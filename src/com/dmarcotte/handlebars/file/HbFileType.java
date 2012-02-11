@@ -1,12 +1,22 @@
-package com.dmarcotte.handlebars;
+package com.dmarcotte.handlebars.file;
 
+import com.dmarcotte.handlebars.HbBundle;
+import com.dmarcotte.handlebars.HbLanguage;
+import com.dmarcotte.handlebars.HbTemplateHighlighter;
+import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.highlighter.EditorHighlighter;
+import com.intellij.openapi.fileTypes.EditorHighlighterProvider;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.encoding.EncodingManager;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
 import java.nio.charset.Charset;
@@ -20,6 +30,16 @@ public class HbFileType extends LanguageFileType {
 
     private HbFileType() {
         super(HbLanguage.INSTANCE);
+
+        // register highlighter - lazy singleton factory
+        FileTypeEditorHighlighterProviders.INSTANCE.addExplicitExtension(this, new EditorHighlighterProvider() {
+            public EditorHighlighter getEditorHighlighter(@Nullable Project project,
+                                                          @NotNull FileType fileType,
+                                                          @Nullable VirtualFile virtualFile,
+                                                          @NotNull EditorColorsScheme editorColorsScheme) {
+                return new HbTemplateHighlighter(project, virtualFile, editorColorsScheme);
+            }
+        });
     }
 
     @NotNull

@@ -16,7 +16,7 @@
 package com.dmarcotte.handlebars.pages;
 
 import com.dmarcotte.handlebars.HbBundle;
-import com.dmarcotte.handlebars.HbFileType;
+import com.dmarcotte.handlebars.file.HbFileType;
 import com.dmarcotte.handlebars.HbHighlighter;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;

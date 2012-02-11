@@ -1,6 +1,7 @@
 package com.dmarcotte.handlebars.parsing;
 
 import com.dmarcotte.handlebars.HbLanguage;
+import com.intellij.psi.templateLanguages.TemplateDataElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
@@ -11,6 +12,12 @@ public class HbTokenTypes {
      * private constructor since this is a constants class
      */
     private HbTokenTypes() {}
+
+    // dm todo rename content to like HTML_somethingorother
+    public static final IElementType TEMPLATE_HTML_TEXT = new HbElementType("CONTENT"); // produced by lexer for all HTML code
+    public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT");
+    public static final TemplateDataElementType TEMPLATE_DATA =
+            new TemplateDataElementType("HB_TEMPLATE_DATA", HbLanguage.INSTANCE, TEMPLATE_HTML_TEXT, OUTER_ELEMENT_TYPE);
 
     public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE");
     public static final IElementType COMMENT = new HbElementType("COMMENT");

@@ -18,8 +18,9 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="com.dmarcotte.handlebars.HbFileTypeFactory" />
+    <fileTypeFactory implementation="com.dmarcotte.handlebars.file.HbFileTypeFactory" />
     <lang.parserDefinition language="Handlebars" implementationClass="com.dmarcotte.handlebars.parsing.HbParseDefinition" />
     <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage" />
+    <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory" />
   </extensions>
 </idea-plugin>

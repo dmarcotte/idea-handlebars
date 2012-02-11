@@ -1,6 +1,6 @@
 package com.dmarcotte.handlebars.psi;
 
-import com.dmarcotte.handlebars.HbFileType;
+import com.dmarcotte.handlebars.file.HbFileType;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;

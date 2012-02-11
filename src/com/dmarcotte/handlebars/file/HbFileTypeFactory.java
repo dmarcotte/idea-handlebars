@@ -1,4 +1,4 @@
-package com.dmarcotte.handlebars;
+package com.dmarcotte.handlebars.file;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
