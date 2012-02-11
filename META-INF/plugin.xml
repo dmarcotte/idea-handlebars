@@ -20,5 +20,6 @@
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="com.dmarcotte.handlebars.HbFileTypeFactory" />
     <lang.parserDefinition language="Handlebars" implementationClass="com.dmarcotte.handlebars.parsing.HbParseDefinition" />
+    <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage" />
   </extensions>
 </idea-plugin>

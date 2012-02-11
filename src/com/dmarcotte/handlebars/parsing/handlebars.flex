@@ -54,6 +54,8 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 
 LineTerminator = \r|\n|\r\n
 WhiteSpace = {LineTerminator} | [ \t\f]
+MustacheBegin = "{{"
+MustacheEnd = "}}"
 
 %state CONTENT
 %state HB_TAG_START
@@ -65,21 +67,21 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 <YYINITIAL, CONTENT> {
 
-  "[^({{)]*"  { yypushback(2); yybegin(HB_TAG_START); return HbTokenTypes.CONTENT; }
-
+  {MustacheBegin} { yypushback(2); yybegin(HB_TAG_START); }
+  .  { return HbTokenTypes.CONTENT; }
 }
 
 <HB_TAG_START> {
 
-  "{{^[#]"  { yybegin(HB_REG_TAG_CONTENTS); return HbTokenTypes.OPEN; }
-  "{{#"     { yybegin(HB_BLOCK_TAG_CONTENTS); }
+  {MustacheBegin}#     { yybegin(HB_BLOCK_TAG_CONTENTS); }
+  {MustacheBegin}  { yybegin(HB_REG_TAG_CONTENTS); return HbTokenTypes.OPEN; }
 
 }
 
 <HB_REG_TAG_CONTENTS> {
 
-  ".*}}"  { yypushback(2); return HbTokenTypes.REG_TAG_EXPRESSION; }
-  "}}"    { yybegin(CONTENT); return HbTokenTypes.CLOSE; }
+  {MustacheEnd}    { yybegin(CONTENT); return HbTokenTypes.CLOSE; }
+  .  { return HbTokenTypes.REG_TAG_EXPRESSION; }
 
 }
 
