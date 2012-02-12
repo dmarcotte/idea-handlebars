@@ -81,8 +81,8 @@ MustacheEnd = "}}"
 <HB_REG_TAG_CONTENTS> {
 
   {MustacheEnd}    { yybegin(CONTENT); return HbTokenTypes.CLOSE; }
-  .  { return HbTokenTypes.REG_TAG_EXPRESSION; }
-
+  "}" { return HbTokenTypes.INVALID; }
+  .*[^"}"]  { return HbTokenTypes.REG_TAG_EXPRESSION; }
 }
 
 {WhiteSpace}+                      { return HbTokenTypes.WHITE_SPACE; }
