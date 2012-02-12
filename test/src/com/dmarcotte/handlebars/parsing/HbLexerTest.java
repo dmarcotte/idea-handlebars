@@ -32,13 +32,40 @@ public class HbLexerTest extends PlatformLiteFixture {
         return tokens;
     }
 
-    public void testMustache() {
+    public void testPlainMustache() {
         List<Token> tokens = lex("{{mustacheContent}}");
 
         assertEquals(3, tokens.size());
         assertEquals(HbTokenTypes.OPEN, tokens.get(0).getElementType());
         assertEquals("{{", tokens.get(0).getElementContent());
+        assertEquals(HbTokenTypes.ID, tokens.get(1).getElementType());
+        assertEquals("mustacheContent", tokens.get(1).getElementContent());
+        assertEquals(HbTokenTypes.CLOSE, tokens.get(2).getElementType());
+        assertEquals("}}", tokens.get(2).getElementContent());
+    }
 
+    public void testPlainMustacheWithWhitespace() {
+        List<Token> tokens = lex("{{\tmustacheContent }}");
+
+        assertEquals(5, tokens.size());
+        assertEquals(HbTokenTypes.OPEN, tokens.get(0).getElementType());
+        assertEquals("{{", tokens.get(0).getElementContent());
+        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(1).getElementType());
+        assertEquals("\t", tokens.get(1).getElementContent());
+        assertEquals(HbTokenTypes.ID, tokens.get(2).getElementType());
+        assertEquals("mustacheContent", tokens.get(2).getElementContent());
+        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(3).getElementType());
+        assertEquals(" ", tokens.get(3).getElementContent());
+        assertEquals(HbTokenTypes.CLOSE, tokens.get(4).getElementType());
+        assertEquals("}}", tokens.get(4).getElementContent());
+    }
+
+    public void testComment() {
+        List<Token> tokens = lex("{{! comment }}");
+
+        assertEquals(1, tokens.size());
+        assertEquals(HbTokenTypes.COMMENT, tokens.get(0).getElementType());
+        assertEquals("{{! comment }}", tokens.get(0).getElementContent());
     }
 
     private static class Token {

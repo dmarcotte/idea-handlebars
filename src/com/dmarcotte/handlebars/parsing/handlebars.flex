@@ -39,6 +39,7 @@ package com.dmarcotte.handlebars.parsing;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.util.containers.Stack;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 
 %%
@@ -52,37 +53,76 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 %eof{ return;
 %eof}
 
-LineTerminator = \r|\n|\r\n
-WhiteSpace = {LineTerminator} | [ \t\f]
-MustacheBegin = "{{"
-MustacheEnd = "}}"
+%{
+    private Stack<Integer> stack = new Stack<Integer>();
 
-%state CONTENT
-%state HB_TAG_START
-%state HB_REG_TAG_CONTENTS
-%state HB_BLOCK_TAG_CONTENTS
-//%state HB_BLOCK_END
+    public void yypushState(int newState) {
+      stack.push(yystate());
+      yybegin(newState);
+    }
+
+    public void yypopState() {
+      yybegin(stack.pop());
+    }
+%}
+
+LineTerminator = \r|\n|\r\n
+SlashSmallS = \t \n\x0B\f\r
+IdFollower = [=}\t\n\f\r\/.]
+WhiteSpace = {LineTerminator} | [ \t\f]
+AtLeast2 = "{2,}"
+OpenStache = "{{"
+CloseStache = "}}"
+
+
+%state mu
+%state emu
 
 %%
 
-<YYINITIAL, CONTENT> {
+<YYINITIAL> {
 
-  {MustacheBegin} { yypushback(2); yybegin(HB_TAG_START); }
-  .  { return HbTokenTypes.CONTENT; }
+  [^\x00]*?"{{" { yypushback(2); yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT; }
+//  [^\x00]*?"{{" {
+//    if(!yytext().toString().substring(0, yylength() - 1).equals("\\")) yypushState(mu);
+//    if(yytext().toString().substring(0, yylength() - 1).equals("\\")) zzBuffer = yytext().subSequence(0,yylength() - 1); yypushState(emu);
+//    if(!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
+//  }
+
+//  [^\x00]+                         { return HbTokenTypes.CONTENT; }
 }
 
-<HB_TAG_START> {
+//<emu> {
+//
+//  [^\x00]{2}?("{{")     { yypopState(); return HbTokenTypes.CONTENT; }
+//
+//} dm todo restore the logic for escaped mustaches
 
-  {MustacheBegin}#     { yybegin(HB_BLOCK_TAG_CONTENTS); }
-  {MustacheBegin}  { yybegin(HB_REG_TAG_CONTENTS); return HbTokenTypes.OPEN; }
+<mu> {
 
-}
-
-<HB_REG_TAG_CONTENTS> {
-
-  {MustacheEnd}    { yybegin(CONTENT); return HbTokenTypes.CLOSE; }
-  "}" { return HbTokenTypes.INVALID; }
-  .*[^"}"]  { return HbTokenTypes.REG_TAG_EXPRESSION; }
+  "{{>" { return HbTokenTypes.OPEN_PARTIAL; }
+  "{{#" { return HbTokenTypes.OPEN_BLOCK; }
+  "{{/" { return HbTokenTypes.OPEN_ENDBLOCK; }
+  "{{^" { return HbTokenTypes.OPEN_INVERSE; }
+  "{{"[\t \n\x0B\f\r]*"else" { return HbTokenTypes.OPEN_INVERSE; }
+  "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
+  "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
+  "{{!".*?"}}" { zzBuffer = yytext().subSequence(3,yylength() - 5); yypopState(); return HbTokenTypes.COMMENT; }
+  "{{" { return HbTokenTypes.OPEN; }
+  "=" { return HbTokenTypes.EQUALS; }
+  "."/[}\t \n\x0B\f\r] { return HbTokenTypes.ID; }
+  ".." { return HbTokenTypes.ID; }
+  [\/.] { return HbTokenTypes.SEP; }
+  {WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }
+  "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
+  "}}" { yypopState(); return HbTokenTypes.CLOSE; }
+  // dm todo what is up with this expression?
+//  '"'("\\"["]\[^"])*'"' { zzBuffer = yytext().subSequence(1,yylength() - 2).toString().replaceAll("\\",'"'); return HbTokenTypes.STRING; }
+  "true"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
+  "false"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
+  [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
+  [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
+  "["[^]]*"]" { zzBuffer = yytext().subSequence(1,yylength() - 2); return HbTokenTypes.ID; }
 }
 
 {WhiteSpace}+                      { return HbTokenTypes.WHITE_SPACE; }
