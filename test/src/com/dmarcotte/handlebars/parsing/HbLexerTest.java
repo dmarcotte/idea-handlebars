@@ -36,12 +36,40 @@ public class HbLexerTest extends PlatformLiteFixture {
         List<Token> tokens = lex("{{mustacheContent}}");
 
         assertEquals(3, tokens.size());
-        assertEquals(HbTokenTypes.OPEN, tokens.get(0).getElementType());
-        assertEquals("{{", tokens.get(0).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(1).getElementType());
-        assertEquals("mustacheContent", tokens.get(1).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(2).getElementType());
-        assertEquals("}}", tokens.get(2).getElementContent());
+        int tokenIdx = -1;
+        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
+        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
+        assertEquals("mustacheContent", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
+        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+    }
+
+    public void testPlainMustacheWithContentPreamble() {
+        List<Token> tokens = lex("Some content y'all {{mustacheContent}}");
+
+        assertEquals(4, tokens.size());
+
+        int tokenIdx = -1;
+        assertEquals(HbTokenTypes.CONTENT, tokens.get(++tokenIdx).getElementType());
+        assertEquals("Some content y'all ", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
+        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
+        assertEquals("mustacheContent", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
+        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+    }
+
+    // dm todo fix this test
+    public void testNoMustaches() {
+        List<Token> tokens = lex("Some content y'all ");
+
+        assertEquals(1, tokens.size());
+
+        int tokenIdx = -1;
+        assertEquals(HbTokenTypes.CONTENT, tokens.get(++tokenIdx).getElementType());
+        assertEquals("Some content y'all ", tokens.get(tokenIdx).getElementContent());
     }
 
     public void testPlainMustacheWithWhitespace() {

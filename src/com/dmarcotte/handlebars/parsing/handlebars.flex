@@ -89,6 +89,8 @@ CloseStache = "}}"
 //    if(!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
 //  }
 
+// dm todo seems like this isn't necessary with our pushback strategy... but hoses up the situation where
+// there is no mustache on the line
 //  [^\x00]+                         { return HbTokenTypes.CONTENT; }
 }
 
