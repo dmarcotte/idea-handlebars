@@ -22,7 +22,7 @@ import javax.swing.Icon;
 import java.nio.charset.Charset;
 
 public class HbFileType extends LanguageFileType {
-    public static final Icon FILE_ICON = IconLoader.getIcon("/fileTypes/properties.png");
+    public static final Icon FILE_ICON = IconLoader.getIcon("/icons/handlebars_icon.png");
     public static final LanguageFileType INSTANCE = new HbFileType();
     @NonNls
     public static final String DEFAULT_EXTENSION = "handlebars";
