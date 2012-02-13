@@ -73,6 +73,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 AtLeast2 = "{2,}"
 OpenStache = "{{"
 CloseStache = "}}"
+AsciiZero = [^\x00]
 
 
 %state mu
@@ -82,9 +83,8 @@ CloseStache = "}}"
 
 <YYINITIAL> {
 
-  [^\x00]*?"{{" {
-            System.out.println("End of text: " + yytext().toString().substring(yylength() - 2, yylength()));
-            if(yytext().toString().substring(yylength() - 2, yylength()).equals("{{")) yypushback(2);
+  [AsciiZero*]?"{{" {
+            yypushback(2);
             yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
         }
 //  [^\x00]*?"{{" {
@@ -111,7 +111,8 @@ CloseStache = "}}"
   "{{"[\t \n\x0B\f\r]*"else" { return HbTokenTypes.OPEN_INVERSE; }
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
-  "{{!".*?"}}" { zzBuffer = yytext().subSequence(3,yylength() - 5); yypopState(); return HbTokenTypes.COMMENT; }
+  // dm todo why were we monkeying with the buffer here??? "{{!".*?"}}" { zzBuffer = yytext().subSequence(3,yylength() - 5); yypopState(); return HbTokenTypes.COMMENT; }
+  "{{!".*?"}}" { yypopState(); return HbTokenTypes.COMMENT; }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
   "."/[}\t \n\x0B\f\r] { return HbTokenTypes.ID; }
@@ -126,7 +127,8 @@ CloseStache = "}}"
   "false"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
-  "["[^]]*"]" { zzBuffer = yytext().subSequence(1,yylength() - 2); return HbTokenTypes.ID; }
+  // dm todo deleted another setter of yytext here; this one seems to be trying to extract the inner value from the parens
+  \[[^\]]*\] { return HbTokenTypes.ID; }
 }
 
 {WhiteSpace}+                      { return HbTokenTypes.WHITE_SPACE; }

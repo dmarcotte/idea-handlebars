@@ -35,7 +35,6 @@ public class HbTokenTypes {
     public static final IElementType BOOLEAN = new HbElementType("BOOLEAN");
     public static final IElementType INTEGER = new HbElementType("INTEGER");
     public static final IElementType INVALID = new HbElementType("INVALID");
-    public static final IElementType REG_TAG_EXPRESSION = new HbElementType("REG_TAG_EXPRESSION");
 
     public static final IFileElementType FILE = new IFileElementType("FILE", HbLanguage.INSTANCE);
 

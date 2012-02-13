@@ -38,7 +38,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
 
     @NotNull
     public Lexer getHighlightingLexer() {
-//        return new HbHighlightingLexer(); dm todo create a highlighting lexer?
+//        return new HbHighlightingLexer(); dm todo create a highlighting-specific lexer?
         return new HbLexer();
     }
 
@@ -47,19 +47,24 @@ public class HbHighlighter extends SyntaxHighlighterBase {
             SyntaxHighlighterColors.BRACES.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey TAG_EXPRESSION = TextAttributesKey.createTextAttributesKey(
-            "HANDLEBARS.TAG_EXPRESSION",
+    public static final TextAttributesKey IDENTIFIERS = TextAttributesKey.createTextAttributesKey(
+            "HANDLEBARS.IDENTIFIERS",
             SyntaxHighlighterColors.KEYWORD.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey HTML_CONTENT = TextAttributesKey.createTextAttributesKey(
-            "HANDLEBARS.HTML_CONTENT",
-            SyntaxHighlighterColors.STRING.getDefaultAttributes()
+    public static final TextAttributesKey COMMENTS = TextAttributesKey.createTextAttributesKey(
+            "HANDLEBARS.COMMENTS",
+            SyntaxHighlighterColors.DOC_COMMENT.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey INVALID_CHARACTER = TextAttributesKey.createTextAttributesKey(
-            "HANDLEBARS.INVALID_CHARACTER",
-            SyntaxHighlighterColors.JAVA_SEMICOLON.getDefaultAttributes() // dm todo semicolon is not a good default here
+    public static final TextAttributesKey OPERATORS = TextAttributesKey.createTextAttributesKey(
+            "HANDLEBARS.OPERATORS",
+            SyntaxHighlighterColors.OPERATION_SIGN.getDefaultAttributes()
+    );
+
+    public static final TextAttributesKey VALUES = TextAttributesKey.createTextAttributesKey(
+            "HANDLEBARS.VALUES",
+            SyntaxHighlighterColors.NUMBER.getDefaultAttributes()
     );
 
     static {
@@ -67,10 +72,18 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         keys2 = new THashMap<IElementType, TextAttributesKey>();
 
         keys1.put(HbTokenTypes.OPEN, BRACES);
+        keys1.put(HbTokenTypes.OPEN_BLOCK, BRACES);
+        keys1.put(HbTokenTypes.OPEN_ENDBLOCK, BRACES);
+        keys1.put(HbTokenTypes.OPEN_INVERSE, BRACES);
+        keys1.put(HbTokenTypes.OPEN_UNESCAPED, BRACES);
         keys1.put(HbTokenTypes.CLOSE, BRACES);
-        keys1.put(HbTokenTypes.CONTENT, HTML_CONTENT);
-        keys1.put(HbTokenTypes.REG_TAG_EXPRESSION, TAG_EXPRESSION);
-        keys1.put(HbTokenTypes.INVALID, INVALID_CHARACTER);
+        keys1.put(HbTokenTypes.ID, IDENTIFIERS);
+        keys1.put(HbTokenTypes.COMMENT, COMMENTS);
+        keys1.put(HbTokenTypes.EQUALS, OPERATORS);
+        keys1.put(HbTokenTypes.SEP, OPERATORS);
+        keys1.put(HbTokenTypes.INTEGER, VALUES);
+        keys1.put(HbTokenTypes.BOOLEAN, VALUES);
+
     }
 
     @NotNull
@@ -81,7 +94,9 @@ public class HbHighlighter extends SyntaxHighlighterBase {
     public static final Map<TextAttributesKey, Pair<String, HighlightSeverity>> DISPLAY_NAMES = new THashMap<TextAttributesKey, Pair<String, HighlightSeverity>>(6);
     static {
         DISPLAY_NAMES.put(BRACES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.braces.key"),null));
-        DISPLAY_NAMES.put(TAG_EXPRESSION, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.tag_expression.key"),null));
-        DISPLAY_NAMES.put(HTML_CONTENT, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.html_content.key"),null));
+        DISPLAY_NAMES.put(IDENTIFIERS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.identifiers.key"),null));
+        DISPLAY_NAMES.put(COMMENTS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.comments.key"),null));
+        DISPLAY_NAMES.put(OPERATORS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.operators.key"),null));
+        DISPLAY_NAMES.put(VALUES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.values.key"),null));
     }
 }
