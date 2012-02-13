@@ -61,7 +61,6 @@ public class HbLexerTest extends PlatformLiteFixture {
         assertEquals("}}", tokens.get(tokenIdx).getElementContent());
     }
 
-    // dm todo fix this test
     public void testNoMustaches() {
         List<Token> tokens = lex("Some content y'all ");
 
@@ -76,24 +75,28 @@ public class HbLexerTest extends PlatformLiteFixture {
         List<Token> tokens = lex("{{\tmustacheContent }}");
 
         assertEquals(5, tokens.size());
-        assertEquals(HbTokenTypes.OPEN, tokens.get(0).getElementType());
-        assertEquals("{{", tokens.get(0).getElementContent());
-        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(1).getElementType());
-        assertEquals("\t", tokens.get(1).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(2).getElementType());
-        assertEquals("mustacheContent", tokens.get(2).getElementContent());
-        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(3).getElementType());
-        assertEquals(" ", tokens.get(3).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(4).getElementType());
-        assertEquals("}}", tokens.get(4).getElementContent());
+
+        int tokenIdx = -1;
+        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
+        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(++tokenIdx).getElementType());
+        assertEquals("\t", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
+        assertEquals("mustacheContent", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(++tokenIdx).getElementType());
+        assertEquals(" ", tokens.get(tokenIdx).getElementContent());
+        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
+        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
     }
 
     public void testComment() {
         List<Token> tokens = lex("{{! this is a comment=true }}");
 
         assertEquals(1, tokens.size());
-        assertEquals(HbTokenTypes.COMMENT, tokens.get(0).getElementType());
-        assertEquals("{{! this is a comment=true }}", tokens.get(0).getElementContent());
+
+        int tokenIdx = -1;
+        assertEquals(HbTokenTypes.COMMENT, tokens.get(++tokenIdx).getElementType());
+        assertEquals("{{! this is a comment=true }}", tokens.get(tokenIdx).getElementContent());
     }
     
     public void testContentAfterComment() {

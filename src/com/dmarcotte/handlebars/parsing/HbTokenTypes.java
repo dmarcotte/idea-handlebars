@@ -13,7 +13,6 @@ public class HbTokenTypes {
      */
     private HbTokenTypes() {}
 
-    // dm todo rename content to like HTML_somethingorother
     public static final IElementType TEMPLATE_HTML_TEXT = new HbElementType("CONTENT"); // produced by lexer for all HTML code
     public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT");
     public static final TemplateDataElementType TEMPLATE_DATA =
