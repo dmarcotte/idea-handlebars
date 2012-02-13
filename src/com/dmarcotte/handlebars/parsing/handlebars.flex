@@ -82,16 +82,18 @@ CloseStache = "}}"
 
 <YYINITIAL> {
 
-  [^\x00]*?"{{" { yypushback(2); yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT; }
+  [^\x00]*?"{{" {
+            System.out.println("End of text: " + yytext().toString().substring(yylength() - 2, yylength()));
+            if(yytext().toString().substring(yylength() - 2, yylength()).equals("{{")) yypushback(2);
+            yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
+        }
 //  [^\x00]*?"{{" {
 //    if(!yytext().toString().substring(0, yylength() - 1).equals("\\")) yypushState(mu);
 //    if(yytext().toString().substring(0, yylength() - 1).equals("\\")) zzBuffer = yytext().subSequence(0,yylength() - 1); yypushState(emu);
 //    if(!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
 //  }
 
-// dm todo seems like this isn't necessary with our pushback strategy... but hoses up the situation where
-// there is no mustache on the line
-//  [^\x00]+                         { return HbTokenTypes.CONTENT; }
+  [^\{\x00]+                         { return HbTokenTypes.CONTENT; }
 }
 
 //<emu> {
