@@ -42,8 +42,8 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         return new HbLexer();
     }
 
-    public static final TextAttributesKey BRACES = TextAttributesKey.createTextAttributesKey(
-            "HANDLEBARS.BRACES",
+    public static final TextAttributesKey MUSTACHES = TextAttributesKey.createTextAttributesKey(
+            "HANDLEBARS.MUSTACHES",
             SyntaxHighlighterColors.BRACES.getDefaultAttributes()
     );
 
@@ -71,12 +71,12 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         keys1 = new THashMap<IElementType, TextAttributesKey>();
         keys2 = new THashMap<IElementType, TextAttributesKey>();
 
-        keys1.put(HbTokenTypes.OPEN, BRACES);
-        keys1.put(HbTokenTypes.OPEN_BLOCK, BRACES);
-        keys1.put(HbTokenTypes.OPEN_ENDBLOCK, BRACES);
-        keys1.put(HbTokenTypes.OPEN_INVERSE, BRACES);
-        keys1.put(HbTokenTypes.OPEN_UNESCAPED, BRACES);
-        keys1.put(HbTokenTypes.CLOSE, BRACES);
+        keys1.put(HbTokenTypes.OPEN, MUSTACHES);
+        keys1.put(HbTokenTypes.OPEN_BLOCK, MUSTACHES);
+        keys1.put(HbTokenTypes.OPEN_ENDBLOCK, MUSTACHES);
+        keys1.put(HbTokenTypes.OPEN_INVERSE, MUSTACHES);
+        keys1.put(HbTokenTypes.OPEN_UNESCAPED, MUSTACHES);
+        keys1.put(HbTokenTypes.CLOSE, MUSTACHES);
         keys1.put(HbTokenTypes.ID, IDENTIFIERS);
         keys1.put(HbTokenTypes.COMMENT, COMMENTS);
         keys1.put(HbTokenTypes.EQUALS, OPERATORS);
@@ -93,7 +93,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
 
     public static final Map<TextAttributesKey, Pair<String, HighlightSeverity>> DISPLAY_NAMES = new THashMap<TextAttributesKey, Pair<String, HighlightSeverity>>(6);
     static {
-        DISPLAY_NAMES.put(BRACES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.braces.key"),null));
+        DISPLAY_NAMES.put(MUSTACHES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.mustaches.key"),null));
         DISPLAY_NAMES.put(IDENTIFIERS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.identifiers.key"),null));
         DISPLAY_NAMES.put(COMMENTS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.comments.key"),null));
         DISPLAY_NAMES.put(OPERATORS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.operators.key"),null));
