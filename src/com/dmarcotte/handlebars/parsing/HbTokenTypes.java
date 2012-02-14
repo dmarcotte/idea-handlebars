@@ -1,6 +1,7 @@
 package com.dmarcotte.handlebars.parsing;
 
 import com.dmarcotte.handlebars.HbLanguage;
+import com.intellij.lang.StdLanguages;
 import com.intellij.psi.templateLanguages.TemplateDataElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
@@ -13,14 +14,14 @@ public class HbTokenTypes {
      */
     private HbTokenTypes() {}
 
-    public static final IElementType TEMPLATE_HTML_TEXT = new HbElementType("CONTENT"); // produced by lexer for all HTML code
+    public static final IElementType CONTENT = new HbElementType("CONTENT");
     public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT");
-    public static final TemplateDataElementType TEMPLATE_DATA =
-            new TemplateDataElementType("HB_TEMPLATE_DATA", HbLanguage.INSTANCE, TEMPLATE_HTML_TEXT, OUTER_ELEMENT_TYPE);
+    public static final TemplateDataElementType TEMPLATE_ELEMENT_TYPE =
+            new TemplateDataElementType("HB_TEMPLATE_DATA", StdLanguages.HTML, CONTENT, OUTER_ELEMENT_TYPE);
 
     public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE");
     public static final IElementType COMMENT = new HbElementType("COMMENT");
-    public static final IElementType CONTENT = new HbElementType("CONTENT");
+
     public static final IElementType OPEN_PARTIAL = new HbElementType("OPEN_PARTIAL");
     public static final IElementType OPEN_BLOCK = new HbElementType("OPEN_BLOCK");
     public static final IElementType OPEN_ENDBLOCK = new HbElementType("OPEN_ENDBLOCK");

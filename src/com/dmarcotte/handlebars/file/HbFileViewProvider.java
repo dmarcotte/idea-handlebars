@@ -78,7 +78,7 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
         // creating file for main lang (HTML)
         if(lang == myTemplateDataLanguage) {
             PsiFileImpl file = (PsiFileImpl) LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this);
-            file.setContentElementType(HbTokenTypes.CONTENT);
+            file.setContentElementType(HbTokenTypes.TEMPLATE_ELEMENT_TYPE);
             return file;
         } else if(lang == HbLanguage.INSTANCE) {
             return LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this);
