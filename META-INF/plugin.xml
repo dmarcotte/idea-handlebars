@@ -1,9 +1,9 @@
-<idea-plugin version="2">
-  <name>Google Closure Templates (Soy) for Idea</name>
-  <description>Google Closure Templates (Soy) Plug-in</description>
+<idea-plugin version="1">
+  <name>Handlebars</name>
+  <description>Handlebars plug-in for IDEA</description>
   <version>0.1</version>
   <vendor>https://github.com/dmarcotte</vendor>
-  <idea-version since-build="8000"/>
+  <idea-version since-build="107.587"/>
 
   <application-components>
     <!-- Add your application components here -->

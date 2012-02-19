@@ -1,5 +1,6 @@
 package com.dmarcotte.handlebars.parsing;
 
+import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiFile;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -11,7 +12,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiUtilCore;
 import org.jetbrains.annotations.NotNull;
 
 public class HbParseDefinition implements ParserDefinition {
@@ -45,7 +45,7 @@ public class HbParseDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return PsiUtilCore.NULL_PSI_ELEMENT;
+        return new HbPsiElement(node);
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
