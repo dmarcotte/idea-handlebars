@@ -1,12 +1,15 @@
-//[^\x00]*?/("{{")                 {
-//                                   if(yytext.slice(-1) !== "\\") this.begin("mu");
-//                                   if(yytext.slice(-1) === "\\") yytext = yytext.substr(0,yyleng-1), this.begin("emu");
-//                                   if(yytext) return 'CONTENT';
-//                                 }
+// This is the official Handlebars lexer definition:
+// (taken from the following revision: https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/src/handlebars.l)
+// We base our lexer directly on that, making some modifications to account for Jison/JFlex syntax and functionality differences
+// TODO there is a later commit which adds support for "escaped mustaches" here: https://github.com/wycats/handlebars.js/blob/c79c761460f7d08e3862c0c9992f65a799771851/src/handlebars.l
 //
+//
+//%x mu
+//
+//%%
+//
+//[^\x00]*?/("{{")                 { this.begin("mu"); if (yytext) return 'CONTENT'; }
 //[^\x00]+                         { return 'CONTENT'; }
-//
-//<emu>[^\x00]{2,}?/("{{")         { this.popState(); return 'CONTENT'; }
 //
 //<mu>"{{>"                        { return 'OPEN_PARTIAL'; }
 //<mu>"{{#"                        { return 'OPEN_BLOCK'; }
@@ -15,7 +18,7 @@
 //<mu>"{{"\s*"else"                { return 'OPEN_INVERSE'; }
 //<mu>"{{{"                        { return 'OPEN_UNESCAPED'; }
 //<mu>"{{&"                        { return 'OPEN_UNESCAPED'; }
-//<mu>"{{!"[\s\S]*?"}}"            { yytext = yytext.substr(3,yyleng-5); this.popState(); return 'COMMENT'; }
+//<mu>"{{!"[\s\S]*?"}}"            { yytext = yytext.substr(3,yyleng-5); this.begin("INITIAL"); return 'COMMENT'; }
 //<mu>"{{"                         { return 'OPEN'; }
 //
 //<mu>"="                          { return 'EQUALS'; }
@@ -23,14 +26,14 @@
 //<mu>".."                         { return 'ID'; }
 //<mu>[\/.]                        { return 'SEP'; }
 //<mu>\s+                          { /*ignore whitespace*/ }
-//<mu>"}}}"                        { this.popState(); return 'CLOSE'; }
-//<mu>"}}"                         { this.popState(); return 'CLOSE'; }
+//<mu>"}}}"                        { this.begin("INITIAL"); return 'CLOSE'; }
+//<mu>"}}"                         { this.begin("INITIAL"); return 'CLOSE'; }
 //<mu>'"'("\\"["]|[^"])*'"'        { yytext = yytext.substr(1,yyleng-2).replace(/\\"/g,'"'); return 'STRING'; }
 //<mu>"true"/[}\s]                 { return 'BOOLEAN'; }
 //<mu>"false"/[}\s]                { return 'BOOLEAN'; }
 //<mu>[0-9]+/[}\s]                 { return 'INTEGER'; }
 //<mu>[a-zA-Z0-9_$-]+/[=}\s\/.]    { return 'ID'; }
-//<mu>'['[^\]]*']'                 { yytext = yytext.substr(1, yyleng-2); return 'ID'; }
+//<mu>\[[^\]]*\]                   { yytext = yytext.substr(1, yyleng-2); return 'ID'; }
 //<mu>.                            { return 'INVALID'; }
 //
 //<INITIAL,mu><<EOF>>              { return 'EOF'; }
@@ -83,24 +86,13 @@ AsciiZero = [^\x00]
 
 <YYINITIAL> {
 
-  [AsciiZero*]?"{{" {
+  [^\x00]*?"{{" {
             yypushback(2);
             yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
         }
-//  [^\x00]*?"{{" {
-//    if(!yytext().toString().substring(0, yylength() - 1).equals("\\")) yypushState(mu);
-//    if(yytext().toString().substring(0, yylength() - 1).equals("\\")) zzBuffer = yytext().subSequence(0,yylength() - 1); yypushState(emu);
-//    if(!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
-//  }
 
-  [^\{\x00]+                         { return HbTokenTypes.CONTENT; }
+  [^(\{\{)\x00]+                         { return HbTokenTypes.CONTENT; }
 }
-
-//<emu> {
-//
-//  [^\x00]{2}?("{{")     { yypopState(); return HbTokenTypes.CONTENT; }
-//
-//} dm todo restore the logic for escaped mustaches
 
 <mu> {
 
@@ -111,7 +103,7 @@ AsciiZero = [^\x00]
   "{{"[\t \n\x0B\f\r]*"else" { return HbTokenTypes.OPEN_INVERSE; }
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
-  // dm todo why were we monkeying with the buffer here??? "{{!".*?"}}" { zzBuffer = yytext().subSequence(3,yylength() - 5); yypopState(); return HbTokenTypes.COMMENT; }
+  // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
   "{{!".*?"}}" { yypopState(); return HbTokenTypes.COMMENT; }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
@@ -121,15 +113,15 @@ AsciiZero = [^\x00]
   {WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
-  // dm todo what is up with this expression?
+  // dm todo get the STRING token returning properly
 //  '"'("\\"["]\[^"])*'"' { zzBuffer = yytext().subSequence(1,yylength() - 2).toString().replaceAll("\\",'"'); return HbTokenTypes.STRING; }
   "true"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
-  // dm todo deleted another setter of yytext here; this one seems to be trying to extract the inner value from the parens
+  // dm todo this is trying to extract the id from within square brackets, not include the square brackets.  Fix it to match handlebars.l
   \[[^\]]*\] { return HbTokenTypes.ID; }
 }
 
-{WhiteSpace}+                      { return HbTokenTypes.WHITE_SPACE; }
-.                                        { return HbTokenTypes.INVALID; }
+{WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }
+. { return HbTokenTypes.INVALID; }

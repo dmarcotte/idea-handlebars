@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * dm todo write tests based on revision of tokenozer_spec.rb which corresponds to the handlebars.l we used
+ * https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/spec/tokenizer_spec.rb
+ */
 public class HbLexerTest extends PlatformLiteFixture {
 
     Lexer _lexer;
