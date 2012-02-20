@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class HbLexerFreeFormTest extends HbLexerTest {
     public void testPlainMustache() {
-        List<Token> tokens = lex("{{mustacheContent}}");
+        List<Token> tokens = tokenizeOld("{{mustacheContent}}");
 
         assertEquals(3, tokens.size());
         int tokenIdx = -1;
@@ -22,7 +22,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testPlainMustacheWithContentPreamble() {
-        List<Token> tokens = lex("Some content y'all {{mustacheContent}}");
+        List<Token> tokens = tokenizeOld("Some content y'all {{mustacheContent}}");
 
         assertEquals(4, tokens.size());
 
@@ -38,7 +38,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testNoMustaches() {
-        List<Token> tokens = lex("Some content y'all ");
+        List<Token> tokens = tokenizeOld("Some content y'all ");
 
         assertEquals(1, tokens.size());
 
@@ -48,7 +48,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testPlainMustacheWithWhitespace() {
-        List<Token> tokens = lex("{{\tmustacheContent }}");
+        List<Token> tokens = tokenizeOld("{{\tmustacheContent }}");
 
         assertEquals(5, tokens.size());
 
@@ -66,7 +66,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testComment() {
-        List<Token> tokens = lex("{{! this is a comment=true }}");
+        List<Token> tokens = tokenizeOld("{{! this is a comment=true }}");
 
         assertEquals(1, tokens.size());
 
@@ -76,7 +76,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testContentAfterComment() {
-        List<Token> tokens = lex("{{! this is a comment=true }}This here be non-Hb content!");
+        List<Token> tokens = tokenizeOld("{{! this is a comment=true }}This here be non-Hb content!");
 
         int tokenIdx = -1;
         assertEquals(HbTokenTypes.COMMENT, tokens.get(++tokenIdx).getElementType());
@@ -86,7 +86,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testSquareBracketStuff() {
-        List<Token> tokens = lex("{{test\t[what] }}");
+        List<Token> tokens = tokenizeOld("{{test\t[what] }}");
 
         int tokenIdx = -1;
         assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
@@ -104,7 +104,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     }
 
     public void testSeparator() {
-        List<Token> tokens = lex("{{dis/connected}}");
+        List<Token> tokens = tokenizeOld("{{dis/connected}}");
 
         int tokenIdx = -1;
         assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());

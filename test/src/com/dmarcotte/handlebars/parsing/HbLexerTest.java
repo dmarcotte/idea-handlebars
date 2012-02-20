@@ -3,6 +3,7 @@ package com.dmarcotte.handlebars.parsing;
 import com.intellij.lexer.Lexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.testFramework.PlatformLiteFixture;
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,14 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
         _lexer = new HbLexer();
     }
 
-    List<Token> lex(String str) {
+    /**
+     * dm todo delete this if we like the new tokenizerResult
+     */
+    List<Token> tokenizeOld(String string) {
         List<Token> tokens = new ArrayList<Token>();
         IElementType currentElement;
 
-        _lexer.start(str);
+        _lexer.start(string);
 
         while((currentElement = _lexer.getTokenType()) != null) {
             tokens.add(new Token(currentElement, _lexer.getTokenText()));
@@ -34,6 +38,10 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
         }
 
         return tokens;
+    }
+
+    TokenizerResult tokenize(String string) {
+        return new TokenizerResult(tokenizeOld(string));
     }
 
     protected static class Token {
@@ -51,6 +59,29 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
 
         public String getElementContent() {
             return _elementContent;
+        }
+    }
+
+    protected static class TokenizerResult {
+        private List<Token> _tokens;
+
+        public TokenizerResult(List<Token> tokens) {
+            _tokens = tokens;
+        }
+
+        public void shouldMatchTokens(IElementType... tokenTypes) {
+            Assert.assertEquals(tokenTypes.length, _tokens.size());
+
+            for (int i = 0; i < _tokens.size(); i++) {
+                Assert.assertEquals(tokenTypes[i], _tokens.get(i).getElementType());
+            }
+        }
+
+        public void shouldBeToken(int tokenPosition, IElementType tokenType, String tokenContent) {
+            Token token = _tokens.get(tokenPosition);
+
+            Assert.assertEquals(tokenType, token.getElementType());
+            Assert.assertEquals(tokenContent, token.getElementContent());
         }
     }
 }

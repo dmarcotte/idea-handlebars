@@ -67,6 +67,11 @@ public class HbHighlighter extends SyntaxHighlighterBase {
             SyntaxHighlighterColors.NUMBER.getDefaultAttributes()
     );
 
+    public static final TextAttributesKey STRINGS = TextAttributesKey.createTextAttributesKey(
+            "HANDLEBARS.STRINGS",
+            SyntaxHighlighterColors.STRING.getDefaultAttributes()
+    );
+
     static {
         keys1 = new THashMap<IElementType, TextAttributesKey>();
         keys2 = new THashMap<IElementType, TextAttributesKey>();
@@ -83,6 +88,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         keys1.put(HbTokenTypes.SEP, OPERATORS);
         keys1.put(HbTokenTypes.INTEGER, VALUES);
         keys1.put(HbTokenTypes.BOOLEAN, VALUES);
+        keys1.put(HbTokenTypes.STRING, STRINGS);
 
     }
 

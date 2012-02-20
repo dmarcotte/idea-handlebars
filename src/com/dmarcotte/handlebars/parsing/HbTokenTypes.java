@@ -34,11 +34,12 @@ public class HbTokenTypes {
     public static final IElementType CLOSE = new HbElementType("CLOSE");
     public static final IElementType BOOLEAN = new HbElementType("BOOLEAN");
     public static final IElementType INTEGER = new HbElementType("INTEGER");
+    public static final IElementType STRING = new HbElementType("STRING");
     public static final IElementType INVALID = new HbElementType("INVALID");
 
     public static final IFileElementType FILE = new IFileElementType("FILE", HbLanguage.INSTANCE);
 
     public static final TokenSet WHITESPACES = TokenSet.create(WHITE_SPACE);
     public static final TokenSet COMMENTS = TokenSet.create(COMMENT);
-    public static final TokenSet STRING_LITERALS = TokenSet.create();
+    public static final TokenSet STRING_LITERALS = TokenSet.create(STRING);
 }

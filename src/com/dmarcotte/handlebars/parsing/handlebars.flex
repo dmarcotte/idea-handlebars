@@ -86,7 +86,7 @@ AsciiZero = [^\x00]
 
 <YYINITIAL> {
 
-  [^\x00]*?"{{" {
+  [^(\{\{)\x00]*?\{\{ {
             yypushback(2);
             yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
         }
@@ -104,17 +104,18 @@ AsciiZero = [^\x00]
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
   // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
-  "{{!".*?"}}" { yypopState(); return HbTokenTypes.COMMENT; }
+  "{{!"[^(\{\{)]*?"}}" { yypopState(); return HbTokenTypes.COMMENT; }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
   "."/[}\t \n\x0B\f\r] { return HbTokenTypes.ID; }
   ".." { return HbTokenTypes.ID; }
   [\/.] { return HbTokenTypes.SEP; }
-  {WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }
+  [\t \n\x0B\f\r]* { return HbTokenTypes.WHITE_SPACE; }
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
   // dm todo get the STRING token returning properly
 //  '"'("\\"["]\[^"])*'"' { zzBuffer = yytext().subSequence(1,yylength() - 2).toString().replaceAll("\\",'"'); return HbTokenTypes.STRING; }
+  \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
   "true"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
