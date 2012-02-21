@@ -20,6 +20,7 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.SyntaxHighlighterColors;
+import com.intellij.openapi.editor.XmlHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.openapi.util.Pair;
@@ -44,7 +45,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
 
     public static final TextAttributesKey MUSTACHES = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.MUSTACHES",
-            SyntaxHighlighterColors.BRACES.getDefaultAttributes()
+            XmlHighlighterColors.XML_ENTITY_REFERENCE.getDefaultAttributes()
     );
 
     public static final TextAttributesKey IDENTIFIERS = TextAttributesKey.createTextAttributesKey(
@@ -104,5 +105,6 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         DISPLAY_NAMES.put(COMMENTS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.comments.key"),null));
         DISPLAY_NAMES.put(OPERATORS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.operators.key"),null));
         DISPLAY_NAMES.put(VALUES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.values.key"),null));
+        DISPLAY_NAMES.put(STRINGS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.strings.key"),null));
     }
 }

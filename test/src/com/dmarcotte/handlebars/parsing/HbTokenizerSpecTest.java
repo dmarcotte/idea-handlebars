@@ -1,7 +1,5 @@
 package com.dmarcotte.handlebars.parsing;
 
-import javax.print.DocFlavor;
-
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
 
 /**

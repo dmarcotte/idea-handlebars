@@ -67,11 +67,8 @@ public class HbColorsPage implements ColorSettingsPage {
 
     @NotNull
     public String getDemoText() {
-        return "<div class=\"some_html\">\n" +
-                "{{identifier my-val=true my-other-val=42}}\n" +
-                "    <span class=\"embedded_html\"/>\n" +
-                "    {{! this is a comment }}\n" +
-                "</div>\n"
+        return "{{identifier my-val=true my-other-val=42 my-string-val=\"a string\"}}\n" +
+               "{{! this is a comment }}\n"
                 ;
     }
 
