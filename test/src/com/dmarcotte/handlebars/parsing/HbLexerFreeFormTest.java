@@ -1,5 +1,6 @@
 package com.dmarcotte.handlebars.parsing;
 
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
 import java.util.List;
 
 /**
@@ -9,113 +10,50 @@ import java.util.List;
  */
 public class HbLexerFreeFormTest extends HbLexerTest {
     public void testPlainMustache() {
-        List<Token> tokens = tokenizeOld("{{mustacheContent}}");
-
-        assertEquals(3, tokens.size());
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("mustacheContent", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("{{mustacheContent}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE);
+        result.shouldMatchTokenContent("{{", "mustacheContent", "}}");
     }
 
     public void testPlainMustacheWithContentPreamble() {
-        List<Token> tokens = tokenizeOld("Some content y'all {{mustacheContent}}");
-
-        assertEquals(4, tokens.size());
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.CONTENT, tokens.get(++tokenIdx).getElementType());
-        assertEquals("Some content y'all ", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("mustacheContent", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("Some content y'all {{mustacheContent}}");
+        result.shouldMatchTokenTypes(CONTENT, OPEN, ID, CLOSE);
+        result.shouldMatchTokenContent("Some content y'all ", "{{", "mustacheContent", "}}");
     }
 
     public void testNoMustaches() {
-        List<Token> tokens = tokenizeOld("Some content y'all ");
-
-        assertEquals(1, tokens.size());
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.CONTENT, tokens.get(++tokenIdx).getElementType());
-        assertEquals("Some content y'all ", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("Some content y'all ");
+        result.shouldMatchTokenTypes(CONTENT);
+        result.shouldMatchTokenContent("Some content y'all ");
     }
 
     public void testPlainMustacheWithWhitespace() {
-        List<Token> tokens = tokenizeOld("{{\tmustacheContent }}");
-
-        assertEquals(5, tokens.size());
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("\t", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("mustacheContent", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(++tokenIdx).getElementType());
-        assertEquals(" ", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("{{\tmustacheContent }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldMatchTokenContent("{{", "\t", "mustacheContent", " ", "}}");
     }
 
     public void testComment() {
-        List<Token> tokens = tokenizeOld("{{! this is a comment=true }}");
-
-        assertEquals(1, tokens.size());
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.COMMENT, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{! this is a comment=true }}", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("{{! this is a comment=true }}");
+        result.shouldMatchTokenTypes(COMMENT);
+        result.shouldMatchTokenContent("{{! this is a comment=true }}");
     }
 
     public void testContentAfterComment() {
-        List<Token> tokens = tokenizeOld("{{! this is a comment=true }}This here be non-Hb content!");
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.COMMENT, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{! this is a comment=true }}", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.CONTENT, tokens.get(++tokenIdx).getElementType());
-        assertEquals("This here be non-Hb content!", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("{{! this is a comment=true }}This here be non-Hb content!");
+        result.shouldMatchTokenTypes(COMMENT, CONTENT);
+        result.shouldMatchTokenContent("{{! this is a comment=true }}", "This here be non-Hb content!");
     }
 
     public void testSquareBracketStuff() {
-        List<Token> tokens = tokenizeOld("{{test\t[what] }}");
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("test", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("\t", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("[what]", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.WHITE_SPACE, tokens.get(++tokenIdx).getElementType());
-        assertEquals(" ", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("{{test\t[what] }}");
+        result.shouldMatchTokenTypes(OPEN, ID, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldMatchTokenContent("{{", "test", "\t", "[what]", " ", "}}");
     }
 
     public void testSeparator() {
-        List<Token> tokens = tokenizeOld("{{dis/connected}}");
-
-        int tokenIdx = -1;
-        assertEquals(HbTokenTypes.OPEN, tokens.get(++tokenIdx).getElementType());
-        assertEquals("{{", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("dis", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.SEP, tokens.get(++tokenIdx).getElementType());
-        assertEquals("/", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.ID, tokens.get(++tokenIdx).getElementType());
-        assertEquals("connected", tokens.get(tokenIdx).getElementContent());
-        assertEquals(HbTokenTypes.CLOSE, tokens.get(++tokenIdx).getElementType());
-        assertEquals("}}", tokens.get(tokenIdx).getElementContent());
+        TokenizerResult result = tokenize("{{dis/connected}}");
+        result.shouldMatchTokenTypes(OPEN, ID, SEP, ID, CLOSE);
+        result.shouldMatchTokenContent("{{", "dis", "/", "connected", "}}");
     }
 }

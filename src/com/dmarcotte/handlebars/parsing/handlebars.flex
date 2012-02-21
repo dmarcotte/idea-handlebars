@@ -113,14 +113,12 @@ AsciiZero = [^\x00]
   [\t \n\x0B\f\r]* { return HbTokenTypes.WHITE_SPACE; }
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
-  // dm todo get the STRING token returning properly
-//  '"'("\\"["]\[^"])*'"' { zzBuffer = yytext().subSequence(1,yylength() - 2).toString().replaceAll("\\",'"'); return HbTokenTypes.STRING; }
   \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
   "true"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
-  // dm todo this is trying to extract the id from within square brackets, not include the square brackets.  Fix it to match handlebars.l
+  // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
   \[[^\]]*\] { return HbTokenTypes.ID; }
 }
 

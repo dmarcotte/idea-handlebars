@@ -8,11 +8,6 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * dm todo write tests based on revision of tokenizer_spec.rb which corresponds to the handlebars.l we used
- * https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/spec/tokenizer_spec.rb
- */
 public abstract class HbLexerTest extends PlatformLiteFixture {
 
     Lexer _lexer;
@@ -23,10 +18,7 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
         _lexer = new HbLexer();
     }
 
-    /**
-     * dm todo delete this if we like the new tokenizerResult
-     */
-    List<Token> tokenizeOld(String string) {
+    TokenizerResult tokenize(String string) {
         List<Token> tokens = new ArrayList<Token>();
         IElementType currentElement;
 
@@ -36,12 +28,8 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
             tokens.add(new Token(currentElement, _lexer.getTokenText()));
             _lexer.advance();
         }
-
-        return tokens;
-    }
-
-    TokenizerResult tokenize(String string) {
-        return new TokenizerResult(tokenizeOld(string));
+        
+        return new TokenizerResult(tokens);
     }
 
     protected static class Token {
@@ -69,7 +57,10 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
             _tokens = tokens;
         }
 
-        public void shouldMatchTokens(IElementType... tokenTypes) {
+        /**
+         * @param tokenTypes The token types expected for the tokens in this TokenizerResult, in the order they are expected
+         */
+        public void shouldMatchTokenTypes(IElementType... tokenTypes) {
             Assert.assertEquals(tokenTypes.length, _tokens.size());
 
             for (int i = 0; i < _tokens.size(); i++) {
@@ -77,6 +68,20 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
             }
         }
 
+        /**
+         * @param tokenContent The content string expected for the tokens in this TokenizerResult, in the order they are expected
+         */
+        public void shouldMatchTokenContent(String... tokenContent) {
+            Assert.assertEquals(tokenContent.length, _tokens.size());
+
+            for (int i = 0; i < _tokens.size(); i++) {
+                Assert.assertEquals(tokenContent[i], _tokens.get(i).getElementContent());
+            }
+        }
+
+        /**
+         * Convenience method for validating a specific token in this TokenizerResult
+         */
         public void shouldBeToken(int tokenPosition, IElementType tokenType, String tokenContent) {
             Token token = _tokens.get(tokenPosition);
 

@@ -39,7 +39,6 @@ public class HbHighlighter extends SyntaxHighlighterBase {
 
     @NotNull
     public Lexer getHighlightingLexer() {
-//        return new HbHighlightingLexer(); dm todo create a highlighting-specific lexer?
         return new HbLexer();
     }
 

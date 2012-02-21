@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# dm todo probably move this file
+####
+# Run this script to regenerate _HbLexer.java from handlebars.flex
+####
 
 # thanks to http://code.google.com/p/google-closure-soy/source/browse/trunk/src/net/intellij/plugins/soy/lexer/build-lexer.cmd
 # for help with the command line switches
