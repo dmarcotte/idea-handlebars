@@ -5,7 +5,7 @@ on the Intellij IDEA platform (IDEA, RubyMine, PhpStorm, and others).
 
 # Features
 * Configurable syntax highlighting for Handlebars code
-* Full HTML highlighting, code-completion, inspections and formatting for the HTML content in your Handlebars templates
+* Full HTML highlighting, code-completion, inspections, formatting and commenting for the HTML content in your Handlebars templates
 
 # Not yet implemented
 * Find usages, Go-to declaration, etc. for references
