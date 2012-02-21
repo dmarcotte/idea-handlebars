@@ -23,5 +23,6 @@
     <lang.formatter language="Handlebars" implementationClass="com.dmarcotte.handlebars.format.HbFormattingModelBuilder"/>
     <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage" />
     <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory" />
+    <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.HandlebarsCommenter"/>
   </extensions>
 </idea-plugin>

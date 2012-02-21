@@ -104,7 +104,7 @@ AsciiZero = [^\x00]
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
   // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
-  "{{!"[^(\{\{)]*?"}}" { yypopState(); return HbTokenTypes.COMMENT; }
+  "{{!"[^(\}\})]*"}}" { yypopState(); return HbTokenTypes.COMMENT; }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
   "."/[}\t \n\x0B\f\r] { return HbTokenTypes.ID; }
