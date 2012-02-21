@@ -21,8 +21,9 @@
     <fileTypeFactory implementation="com.dmarcotte.handlebars.file.HbFileTypeFactory" />
     <lang.parserDefinition language="Handlebars" implementationClass="com.dmarcotte.handlebars.parsing.HbParseDefinition" />
     <lang.formatter language="Handlebars" implementationClass="com.dmarcotte.handlebars.format.HbFormattingModelBuilder"/>
-    <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage" />
-    <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory" />
+    <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage"/>
+    <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory"/>
     <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.HandlebarsCommenter"/>
+    <lang.braceMatcher language="Handlebars" implementationClass="com.dmarcotte.handlebars.HbBraceMatcher"/>
   </extensions>
 </idea-plugin>

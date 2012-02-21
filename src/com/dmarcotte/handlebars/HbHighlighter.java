@@ -78,6 +78,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
 
         keys1.put(HbTokenTypes.OPEN, MUSTACHES);
         keys1.put(HbTokenTypes.OPEN_BLOCK, MUSTACHES);
+        keys1.put(HbTokenTypes.OPEN_PARTIAL, MUSTACHES);
         keys1.put(HbTokenTypes.OPEN_ENDBLOCK, MUSTACHES);
         keys1.put(HbTokenTypes.OPEN_INVERSE, MUSTACHES);
         keys1.put(HbTokenTypes.OPEN_UNESCAPED, MUSTACHES);

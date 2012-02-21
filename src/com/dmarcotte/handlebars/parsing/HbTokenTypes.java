@@ -22,12 +22,12 @@ public class HbTokenTypes {
     public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE");
     public static final IElementType COMMENT = new HbElementType("COMMENT");
 
-    public static final IElementType OPEN_PARTIAL = new HbElementType("OPEN_PARTIAL");
+    public static final IElementType OPEN = new HbElementType("OPEN");
     public static final IElementType OPEN_BLOCK = new HbElementType("OPEN_BLOCK");
+    public static final IElementType OPEN_PARTIAL = new HbElementType("OPEN_PARTIAL");
     public static final IElementType OPEN_ENDBLOCK = new HbElementType("OPEN_ENDBLOCK");
     public static final IElementType OPEN_INVERSE = new HbElementType("OPEN_INVERSE");
     public static final IElementType OPEN_UNESCAPED = new HbElementType("OPEN_UNESCAPED");
-    public static final IElementType OPEN = new HbElementType("OPEN");
     public static final IElementType EQUALS = new HbElementType("EQUALS");
     public static final IElementType ID = new HbElementType("ID");
     public static final IElementType SEP = new HbElementType("SEP");
