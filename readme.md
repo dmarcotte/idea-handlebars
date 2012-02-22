@@ -19,9 +19,9 @@ Handlebars-specific utilites.
 * Support for Handlebars templates embedded in script tags in html files
 
 ## Compatibility
-* Confirmed to work with IDEA 11, RubyMine 4 and PhpStorm 3 [DM TODO check phpStorm and RubyMine compatibility]
+* Confirmed to work with IDEA 11, RubyMine 4 and PhpStorm/WebStorm 3
 * IDEA 10.5 version can be found in branch idea-handlebars-10.5
-* Should work with any other IDE based on the IDEA 11 platform, build 107.587 [DM TODO UPDATE IDEA 11 BUILD NUMBER] or higher (will confirm further compatability soon)
+* Should work with any other IDE based on the IDEA 11 platform, build 110.00 or higher (will confirm further compatability soon)
 
 ## Feedback
 * Please feel free to call out bugs and feaure requests in the issue tracker
