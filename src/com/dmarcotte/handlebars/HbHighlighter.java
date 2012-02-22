@@ -20,8 +20,8 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.SyntaxHighlighterColors;
-import com.intellij.openapi.editor.XmlHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.tree.IElementType;
@@ -44,7 +44,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
 
     public static final TextAttributesKey MUSTACHES = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.MUSTACHES",
-            XmlHighlighterColors.XML_ENTITY_REFERENCE.getDefaultAttributes()
+            new TextAttributes(null, null, null, null, 1)
     );
 
     public static final TextAttributesKey IDENTIFIERS = TextAttributesKey.createTextAttributesKey(
