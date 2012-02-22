@@ -1,8 +1,42 @@
-<idea-plugin version="1">
+<idea-plugin version="1" url="https://github.com/dmarcotte/idea-handlebars">
   <name>Handlebars</name>
-  <description>Handlebars plug-in for IDEA</description>
+  <description>
+    <![CDATA[
+      <a href="http://handlebarsjs.com/">Handlebars</a> template support
+    ]]>
+  </description>
+  <change-notes>
+    <![CDATA[
+      <b>Version 0.1</b>
+      <br>
+      <br>
+
+      The key feature of this early version of the plugin is that it allows most of the power of the built-in IDEA HTML
+      editing utilities to be used with Handlebars syntax inserted in the markup.  Future versions will build out more
+      Handlebars-specific utilites.
+      <ul>
+        <li>
+          <b>Features</b>
+          <ul>
+            <li>Configurable syntax highlighting</li>
+            <li>Mustache pair highlighting</li>
+            <li>Full HTML highlighting, code-completion, inspections, formatting and commenting</li>
+          </ul>
+        </li>
+        <li>
+          <b>Not yet implemented</b>
+          <ul>
+            <li>Handlebars-specific syntax-error highlighting</li>
+            <li>Find usages, Go-to declaration, etc. for references</li>
+            <li>Support for Handlebars templates embedded in script tags in html files</li>
+          </ul>
+         </li>
+      </ul>
+    ]]>
+  </change-notes>
   <version>0.1</version>
-  <vendor>https://github.com/dmarcotte</vendor>
+  <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
+  
   <idea-version since-build="107.587"/>
 
   <application-components>

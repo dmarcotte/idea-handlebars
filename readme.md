@@ -1,4 +1,4 @@
-# IDEA-Handlebars:  An Intellij IDEA plug for [Handlebars](http://handlebarsjs.com/) templates
+# IDEA-Handlebars:  An Intellij IDEA plug-in for [Handlebars](http://handlebarsjs.com/) templates
 
 IDEA-Handlebars adds support for Handlebars templates (by default, files with the ".handlebars" extension) to IDEs based
 on the Intellij IDEA platform (IDEA, RubyMine, PhpStorm, and others).
@@ -11,6 +11,7 @@ Handlebars-specific utilites.
 * Configurable syntax highlighting for Handlebars code
 * Matched mustache pair highlighting
 * Full HTML highlighting, code-completion, inspections, formatting and commenting for the HTML content in your Handlebars templates
+* Since Handlebars is a super-set of [Mustache](http://mustache.github.com/) syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too
 
 ## Not yet implemented
 * Handlebars-specific syntax-error highlighting
@@ -18,9 +19,13 @@ Handlebars-specific utilites.
 * Support for Handlebars templates embedded in script tags in html files
 
 ## Compatibility
-* Confirmed to work with IDEA 10.5, IDEA 11, RubyMine 4 and PhpStorm 3 DM TODO check phpStorm and RubyMine compatibility
-* Should work with any other IDE based on the IDEA platform, build 107.587 or higher
+* Confirmed to work with IDEA 11, RubyMine 4 and PhpStorm 3 [DM TODO check phpStorm and RubyMine compatibility]
+* IDEA 10.5 version can be found in branch idea-handlebars-10.5
+* Should work with any other IDE based on the IDEA 11 platform, build 107.587 [DM TODO UPDATE IDEA 11 BUILD NUMBER] or higher (will confirm further compatability soon)
 
+## Feedback
+* Please feel free to call out bugs and feaure requests in the issue tracker
+* Also, pull requests are absolutely welcome
 
 ## Special thanks
 * Extra special thanks to the [intellij-latte](https://github.com/juzna/intellij-latte project) project
