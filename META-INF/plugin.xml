@@ -4,6 +4,9 @@
   <description>
     <![CDATA[
       <a href="http://handlebarsjs.com/">Handlebars</a> template support
+      <br>
+      <br>
+      Issues, feature requests and contributions welcome: <a href="https://github.com/dmarcotte/idea-handlebars">https://github.com/dmarcotte/idea-handlebars</a>
     ]]>
   </description>
   <category>Custom Languages</category>
