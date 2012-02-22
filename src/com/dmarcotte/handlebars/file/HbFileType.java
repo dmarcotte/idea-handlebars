@@ -3,17 +3,12 @@ package com.dmarcotte.handlebars.file;
 import com.dmarcotte.handlebars.HbBundle;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.HbTemplateHighlighter;
-import com.intellij.ide.highlighter.XmlFileHighlighter;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
-//import com.intellij.openapi.fileTypes.EditorHighlighterProvider;
-import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
+import com.intellij.openapi.fileTypes.EditorHighlighterProvider;
 import com.intellij.openapi.fileTypes.FileType;
-//import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
+import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.fileTypes.SingleLazyInstanceSyntaxHighlighterFactory;
-import com.intellij.openapi.fileTypes.SyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.CharsetToolkit;
@@ -35,6 +30,15 @@ public class HbFileType extends LanguageFileType {
 
     private HbFileType() {
         super(HbLanguage.INSTANCE);
+
+        FileTypeEditorHighlighterProviders.INSTANCE.addExplicitExtension(this, new EditorHighlighterProvider() {
+            public EditorHighlighter getEditorHighlighter(@Nullable Project project,
+                                                          @NotNull FileType fileType,
+                                                          @Nullable VirtualFile virtualFile,
+                                                          @NotNull EditorColorsScheme editorColorsScheme) {
+                return new HbTemplateHighlighter(project, virtualFile, editorColorsScheme);
+            }
+        });
     }
 
     @NotNull
@@ -60,10 +64,5 @@ public class HbFileType extends LanguageFileType {
         Charset charset = EncodingManager.getInstance().getDefaultCharsetForPropertiesFiles(file);
         String defaultCharsetName = charset == null ? CharsetToolkit.getDefaultSystemCharset().name() : charset.name();
         return defaultCharsetName;
-    }
-
-    @Override
-    public EditorHighlighter getEditorHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile, @NotNull EditorColorsScheme colors) {
-        return new HbTemplateHighlighter(project, virtualFile, colors);
     }
 }
