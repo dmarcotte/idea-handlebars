@@ -28,7 +28,8 @@ Handlebars-specific utilites.
 * Also, pull requests are absolutely welcome
 
 ## Special thanks
-* Extra special thanks to the [intellij-latte](https://github.com/juzna/intellij-latte project) project
-(for having a clean code-base to learn from, and taking the time to make posts like [this gem](http://devnet.jetbrains.net/message/5450284?tstart=0)
+* Bazaarvoice, my fantastic employer, for providing the time to work on this
 * Yehuda Katz for creating and maintaining [Handlebars](http://handlebarsjs.com/)
-* And, of course, thanks to the Intellij team for making such a great extensible IDE
+* The Intellij team for making such a great, extensible IDE platform
+* Extra special thanks to Jan Dolecek and the [intellij-latte](https://github.com/juzna/intellij-latte) project
+(for having a clean code-base to learn from, and taking the time to make posts like [this gem](http://devnet.jetbrains.net/message/5450284?tstart=0)
