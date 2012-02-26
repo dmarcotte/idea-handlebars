@@ -28,4 +28,4 @@ The key feature of this early version of the plugin is that it allows most of th
 * [Bazaarvoice](http://www.bazaarvoice.com), my fantastic employer, for providing the time to work on this
 * Yehuda Katz for creating and maintaining [Handlebars](http://handlebarsjs.com/)
 * The Jetbrains team for making such a great, extensible IDE platform
-* Extra special thanks to Jan Dolecek and the [intellij-latte](https://github.com/juzna/intellij-latte) project (for having a clean code-base to learn from, and taking the time to make posts like [this gem](http://devnet.jetbrains.net/message/5450284?tstart=0); these went a long way to making this plug-in possible
+* Extra special thanks to Jan Dolecek and the [intellij-latte](https://github.com/juzna/intellij-latte) project (for having a clean code-base to learn from, and taking the time to make posts like [this gem](http://devnet.jetbrains.net/message/5450284?tstart=0); these went a long way to making this plug-in possible)
