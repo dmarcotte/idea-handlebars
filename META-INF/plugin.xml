@@ -25,7 +25,8 @@
           <ul>
             <li>Configurable syntax highlighting</li>
             <li>Mustache pair highlighting</li>
-            <li>Full HTML highlighting, code-completion, inspections, formatting and commenting</li>
+            <li>Full HTML highlighting, code completion, inspections, formatting and commenting</li>
+            <li>Since Handlebars is a super-set of <a href="http://mustache.github.com/">Mustache</a> syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too</li>
           </ul>
         </li>
         <li>
@@ -39,7 +40,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.1.1</version>
+  <version>0.1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   
