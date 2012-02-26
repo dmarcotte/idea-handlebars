@@ -21,8 +21,8 @@ The key feature of this early version of the plugin is that it allows most of th
 * Should work with any other IDE based on the IDEA 11 platform, build 110.00 or higher (will confirm further compatability soon)
 
 ## Feedback
-* Please feel free to call out bugs and feaure requests in the issue tracker
-* Also, pull requests are absolutely welcome
+* Please feel free to call out bugs and feaure requests in the [issue tracker](https://github.com/dmarcotte/idea-handlebars/issues)
+* Also, [pull requests](https://github.com/dmarcotte/idea-handlebars/pulls) are absolutely welcome
 
 ## Special thanks
 * [Bazaarvoice](http://www.bazaarvoice.com), my fantastic employer, for providing the time to work on this
