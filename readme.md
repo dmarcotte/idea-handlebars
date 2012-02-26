@@ -28,7 +28,7 @@ Handlebars-specific utilites.
 * Also, pull requests are absolutely welcome
 
 ## Special thanks
-* Bazaarvoice, my fantastic employer, for providing the time to work on this
+* [Bazaarvoice](http://www.bazaarvoice.com), my fantastic employer, for providing the time to work on this
 * Yehuda Katz for creating and maintaining [Handlebars](http://handlebarsjs.com/)
 * The Intellij team for making such a great, extensible IDE platform
 * Extra special thanks to Jan Dolecek and the [intellij-latte](https://github.com/juzna/intellij-latte) project
