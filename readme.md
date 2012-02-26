@@ -1,7 +1,6 @@
 # IDEA-Handlebars:  An Intellij IDEA plug-in for [Handlebars](http://handlebarsjs.com/) templates
 
-IDEA-Handlebars adds support for Handlebars templates (by default, files with the ".handlebars" extension) to IDEs based
-on the Intellij IDEA platform (IDEA, RubyMine, PhpStorm, and others).
+IDEA-Handlebars adds support for Handlebars templates Intellij IDEA 10.5
 
 The key feature of this early version of the plugin is that it allows most of the power of the built-in IDEA HTML
 editing utilities to be used with Handlebars syntax inserted in the markup.  Future versions will build out more
@@ -19,14 +18,4 @@ Handlebars-specific utilites.
 * Support for Handlebars templates embedded in script tags in html files
 
 ## Compatibility
-* This branch contains the IDEA 10.5 compatible version of this plugin
-
-## Feedback
-* Please feel free to call out bugs and feaure requests in the issue tracker
-* Also, pull requests are absolutely welcome
-
-## Special thanks
-* Extra special thanks to the [intellij-latte](https://github.com/juzna/intellij-latte project) project
-(for having a clean code-base to learn from, and taking the time to make posts like [this gem](http://devnet.jetbrains.net/message/5450284?tstart=0)
-* Yehuda Katz for creating and maintaining [Handlebars](http://handlebarsjs.com/)
-* And, of course, thanks to the Intellij team for making such a great extensible IDE
+* This branch contains the IDEA 10.5 compatible version of this plugin.  See master branch for Intellij IDEA 11.
