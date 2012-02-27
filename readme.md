@@ -20,6 +20,10 @@ The key feature of this early version of the plugin is that it allows most of th
 * IDEA 10.5 version can be found in branch idea-handlebars-10.5
 * Should work with any other IDE based on the IDEA 11 platform, build 110.00 or higher (will confirm further compatability soon)
 
+## Installation
+* To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
+  * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars" on the list, right-click, and select "Download and Install"
+
 ## Feedback
 * Please feel free to call out bugs and feaure requests in the [issue tracker](https://github.com/dmarcotte/idea-handlebars/issues)
 * Also, [pull requests](https://github.com/dmarcotte/idea-handlebars/pulls) are absolutely welcome
