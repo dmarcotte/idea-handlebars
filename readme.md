@@ -11,7 +11,7 @@ The key feature of this early version of the plugin is that it allows most of th
 * Since Handlebars is a super-set of [Mustache](http://mustache.github.com/) syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too
 
 ## Not yet implemented
-* Handlebars-specific syntax-error highlighting
+* Handlebars-specific code completion and syntax-error highlighting
 * Find usages, Go-to declaration, etc. for references
 * Support for Handlebars templates embedded in script tags in html files
 
