@@ -1,10 +1,15 @@
 <idea-plugin version="1" url="https://github.com/dmarcotte/idea-handlebars">
+  <id>com.dmarcotte.handlebars</id>
   <name>Handlebars</name>
   <description>
     <![CDATA[
       <a href="http://handlebarsjs.com/">Handlebars</a> template support
+      <br>
+      <br>
+      Issues, feature requests and contributions welcome: <a href="https://github.com/dmarcotte/idea-handlebars">https://github.com/dmarcotte/idea-handlebars</a>
     ]]>
   </description>
+  <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
       <b>Version 0.1</b>
@@ -20,7 +25,8 @@
           <ul>
             <li>Configurable syntax highlighting</li>
             <li>Mustache pair highlighting</li>
-            <li>Full HTML highlighting, code-completion, inspections, formatting and commenting</li>
+            <li>Full HTML highlighting, code completion, inspections, formatting and commenting</li>
+            <li>Since Handlebars is a super-set of <a href="http://mustache.github.com/">Mustache</a> syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too</li>
           </ul>
         </li>
         <li>
@@ -34,10 +40,10 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.1</version>
+  <version>0.1 (backport)</version>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   
-  <idea-version since-build="107.587"/>
+  <idea-version since-build="107.000"/>
 
   <application-components>
     <!-- Add your application components here -->
