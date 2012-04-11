@@ -14,6 +14,23 @@ public class HbTokenTypes {
      */
     private HbTokenTypes() {}
 
+    public static final IElementType CLOSEBLOCK = new HbCompositeElementType("CLOSEBLOCK");
+    public static final IElementType HASH = new HbCompositeElementType("HASH");
+    public static final IElementType HASHSEGMENT = new HbCompositeElementType("HASHSEGMENT");
+    public static final IElementType HASHSEGMENTS = new HbCompositeElementType("HASHSEGMENTS");
+    public static final IElementType INMUSTACHE = new HbCompositeElementType("INMUSTACHE");
+    public static final IElementType MUSTACHE = new HbCompositeElementType("MUSTACHE");
+    public static final IElementType OPENBLOCK = new HbCompositeElementType("OPENBLOCK");
+    public static final IElementType OPENINVERSE = new HbCompositeElementType("OPENINVERSE");
+    public static final IElementType OPENPARTIAL = new HbCompositeElementType("OPENPARTIAL");
+    public static final IElementType PARAM = new HbCompositeElementType("PARAM");
+    public static final IElementType PARAMS = new HbCompositeElementType("PARAMS");
+    public static final IElementType PATH = new HbCompositeElementType("PATH");
+    public static final IElementType PATHSEGMENTS = new HbCompositeElementType("PATHSEGMENTS");
+    public static final IElementType PROGRAM = new HbCompositeElementType("PROGRAM");
+    public static final IElementType SIMPLEINVERSE = new HbCompositeElementType("SIMPLEINVERSE");
+    public static final IElementType STATEMENT = new HbCompositeElementType("STATEMENT");
+
     public static final IElementType CONTENT = new HbElementType("CONTENT");
     public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT");
     public static final TemplateDataElementType TEMPLATE_ELEMENT_TYPE =
