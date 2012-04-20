@@ -13,6 +13,7 @@ public class HbParser implements PsiParser {
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         final PsiBuilder.Marker rootMarker = builder.mark();
 
+        builder.setDebugMode(true);  // dm todo delete
         parseProgram(builder);
 
         // eat any remaining tokens
@@ -27,42 +28,48 @@ public class HbParser implements PsiParser {
 
     /**
      * program
-     * : statements simpleInverse statements { $$ = new yy.ProgramNode($1, $3); }
-     * | statements { $$ = new yy.ProgramNode($1); }
-     * | "" { $$ = new yy.ProgramNode([]); }
+     * : statements simpleInverse statements
+     * | statements
+     * | ""
      * ;
      */
     public static boolean parseProgram(PsiBuilder builder) {
-        return parseStatements(builder) && parseSimpleInverse(builder) && parseStatements(builder)
-                || parseStatements(builder);
+        if (builder.eof()) {
+            return true;
+        }
+
+        if (parseStatements(builder)) {
+            if (parseSimpleInverse(builder)) {
+                // if we have a simple inverse, must have more statements
+                parseStatements(builder);
+            }
+        }
+
+        return true;
     }
 
     /**
      * statements
-     * : statement { $$ = [$1]; }
-     * | statements statement { $1.push($2); $$ = $1; }
+     * : statement
+     * | statements statement
      * ;
      */
     public static boolean parseStatements(PsiBuilder builder) {
         PsiBuilder.Marker statementsMarker = builder.mark();
 
-        // parse the required first statement
-        boolean handled = parseStatement(builder);
-
-        if (!handled) {
-            statementsMarker.rollbackTo();
+        if (!parseStatement(builder)) {
+            statementsMarker.error("Expected a statement"); // dm todo message
             return false;
         }
 
-        // now parse the rest, rolling back if we hit any problems (since we don't require that there be statements,
-        // there just might be)
-        while (handled) {
-            PsiBuilder.Marker mark = builder.mark();
-            handled = parseStatement(builder);
-            if (handled) {
-                mark.drop();
+        // parse any additional statements
+        while (true) {
+            PsiBuilder.Marker optionalStatementMarker = builder.mark();
+            if (parseStatements(builder)) {
+                optionalStatementMarker.drop();
             } else {
-                mark.rollbackTo();
+                optionalStatementMarker.rollbackTo();
+                break;
             }
         }
 
@@ -81,12 +88,66 @@ public class HbParser implements PsiParser {
      * ;
      */
     public static boolean parseStatement(PsiBuilder builder) {
-        return parseOpenInverse(builder) && parseProgram(builder) && parseCloseBlock(builder)
-                        || parseOpenBlock(builder) && parseProgram(builder) && parseCloseBlock(builder)
-                        || parseMustache(builder)
-                        || parsePartial(builder)
-                        || parseLeafToken(builder, CONTENT)
-                        || parseLeafToken(builder, COMMENT);
+        IElementType tokenType = builder.getTokenType();
+
+        if (tokenType == OPEN_INVERSE) {
+            PsiBuilder.Marker inverseBlockMarker = builder.mark();
+            PsiBuilder.Marker lookaheadMarker = builder.mark();
+            boolean isSimpleInverse = parseSimpleInverse(builder);
+            lookaheadMarker.rollbackTo();
+
+            if (isSimpleInverse) {
+                // leave this to be caught be the simpleInverseParser
+                inverseBlockMarker.rollbackTo();
+                return false;
+            }
+            if (parseOpenInverse(builder)) {
+                parseProgram(builder);
+                parseCloseBlock(builder);
+                inverseBlockMarker.drop();
+            } else {
+                inverseBlockMarker.error("Malformed inverse block");
+                return false;
+            }
+
+            return true;
+        }
+
+        if (tokenType == OPEN_BLOCK) {
+            PsiBuilder.Marker blockMarker = builder.mark();
+            if (parseOpenBlock(builder)) {
+                parseProgram(builder);
+                parseCloseBlock(builder);
+                blockMarker.drop();
+            } else {
+                blockMarker.error("Malformed block");
+                return false;
+            }
+
+            return true;
+        }
+
+        if (tokenType == OPEN) {
+            return parseMustache(builder);
+        }
+
+        if (tokenType == OPEN_PARTIAL) {
+            return parsePartial(builder);
+        }
+
+        if (tokenType == CONTENT) {
+            builder.advanceLexer(); // eat non-HB content
+            return true;
+        }
+
+        if (tokenType == COMMENT) {
+            PsiBuilder.Marker commentMark = builder.mark();
+            builder.advanceLexer();
+            commentMark.done(COMMENT);
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -98,12 +159,13 @@ public class HbParser implements PsiParser {
         PsiBuilder.Marker openBlockMarker = builder.mark();
 
         if (!parseLeafToken(builder, OPEN_BLOCK)) {
-            openBlockMarker.rollbackTo();
+            openBlockMarker.error("Expected open block");
             return false;
         }
 
-        parseInMustache(builder);
-        parseLeafToken(builder, CLOSE);
+        if (parseInMustache(builder)) {
+            parseLeafToken(builder, CLOSE);
+        }
 
         openBlockMarker.done(BLOCK_STACHE);
         return true;
@@ -118,12 +180,13 @@ public class HbParser implements PsiParser {
         PsiBuilder.Marker openInverseMarker = builder.mark();
 
         if (!parseLeafToken(builder, OPEN_INVERSE)) {
-            openInverseMarker.rollbackTo();
+            openInverseMarker.error("Expected open inverse"); // dm todo message
             return false;
         }
 
-        parseInMustache(builder);
-        parseLeafToken(builder, CLOSE);
+        if(parseInMustache(builder)) {
+            parseLeafToken(builder, CLOSE);
+        }
 
         openInverseMarker.done(INVERSE_STACHE);
         return true;
@@ -138,12 +201,13 @@ public class HbParser implements PsiParser {
         PsiBuilder.Marker closeBlockMarker = builder.mark();
 
         if (!parseLeafToken(builder, OPEN_ENDBLOCK)) {
-            closeBlockMarker.rollbackTo();
+            closeBlockMarker.error("Expected close block"); // dm todo message
             return false;
         }
 
-        parsePath(builder);
-        parseLeafToken(builder, CLOSE);
+        if(parsePath(builder)) {
+            parseLeafToken(builder, CLOSE);
+        }
 
         closeBlockMarker.done(CLOSEBLOCK_STACHE);
         return true;
@@ -156,33 +220,28 @@ public class HbParser implements PsiParser {
      * ;
      */
     public static boolean parseMustache(PsiBuilder builder) {
-        return parseMustacheRegularHelper(builder)
-                || parseMustacheUnescapedHelper(builder);
-    }
-
-    private static boolean parseMustacheRegularHelper(PsiBuilder builder) {
         PsiBuilder.Marker mustacheMarker = builder.mark();
-        if (!parseLeafToken(builder, OPEN)) {
-            mustacheMarker.rollbackTo();
-            return false;
+        if (builder.getTokenType() == OPEN) {
+            PsiBuilder.Marker mustacheOpenMarker = builder.mark();
+            if (parseLeafToken(builder, OPEN)) {
+                mustacheOpenMarker.drop();
+            } else {
+                mustacheMarker.rollbackTo();
+            }
+        } else if (builder.getTokenType() == OPEN_UNESCAPED) {
+            PsiBuilder.Marker mustacheOpenMarker = builder.mark();
+            if (parseLeafToken(builder, OPEN_UNESCAPED)) {
+                mustacheOpenMarker.drop();
+            } else {
+                mustacheMarker.rollbackTo();
+            }
+        } else {
+            mustacheMarker.error("Expected {{ or {{{"); // dm todo message
         }
 
-        parseInMustache(builder);
-        parseLeafToken(builder, CLOSE);
-
-        mustacheMarker.done(MUSTACHE);
-        return true;
-    }
-
-    private static boolean parseMustacheUnescapedHelper(PsiBuilder builder) {
-        PsiBuilder.Marker mustacheMarker = builder.mark();
-        if (!parseLeafToken(builder, OPEN_UNESCAPED)) {
-            mustacheMarker.rollbackTo();
-            return false;
+        if(parseInMustache(builder)) {
+            parseLeafToken(builder, CLOSE);
         }
-
-        parseInMustache(builder);
-        parseLeafToken(builder, CLOSE);
 
         mustacheMarker.done(MUSTACHE);
         return true;
@@ -197,16 +256,13 @@ public class HbParser implements PsiParser {
     public static boolean parsePartial(PsiBuilder builder) {
         PsiBuilder.Marker partialMarker = builder.mark();
 
-        if (!parseLeafToken(builder, OPEN_PARTIAL)) {
-            partialMarker.rollbackTo();
+        if (!parseLeafToken(builder, OPEN_PARTIAL) || !parsePath(builder)) {
+            partialMarker.error("Expected an ID"); // dm todo messsage
             return false;
         }
 
-        parsePath(builder);
-
         PsiBuilder.Marker optionalPathMarker = builder.mark();
-        boolean optionalSecondPath = parsePath(builder);
-        if (optionalSecondPath) {
+        if (parsePath(builder)) {
             optionalPathMarker.drop();
         } else {
             optionalPathMarker.rollbackTo();
@@ -246,17 +302,191 @@ public class HbParser implements PsiParser {
      * | path { $$ = [[$1], null]; }
      * ;
      *
-     * TODO need to implement the remaining cases here
+     * Note:
+     * We actually implement this in a different order (with 'path hash' checked first) since
+     * the beginning of a 'hash' can be interpreted as a 'params'
+     * dm todo convince yourself this doesn't change the grammar
      */
     public static boolean parseInMustache(PsiBuilder builder) {
         PsiBuilder.Marker inMustacheMarker = builder.mark();
-        boolean handled = parsePath(builder);
-        if (!handled) {
+        if (!parsePath(builder)) {
             inMustacheMarker.error("Expected a path");
-            return true;
+            return false;
+        }
+
+        // try to extend the 'path' we found to 'path hash'
+        PsiBuilder.Marker hashMarker = builder.mark();
+        if (parseHash(builder)) {
+            hashMarker.drop();
+        } else {
+            // not a hash... try for 'path params', followed by an attempt at 'path params hash'
+            hashMarker.rollbackTo();
+            PsiBuilder.Marker paramsMarker = builder.mark();
+            if (parseParams(builder)) {
+                PsiBuilder.Marker paramsHashMarker = builder.mark();
+                if (parseHash(builder)) {
+                    paramsHashMarker.drop();
+                } else {
+                    paramsHashMarker.rollbackTo();
+                }
+                paramsMarker.drop();
+            } else {
+                paramsMarker.rollbackTo();
+            }
         }
 
         inMustacheMarker.done(IN_MUSTACHE);
+        return true;
+    }
+
+    /**
+     * params
+     * : params param
+     * | param
+     * ;
+     */
+    public static boolean parseParams(PsiBuilder builder) {
+        PsiBuilder.Marker paramsMarker = builder.mark();
+
+        if (!parseParam(builder)) {
+            paramsMarker.error("Expected a parameter"); // dm todo message
+            return false;
+        }
+
+        // parse any additional params
+        while (true) {
+            PsiBuilder.Marker optionalParamMarker = builder.mark();
+            if (parseParam(builder)) {
+                optionalParamMarker.drop();
+            } else {
+                optionalParamMarker.rollbackTo();
+                break;
+            }
+        }
+
+        paramsMarker.done(PARAMS);
+        return true;
+    }
+
+    /**
+     * param
+     * : path
+     * | STRING
+     * | INTEGER
+     * | BOOLEAN
+     * ;
+     */
+    public static boolean parseParam(PsiBuilder builder) {
+        PsiBuilder.Marker paramMarker = builder.mark();
+
+        PsiBuilder.Marker pathMarker = builder.mark();
+        if (parsePath(builder)) {
+            pathMarker.drop();
+            paramMarker.done(PARAM);
+            return true;
+        } else {
+            pathMarker.rollbackTo();
+        }
+
+        PsiBuilder.Marker stringMarker = builder.mark();
+        if (parseLeafToken(builder, STRING)) {
+            stringMarker.drop();
+            paramMarker.done(PARAM);
+            return true;
+        } else {
+            stringMarker.rollbackTo();
+        }
+
+        PsiBuilder.Marker integerMarker = builder.mark();
+        if (parseLeafToken(builder, INTEGER)) {
+            integerMarker.drop();
+            paramMarker.done(PARAM);
+            return true;
+        } else {
+            integerMarker.rollbackTo();
+        }
+
+        PsiBuilder.Marker booleanMarker = builder.mark();
+        if (parseLeafToken(builder, BOOLEAN)) {
+            booleanMarker.drop();
+            paramMarker.done(PARAM);
+            return true;
+        } else {
+            booleanMarker.rollbackTo();
+        }
+
+        paramMarker.error("Expected a parameter"); // dm todo message
+        return false;
+    }
+
+    /**
+     * hash
+     * : hashSegments { $$ = new yy.HashNode($1); }
+     * ;
+     */
+    public static boolean parseHash(PsiBuilder builder) {
+        return parseHashSegments(builder);
+    }
+
+    /**
+     * hashSegments
+     * : hashSegments hashSegment { $1.push($2); $$ = $1; }
+     * | hashSegment { $$ = [$1]; }
+     * ;
+     */
+    public static boolean parseHashSegments(PsiBuilder builder) {
+        PsiBuilder.Marker hashSegmentsMarker = builder.mark();
+
+        if (!parseHashSegment(builder)) {
+            hashSegmentsMarker.error("Expected a hash");  // dm todo message
+            return false;
+        }
+
+        // parse any additional hash segments
+        while (true) {
+            PsiBuilder.Marker optionalHashMarker = builder.mark();
+            if (parseHash(builder)) {
+                optionalHashMarker.drop();
+            } else {
+                optionalHashMarker.rollbackTo();
+                break;
+            }
+        }
+
+        hashSegmentsMarker.done(HASH_SEGMENTS);
+        return true;
+    }
+
+    /**
+     * hashSegment
+     * : ID EQUALS path
+     * | ID EQUALS STRING
+     * | ID EQUALS INTEGER
+     * | ID EQUALS BOOLEAN
+     * ;
+     *
+     * Refactored to:
+     * hashSegment
+     * : ID EQUALS param
+     */
+    public static boolean parseHashSegment(PsiBuilder builder) {
+        PsiBuilder.Marker hashSegmentMarker = builder.mark();
+        if (!parseLeafToken(builder, ID)) {
+            hashSegmentMarker.error("Expected an ID"); // dm todo message
+            return false;
+        }
+
+        if (!parseLeafToken(builder, EQUALS)) {
+            hashSegmentMarker.error("Expected ="); // dm todo message
+            return false;
+        }
+
+        if (!parseParam(builder)) {
+            hashSegmentMarker.error("Expected a parameter"); // dm todo message
+            return false;
+        }
+
+        hashSegmentMarker.done(HASH_SEGMENT);
         return true;
     }
 
@@ -281,14 +511,13 @@ public class HbParser implements PsiParser {
      * : ID pathSegments'
      *
      * pathSegements'
-     * :
-     * | SEP ID pathSegments
+     * : <epsilon>
+     * | SEP ID pathSegments'
      */
     public static boolean parsePathSegments(PsiBuilder builder) {
         PsiBuilder.Marker pathSegmentsMarker = builder.mark();
-        boolean handled = parseLeafToken(builder, ID);
-        if (!handled) {
-            pathSegmentsMarker.rollbackTo();
+        if (!parseLeafToken(builder, ID)) {
+            pathSegmentsMarker.error("Expected ID"); // dm todo message
             return false;
         }
 
@@ -302,16 +531,16 @@ public class HbParser implements PsiParser {
         PsiBuilder.Marker pathSegmentsPrimeMarker = builder.mark();
 
         if (!parseLeafToken(builder, SEP)) {
+            // the epsilon case
             pathSegmentsPrimeMarker.rollbackTo();
             return false;
         }
 
-        boolean handled = parseLeafToken(builder, ID);
-        if (handled) {
-            parsePathSegments(builder);
+        if (parseLeafToken(builder, ID)) {
+            parsePathSegmentsPrime(builder);
         }
 
-        pathSegmentsPrimeMarker.done(PATH_SEGMENTS);
+        pathSegmentsPrimeMarker.drop();
         return true;
     }
 
@@ -321,6 +550,12 @@ public class HbParser implements PsiParser {
             builder.advanceLexer();
             leafTokenMark.done(leafTokenType);
             return true;
+        } else if (builder.getTokenType() == INVALID) {
+            while (!builder.eof() && builder.getTokenType() == INVALID) {
+                builder.advanceLexer();
+            }
+            leafTokenMark.error("Expected " + leafTokenType);
+            return false;
         } else {
             leafTokenMark.error("Expected " + leafTokenType); // TODO pretty up these message and put in the resource bundle
             return false;
