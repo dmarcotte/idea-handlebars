@@ -6,9 +6,34 @@ import com.intellij.lang.PsiParser;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
 
+/**
+ * The parser is based directly on Handlebars.yy
+ * (taken from the following revision: https://github.com/wycats/handlebars.js/blob/2ea95ca08d47bb16ed79e8481c50a1c074dd676e/src/handlebars.yy)
+ *
+ * Methods mapping to expression in the grammar are commented with the part of the grammar they map to.
+ *
+ * Places where we've gone off book to make the live syntax detection a more pleasant experience are
+ * marked HB_CUSTOMIZATION.  If we find bugs, or the grammar is ever updated, these are the first candidates to check.
+ */
 public class HbParser implements PsiParser {
+
+    // the set of tokens which, if we encounter them while in a bad state, we'll try to
+    // resume parsing from them
+    private static final Set<IElementType> RECOVERY_SET;
+    static {
+        RECOVERY_SET = new HashSet<IElementType>();
+        RECOVERY_SET.add(OPEN);
+        RECOVERY_SET.add(OPEN_BLOCK);
+        RECOVERY_SET.add(OPEN_ENDBLOCK);
+        RECOVERY_SET.add(OPEN_INVERSE);
+        RECOVERY_SET.add(OPEN_PARTIAL);
+        RECOVERY_SET.add(OPEN_UNESCAPED);
+    }
     @NotNull
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         final PsiBuilder.Marker rootMarker = builder.mark();
@@ -164,7 +189,7 @@ public class HbParser implements PsiParser {
         }
 
         if (parseInMustache(builder)) {
-            parseLeafToken(builder, CLOSE);
+            parseLeafTokenGreedy(builder, CLOSE);
         }
 
         openBlockMarker.done(BLOCK_STACHE);
@@ -185,7 +210,7 @@ public class HbParser implements PsiParser {
         }
 
         if(parseInMustache(builder)) {
-            parseLeafToken(builder, CLOSE);
+            parseLeafTokenGreedy(builder, CLOSE);
         }
 
         openInverseMarker.done(INVERSE_STACHE);
@@ -240,7 +265,7 @@ public class HbParser implements PsiParser {
         }
 
         if(parseInMustache(builder)) {
-            parseLeafToken(builder, CLOSE);
+            parseLeafTokenGreedy(builder, CLOSE);
         }
 
         mustacheMarker.done(MUSTACHE);
@@ -301,14 +326,10 @@ public class HbParser implements PsiParser {
      * | path hash { $$ = [[$1], $2]; }
      * | path { $$ = [[$1], null]; }
      * ;
-     *
-     * Note:
-     * We actually implement this in a different order (with 'path hash' checked first) since
-     * the beginning of a 'hash' can be interpreted as a 'params'
-     * dm todo convince yourself this doesn't change the grammar
      */
     public static boolean parseInMustache(PsiBuilder builder) {
         PsiBuilder.Marker inMustacheMarker = builder.mark();
+
         if (!parsePath(builder)) {
             inMustacheMarker.error("Expected a path");
             return false;
@@ -445,7 +466,7 @@ public class HbParser implements PsiParser {
         // parse any additional hash segments
         while (true) {
             PsiBuilder.Marker optionalHashMarker = builder.mark();
-            if (parseHash(builder)) {
+            if (parseHashSegment(builder)) {
                 optionalHashMarker.drop();
             } else {
                 optionalHashMarker.rollbackTo();
@@ -516,6 +537,13 @@ public class HbParser implements PsiParser {
      */
     public static boolean parsePathSegments(PsiBuilder builder) {
         PsiBuilder.Marker pathSegmentsMarker = builder.mark();
+
+        /* HB_CUSTOMIZATION*/
+        if (isHashNextLookAhead(builder)) {
+            pathSegmentsMarker.rollbackTo();
+            return false;
+        }
+
         if (!parseLeafToken(builder, ID)) {
             pathSegmentsMarker.error("Expected ID"); // dm todo message
             return false;
@@ -536,12 +564,34 @@ public class HbParser implements PsiParser {
             return false;
         }
 
+        /* HB_CUSTOMIZATION*/
+        if (isHashNextLookAhead(builder)) {
+            pathSegmentsPrimeMarker.rollbackTo();
+            return false;
+        }
+
         if (parseLeafToken(builder, ID)) {
             parsePathSegmentsPrime(builder);
         }
 
         pathSegmentsPrimeMarker.drop();
         return true;
+    }
+
+    /**
+     *  HB_CUSTOMIZATION: the beginnings of a 'hash' have a bad habit of looking like params
+     *  (i.e. test="what" parses as if "test" was a param, and then the builder is left pointing
+     *  at "=" which matches no rules).
+     *
+     *  We check this in a couple of places to determine whether something should be parsed as
+     *  a param, or left alone to grabbed by the hash parser later
+     */
+    private static boolean isHashNextLookAhead(PsiBuilder builder) {
+        // dm todo is this the right place for this hack?
+        PsiBuilder.Marker hashLookAheadMarker = builder.mark();
+        boolean isHashUpcoming = parseHash(builder);
+        hashLookAheadMarker.rollbackTo();
+        return isHashUpcoming;
     }
 
     private static boolean parseLeafToken(PsiBuilder builder, IElementType leafTokenType) {
@@ -560,5 +610,32 @@ public class HbParser implements PsiParser {
             leafTokenMark.error("Expected " + leafTokenType); // TODO pretty up these message and put in the resource bundle
             return false;
         }
+    }
+
+    /**
+     * HB_CUSTOMIZATION
+     * Eats tokens until it finds the expected token, marking errors along the way.
+     *
+     * Will also stop if it encounters a {@link #RECOVERY_SET} token
+     */
+    private static void parseLeafTokenGreedy(PsiBuilder builder, IElementType expectedToken) {
+        // try to parse the token we're expecting
+        if (parseLeafToken(builder, expectedToken)) {
+            return;
+        }
+
+        // failed to parse expected token... chew up tokens marking this error until we encounter
+        // a token which give the parser a good shot at resuming
+        if (builder.getTokenType() != expectedToken) {
+            builder.error("Expected " + expectedToken);
+            PsiBuilder.Marker unexpectedTokensMarker = builder.mark();
+            while (builder.getTokenType() != expectedToken
+                    && !RECOVERY_SET.contains(builder.getTokenType())) {
+                builder.advanceLexer();
+            }
+            unexpectedTokensMarker.error("Expected " + expectedToken);
+        }
+
+        parseLeafToken(builder, expectedToken);
     }
 }
