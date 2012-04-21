@@ -33,6 +33,7 @@ public class HbParser implements PsiParser {
         RECOVERY_SET.add(OPEN_INVERSE);
         RECOVERY_SET.add(OPEN_PARTIAL);
         RECOVERY_SET.add(OPEN_UNESCAPED);
+        RECOVERY_SET.add(CONTENT);
     }
     @NotNull
     public ASTNode parse(IElementType root, PsiBuilder builder) {
@@ -345,10 +346,18 @@ public class HbParser implements PsiParser {
             PsiBuilder.Marker paramsMarker = builder.mark();
             if (parseParams(builder)) {
                 PsiBuilder.Marker paramsHashMarker = builder.mark();
+                int hashStartPos = builder.getCurrentOffset();
                 if (parseHash(builder)) {
                     paramsHashMarker.drop();
                 } else {
-                    paramsHashMarker.rollbackTo();
+                    if (hashStartPos < builder.getCurrentOffset()) {
+                        /* HB_CUSTOMIZATION */
+                        // managed to partially parse the hash.  Don't rollback so that
+                        // we can keep the errors
+                        paramsHashMarker.drop();
+                    } else {
+                        paramsHashMarker.rollbackTo();
+                    }
                 }
                 paramsMarker.drop();
             } else {
@@ -466,10 +475,18 @@ public class HbParser implements PsiParser {
         // parse any additional hash segments
         while (true) {
             PsiBuilder.Marker optionalHashMarker = builder.mark();
+            int hashStartPos = builder.getCurrentOffset();
             if (parseHashSegment(builder)) {
                 optionalHashMarker.drop();
             } else {
-                optionalHashMarker.rollbackTo();
+                if (hashStartPos < builder.getCurrentOffset()) {
+                    // HB_CUSTOMIZATION managed to partially parse this hash; don't roll back the errors
+                    optionalHashMarker.drop();
+                    hashSegmentsMarker.done(HASH_SEGMENTS);
+                    return false;
+                } else {
+                    optionalHashMarker.rollbackTo();
+                }
                 break;
             }
         }
@@ -589,7 +606,7 @@ public class HbParser implements PsiParser {
     private static boolean isHashNextLookAhead(PsiBuilder builder) {
         // dm todo is this the right place for this hack?
         PsiBuilder.Marker hashLookAheadMarker = builder.mark();
-        boolean isHashUpcoming = parseHash(builder);
+        boolean isHashUpcoming = parseHashSegment(builder);
         hashLookAheadMarker.rollbackTo();
         return isHashUpcoming;
     }
@@ -614,6 +631,7 @@ public class HbParser implements PsiParser {
 
     /**
      * HB_CUSTOMIZATION
+     *
      * Eats tokens until it finds the expected token, marking errors along the way.
      *
      * Will also stop if it encounters a {@link #RECOVERY_SET} token
@@ -629,7 +647,8 @@ public class HbParser implements PsiParser {
         if (builder.getTokenType() != expectedToken) {
             builder.error("Expected " + expectedToken);
             PsiBuilder.Marker unexpectedTokensMarker = builder.mark();
-            while (builder.getTokenType() != expectedToken
+            while (!builder.eof()
+                    && builder.getTokenType() != expectedToken
                     && !RECOVERY_SET.contains(builder.getTokenType())) {
                 builder.advanceLexer();
             }
