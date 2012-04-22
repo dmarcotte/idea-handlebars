@@ -70,13 +70,7 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 %}
 
 LineTerminator = \r|\n|\r\n
-SlashSmallS = \t \n\x0B\f\r
-IdFollower = [=}\t\n\f\r\/.]
 WhiteSpace = {LineTerminator} | [ \t\f]
-AtLeast2 = "{2,}"
-OpenStache = "{{"
-CloseStache = "}}"
-AsciiZero = [^\x00]
 
 
 %state mu
@@ -86,12 +80,21 @@ AsciiZero = [^\x00]
 
 <YYINITIAL> {
 
-  [^(\{\{)\x00]*?\{\{ {
-            yypushback(2);
-            yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
+  // jflex doesn't support lookaheads with potentially empty prefixes, so we can't directly port the Initial
+  // state from handlebars.l, so we accomplish the same thing in a more roundabout way:
+
+  // simulate the lookahead by matching with anything that ends in "{{", and then backtracking away from
+  // any trailing "{" characters we've picked up
+  ~"{{" {
+          // backtrack over any stache characters at the end of this string
+          while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).equals("{")) {
+            yypushback(1);
+          }
+          yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
         }
 
-  [^(\{\{)\x00]+                         { return HbTokenTypes.CONTENT; }
+  // Check for anything that is not a string containing "{{"; that's CONTENT
+  !([^]*"{{"[^]*)                         { return HbTokenTypes.CONTENT; }
 }
 
 <mu> {
@@ -104,7 +107,14 @@ AsciiZero = [^\x00]
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
   // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
-  "{{!"[^(\}\})]*"}}" { yypopState(); return HbTokenTypes.COMMENT; }
+  "{{!"~"}}" {
+    // backtrack over any extra stache characters at the end of this string
+    while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).equals("}}}")) {
+      yypushback(1);
+    }
+    yypopState();
+    return HbTokenTypes.COMMENT;
+  }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
   "."/[}\t \n\x0B\f\r] { return HbTokenTypes.ID; }
