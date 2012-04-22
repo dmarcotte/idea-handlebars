@@ -89,6 +89,7 @@ public class HbParser implements PsiParser {
         }
 
         // parse any additional statements
+        // dm todo this screws up on the last statement if it's busted by rolling back the check
         while (true) {
             PsiBuilder.Marker optionalStatementMarker = builder.mark();
             if (parseStatements(builder)) {
@@ -118,11 +119,12 @@ public class HbParser implements PsiParser {
 
         if (tokenType == OPEN_INVERSE) {
             PsiBuilder.Marker inverseBlockMarker = builder.mark();
-            PsiBuilder.Marker lookaheadMarker = builder.mark();
+            PsiBuilder.Marker lookAheadMarker = builder.mark();
             boolean isSimpleInverse = parseSimpleInverse(builder);
-            lookaheadMarker.rollbackTo();
+            lookAheadMarker.rollbackTo();
 
             if (isSimpleInverse) {
+                /* HB_CUSTOMIZATION */
                 // leave this to be caught be the simpleInverseParser
                 inverseBlockMarker.rollbackTo();
                 return false;
