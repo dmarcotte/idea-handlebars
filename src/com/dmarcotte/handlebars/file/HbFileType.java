@@ -25,8 +25,7 @@ public class HbFileType extends LanguageFileType {
     public static final Icon FILE_ICON = IconLoader.getIcon("/icons/handlebars_icon.png");
     public static final LanguageFileType INSTANCE = new HbFileType();
     @NonNls
-    public static final String DEFAULT_EXTENSION = "handlebars";
-    @NonNls public static final String DOT_DEFAULT_EXTENSION = "."+DEFAULT_EXTENSION;
+    public static final String DEFAULT_EXTENSION = "handlebars;hbs;mustache";
 
     private HbFileType() {
         super(HbLanguage.INSTANCE);
