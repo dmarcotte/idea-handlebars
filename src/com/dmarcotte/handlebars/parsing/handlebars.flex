@@ -87,7 +87,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   // any trailing "{" characters we've picked up
   ~"{{" {
           // backtrack over any stache characters at the end of this string
-          while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).equals("{")) {
+          while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {
             yypushback(1);
           }
           yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
@@ -109,7 +109,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
   "{{!"~"}}" {
     // backtrack over any extra stache characters at the end of this string
-    while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).equals("}}}")) {
+    while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).toString().equals("}}}")) {
       yypushback(1);
     }
     yypopState();
