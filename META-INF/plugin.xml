@@ -12,6 +12,14 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.1.1</b>
+      <br>
+      <br>
+      <ul>
+        <li>Adds .mustache and .hbs as default files extensions handled by this plugin</li>
+        <li>Fixes a lexer issue where non-Handlebars "{" characters were being parsed incorrectly</li>
+      </ul>
+
       <b>Version 0.1</b>
       <br>
       <br>
@@ -40,7 +48,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.1</version>
+  <version>0.1.1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   

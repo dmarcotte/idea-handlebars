@@ -1,6 +1,6 @@
 # IDEA-Handlebars:  [Handlebars](http://handlebarsjs.com/) template plugin for Jetbrains IDEs
 
-IDEA-Handlebars adds support for Handlebars templates (by default, files with the ".handlebars" extension) to IDEs based on the Intellij IDEA platform (IDEA, RubyMine, PhpStorm, and others).
+IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intellij IDEA platform (IDEA, RubyMine, PhpStorm, and others).
 
 The key feature of this early version of the plugin is that it allows most of the power of the built-in IDEA HTML editing utilities to be used with Handlebars syntax inserted in the markup.  Future versions will build out more Handlebars-specific utilites.
 
@@ -9,6 +9,7 @@ The key feature of this early version of the plugin is that it allows most of th
 * Matched mustache pair highlighting
 * Full HTML highlighting, code completion, inspections, formatting and commenting for the HTML content in your Handlebars templates
 * Since Handlebars is a super-set of [Mustache](http://mustache.github.com/) syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too
+* By default, files with the ".handlebars", ".hbs" or ".mustache" extensions are handled by this plugin
 
 ## Not yet implemented
 * Handlebars-specific code completion and syntax-error highlighting
