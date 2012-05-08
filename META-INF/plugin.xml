@@ -74,5 +74,6 @@
     <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory"/>
     <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.HandlebarsCommenter"/>
     <lang.braceMatcher language="Handlebars" implementationClass="com.dmarcotte.handlebars.HbBraceMatcher"/>
+    <typedHandler implementation="com.dmarcotte.handlebars.editor.actions.HbTypedHandler"/>
   </extensions>
 </idea-plugin>
