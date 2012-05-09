@@ -1,6 +1,6 @@
 # IDEA-Handlebars:  [Handlebars](http://handlebarsjs.com/) template plugin for Jetbrains IDEs
 
-IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intellij IDEA platform (IDEA, RubyMine, PhpStorm, and others).
+IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
 The key feature of this early version of the plugin is that it allows most of the power of the built-in IDEA HTML editing utilities to be used with Handlebars syntax inserted in the markup.  Future versions will build out more Handlebars-specific utilites.
 
@@ -15,11 +15,6 @@ The key feature of this early version of the plugin is that it allows most of th
 * Handlebars-specific code completion and syntax-error highlighting
 * Find usages, Go-to declaration, etc. for references
 * Support for Handlebars templates embedded in script tags in html files
-
-## Compatibility
-* Confirmed to work with [IntelliJ IDEA 11](http://www.jetbrains.com/idea), [RubyMine 4](http://www.jetbrains.com/ruby), [PhpStorm 3](http://www.jetbrains.com/phpstorm), [WebStorm 3](http://www.jetbrains.com/webstorm)
-* IDEA 10.5 version can be found in branch idea-handlebars-10.5
-* Should work with any other IDE based on the IDEA 11 platform, build 110.00 or higher (will confirm further compatability soon)
 
 ## Installation
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
