@@ -1,7 +1,7 @@
 package com.dmarcotte.handlebars.parsing;
 
 import com.dmarcotte.handlebars.HbLanguage;
-import com.intellij.lang.StdLanguages;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.psi.templateLanguages.TemplateDataElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
@@ -17,7 +17,7 @@ public class HbTokenTypes {
     public static final IElementType CONTENT = new HbElementType("CONTENT");
     public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT");
     public static final TemplateDataElementType TEMPLATE_ELEMENT_TYPE =
-            new TemplateDataElementType("HB_TEMPLATE_DATA", StdLanguages.HTML, CONTENT, OUTER_ELEMENT_TYPE);
+            new TemplateDataElementType("HB_TEMPLATE_DATA", StdFileTypes.HTML.getLanguage(), CONTENT, OUTER_ELEMENT_TYPE);
 
     public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE");
     public static final IElementType COMMENT = new HbElementType("COMMENT");

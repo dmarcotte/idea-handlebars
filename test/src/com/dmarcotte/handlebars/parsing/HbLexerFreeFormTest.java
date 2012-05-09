@@ -1,7 +1,15 @@
 package com.dmarcotte.handlebars.parsing;
 
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
-import java.util.List;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.WHITE_SPACE;
 
 /**
  * Free form lexer tests to help develop the lexer, pin down regressions, etc.
@@ -67,5 +75,44 @@ public class HbLexerFreeFormTest extends HbLexerTest {
         TokenizerResult result = tokenize("{{{partialId}}}");
         result.shouldMatchTokenTypes(OPEN_UNESCAPED, ID, CLOSE);
         result.shouldMatchTokenContent("{{{", "partialId", "}}}");
+    }
+
+    /**
+     * Lexer was not interpreting mustaches ("{{") properly, resulting in bad behavior when perfectly
+     * reasonable CONTENT contained a single "{" (i.e. when writing js in a script tag for instance),
+     * the "{" was being lexed as INVALID.
+     *
+     * See https://github.com/dmarcotte/idea-handlebars/issues/4
+     */
+    public void testContentWithSingleBrace() {
+        TokenizerResult result = tokenize("{");
+        result.shouldMatchTokenTypes(CONTENT);
+        result.shouldMatchTokenContent("{");
+
+        // also check an example with more context just to be sure
+        result = tokenize("{{stache}}\n<script type=\"text/javascript\">function test() { alert('hotttness') }</script>{{afterStache}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, OPEN, ID, CLOSE);
+    }
+
+    public void testRegularMustacheFollowedByUnescaped() {
+        TokenizerResult result = tokenize("{{reg}}{{{unesc}}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, OPEN_UNESCAPED, ID, CLOSE);
+        result.shouldMatchTokenContent("{{", "reg", "}}", "{{{", "unesc", "}}}");
+    }
+
+    public void testTooManyMustaches() {
+        TokenizerResult result = tokenize("{{{{");
+        result.shouldMatchTokenTypes(OPEN_UNESCAPED, INVALID);
+        result.shouldMatchTokenContent("{{{", "{");
+    }
+
+    public void testTooManyCommentCloseStaches() {
+        TokenizerResult result = tokenize("{{! ZOMG! A comment!!! }}}");
+        result.shouldMatchTokenTypes(COMMENT, CONTENT);
+        result.shouldMatchTokenContent("{{! ZOMG! A comment!!! }}", "}");
+
+        result = tokenize("{{! ZOMG! A comment!!! }}}}");
+        result.shouldMatchTokenTypes(COMMENT, CONTENT);
+        result.shouldMatchTokenContent("{{! ZOMG! A comment!!! }}", "}}");
     }
 }

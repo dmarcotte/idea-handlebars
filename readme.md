@@ -11,6 +11,7 @@ Handlebars-specific utilites.
 * Matched mustache pair highlighting
 * Full HTML highlighting, code-completion, inspections, formatting and commenting for the HTML content in your Handlebars templates
 * Since Handlebars is a super-set of [Mustache](http://mustache.github.com/) syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too
+* By default, files with the ".handlebars", ".hbs" or ".mustache" extensions are handled by this plugin
 
 ## Not yet implemented
 * Handlebars-specific syntax-error highlighting

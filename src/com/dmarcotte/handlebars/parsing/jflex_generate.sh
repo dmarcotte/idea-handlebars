@@ -2,6 +2,7 @@
 
 ####
 # Run this script to regenerate _HbLexer.java from handlebars.flex
+# NOTE: you'll need to update the absolute paths TODO make this not rely on absolute paths
 ####
 
 # thanks to http://code.google.com/p/google-closure-soy/source/browse/trunk/src/net/intellij/plugins/soy/lexer/build-lexer.cmd
