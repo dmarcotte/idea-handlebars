@@ -37,9 +37,18 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SIMPLE_INVERSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STATEMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STRING;
 
+/**
+ * The parser is based directly on Handlebars.yy
+ * (taken from the following revision: https://github.com/wycats/handlebars.js/blob/2ea95ca08d47bb16ed79e8481c50a1c074dd676e/src/handlebars.yy)
+ *
+ * Methods mapping to expression in the grammar are commented with the part of the grammar they map to.
+ *
+ * Places where we've gone off book to make the live syntax detection a more pleasant experience are
+ * marked HB_CUSTOMIZATION.  If we find bugs, or the grammar is ever updated, these are the first candidates to check.
+ */
 public class HbParsing {
     private final PsiBuilder builder;
-    private final Stack<String> myTagNamesStack = new Stack<String>();
+    private final Stack<String> openTagNamesStack = new Stack<String>();
 
     // the set of tokens which, if we encounter them while in a bad state, we'll try to
     // resume parsing from them
@@ -85,7 +94,7 @@ public class HbParsing {
                 problemMark.error("Invalid token");
             }
 
-            parseProgram(builder);
+            parse();
         }
     }
     /**
@@ -124,13 +133,11 @@ public class HbParsing {
             return false;
         }
 
-        statementsMarker.done(STATEMENTS);
-
         // parse any additional statements
         // dm todo this screws up on the last statement if it's busted by rolling back the check
         while (true) {
             PsiBuilder.Marker optionalStatementMarker = builder.mark();
-            if (parseStatements(builder)) {
+            if (parseStatement(builder)) {
                 optionalStatementMarker.drop();
             } else {
                 optionalStatementMarker.rollbackTo();
@@ -138,6 +145,7 @@ public class HbParsing {
             }
         }
 
+        statementsMarker.done(STATEMENTS);
         return true;
     }
 
@@ -171,14 +179,7 @@ public class HbParsing {
 
             PsiBuilder.Marker openInverseMarker = builder.mark();
             if (parseOpenInverse(builder)) {
-                PsiBuilder.Marker parseProgramMarker = builder.mark();
-                parseProgram(builder);
-                if(parseCloseBlock(builder)) {
-                    openInverseMarker.drop();
-                } else {
-                    openInverseMarker.errorBefore("Block + blockId + unclosed", parseProgramMarker);
-                }
-                parseProgramMarker.drop();
+                openBlockMarker(builder, openInverseMarker);
             } else {
                 return false;
             }
@@ -187,13 +188,10 @@ public class HbParsing {
         }
 
         if (tokenType == OPEN_BLOCK) {
-            PsiBuilder.Marker blockMarker = builder.mark();
+            PsiBuilder.Marker openBlockMarker = builder.mark();
             if (parseOpenBlock(builder)) {
-                parseProgram(builder);
-                parseCloseBlock(builder);
-                blockMarker.drop();
+                openBlockMarker(builder, openBlockMarker);
             } else {
-                blockMarker.error("Malformed block");
                 return false;
             }
 
@@ -224,6 +222,28 @@ public class HbParsing {
     }
 
     /**
+     * Helper method to take care of the business need after an "open-type mustache" (openBlock or openInverse),
+     * including ensuring we've got the right close tag
+     *
+     * NOTE: will resolve the given openMustacheMarker
+     */
+    private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker) {
+        PsiBuilder.Marker parseProgramMarker = builder.mark();
+        parseProgram(builder);
+        if(parseCloseBlock(builder)) {
+            openMustacheMarker.drop();
+        } else {
+            if (!openTagNamesStack.empty()) {
+                openMustacheMarker.errorBefore("Block \"" + openTagNamesStack.pop() + "\" unclosed", parseProgramMarker);
+            } else {
+                openMustacheMarker.drop();
+            }
+        }
+        parseProgramMarker.drop();
+        return true;
+    }
+
+    /**
      * openBlock
      * : OPEN_BLOCK inMustache CLOSE { $$ = new yy.MustacheNode($2[0], $2[1]); }
      * ;
@@ -236,7 +256,7 @@ public class HbParsing {
             return false;
         }
 
-        if (parseInMustache(builder)) {
+        if (parseInMustache(builder, true)) {
             parseLeafTokenGreedy(builder, CLOSE);
         }
 
@@ -257,7 +277,7 @@ public class HbParsing {
             return false;
         }
 
-        if(parseInMustache(builder)) {
+        if(parseInMustache(builder, true)) {
             parseLeafTokenGreedy(builder, CLOSE);
         }
 
@@ -276,6 +296,24 @@ public class HbParsing {
         if (!parseLeafToken(builder, OPEN_ENDBLOCK)) {
             closeBlockMarker.error("Expected close block"); // dm todo message
             return false;
+        }
+
+        // HB_CUSTOMIZATION: we store open/close IDs to detect mismatches.  Note that if the current token is not
+        // an id, we do nothing: the actual parser takes care of detecting the problem
+        if (builder.getTokenType() == HbTokenTypes.ID && !openTagNamesStack.empty()) {
+            String expectedCloseTag = openTagNamesStack.pop();
+            if (!expectedCloseTag.equals(builder.getTokenText())) {
+                // advance all the way to a recovery token or the close stache for this open block 'stache
+                while (builder.getTokenType() != CLOSE && !RECOVERY_SET.contains(builder.getTokenType()) && !builder.eof()) {
+                    builder.advanceLexer();
+                }
+
+                if (builder.getTokenType() == CLOSE) {
+                    builder.advanceLexer();
+                }
+                closeBlockMarker.error("Closing tag does not match open tag: \"" + expectedCloseTag + "\"");
+                return true;
+            }
         }
 
         if(parsePath(builder)) {
@@ -312,7 +350,7 @@ public class HbParsing {
             mustacheMarker.error("Expected {{ or {{{"); // dm todo message
         }
 
-        parseInMustache(builder);
+        parseInMustache(builder, false);
         // whether our parseInMustache hit trouble or not, we absolutely must have
         // a CLOSE token, so let's find it
         parseLeafTokenGreedy(builder, CLOSE);
@@ -375,9 +413,18 @@ public class HbParsing {
      * | path hash { $$ = [[$1], $2]; }
      * | path { $$ = [[$1], null]; }
      * ;
+     *
+     * @param hasOpenTag is used to tell this method that the first ID in this 'stache is the open
+     *                   tag of a block (this method stores it so that we can compare to the close tag later)
      */
-    private boolean parseInMustache(PsiBuilder builder) {
+    private boolean parseInMustache(PsiBuilder builder, boolean hasOpenTag) {
         PsiBuilder.Marker inMustacheMarker = builder.mark();
+
+        // HB_CUSTOMIZATION: we store open/close IDs to detect mismatches.  Note that if the current token is not
+        // an id, we do nothing: the actual parser takes care of detecting the problem
+        if (hasOpenTag && builder.getTokenType() == HbTokenTypes.ID) {
+            openTagNamesStack.push(builder.getTokenText());
+        }
 
         if (!parsePath(builder)) {
             inMustacheMarker.error("Expected a path");
@@ -603,7 +650,7 @@ public class HbParsing {
     private boolean parsePathSegments(PsiBuilder builder) {
         PsiBuilder.Marker pathSegmentsMarker = builder.mark();
 
-        /* HB_CUSTOMIZATION*/
+        /* HB_CUSTOMIZATION: see ishashNextLookAhead docs for details */
         if (isHashNextLookAhead(builder)) {
             pathSegmentsMarker.rollbackTo();
             return false;
