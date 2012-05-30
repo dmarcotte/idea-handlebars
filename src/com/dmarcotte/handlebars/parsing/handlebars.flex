@@ -117,7 +117,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
-  "."/["}"" "] { return HbTokenTypes.ID; }
+  "."/["}"\t \n\x0B\f\r] { return HbTokenTypes.ID; }
   ".." { return HbTokenTypes.ID; }
   [\/.] { return HbTokenTypes.SEP; }
   [\t \n\x0B\f\r]* { return HbTokenTypes.WHITE_SPACE; }

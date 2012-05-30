@@ -35,6 +35,7 @@ public class HbParser implements PsiParser {
         RECOVERY_SET.add(OPEN_UNESCAPED);
         RECOVERY_SET.add(CONTENT);
     }
+
     @NotNull
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         final PsiBuilder.Marker rootMarker = builder.mark();
@@ -42,9 +43,30 @@ public class HbParser implements PsiParser {
         builder.setDebugMode(true);  // dm todo delete
         parseProgram(builder);
 
-        // eat any remaining tokens
-        while (!builder.eof()) {
-            builder.advanceLexer();
+        if (!builder.eof()) {
+            // jumped out of the parser prematurely... try and figure out what's tripping it up,
+            // then jump back in
+            // dm todo is this the right place to catch exceptions like this?
+
+            // deal with some unexpected tokens
+            IElementType tokenType = builder.getTokenType();
+            int problemOffset = builder.getCurrentOffset();
+
+            if (tokenType == OPEN_ENDBLOCK) {
+                PsiBuilder.Marker badEndBlockMarker = builder.mark();
+                parseCloseBlock(builder);
+                badEndBlockMarker.error("No corresponding open block"); // dm todo message
+            }
+
+            if (builder.getCurrentOffset() == problemOffset) {
+                // none of our error checks advanced the lexer, do it manually before we
+                // try and resume parsing to avoid an infinite loop
+                PsiBuilder.Marker problemMark = builder.mark();
+                builder.advanceLexer();
+                problemMark.error("Invalid token");
+            }
+
+            parseProgram(builder);
         }
 
         rootMarker.done(root);
@@ -88,6 +110,8 @@ public class HbParser implements PsiParser {
             return false;
         }
 
+        statementsMarker.done(STATEMENTS);
+
         // parse any additional statements
         // dm todo this screws up on the last statement if it's busted by rolling back the check
         while (true) {
@@ -100,7 +124,6 @@ public class HbParser implements PsiParser {
             }
         }
 
-        statementsMarker.done(STATEMENTS);
         return true;
     }
 
@@ -155,7 +178,7 @@ public class HbParser implements PsiParser {
             return true;
         }
 
-        if (tokenType == OPEN) {
+        if (tokenType == OPEN || tokenType == OPEN_UNESCAPED) {
             return parseMustache(builder);
         }
 
@@ -267,9 +290,10 @@ public class HbParser implements PsiParser {
             mustacheMarker.error("Expected {{ or {{{"); // dm todo message
         }
 
-        if(parseInMustache(builder)) {
-            parseLeafTokenGreedy(builder, CLOSE);
-        }
+        parseInMustache(builder);
+        // whether our parseInMustache hit trouble or not, we absolutely must have
+        // a CLOSE token, so let's find it
+        parseLeafTokenGreedy(builder, CLOSE);
 
         mustacheMarker.done(MUSTACHE);
         return true;
