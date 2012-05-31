@@ -1,5 +1,7 @@
 package com.dmarcotte.handlebars.parsing;
 
+import com.dmarcotte.handlebars.HbBundle;
+import com.dmarcotte.handlebars.exception.ShouldNotHappenException;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.containers.Stack;
@@ -7,7 +9,6 @@ import com.intellij.util.containers.Stack;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BLOCK_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSEBLOCK_STACHE;
@@ -18,7 +19,6 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INTEGER;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVERSE_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.IN_MUSTACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.MUSTACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
@@ -81,7 +81,7 @@ public class HbParsing {
             if (tokenType == OPEN_ENDBLOCK) {
                 PsiBuilder.Marker badEndBlockMarker = builder.mark();
                 parseCloseBlock(builder);
-                badEndBlockMarker.error("No corresponding open block"); // dm todo message
+                badEndBlockMarker.error(HbBundle.message("hb.parsing.no.open.mustache"));
             }
 
             if (builder.getCurrentOffset() == problemOffset) {
@@ -89,7 +89,7 @@ public class HbParsing {
                 // try and resume parsing to avoid an infinite loop
                 PsiBuilder.Marker problemMark = builder.mark();
                 builder.advanceLexer();
-                problemMark.error("Invalid token");
+                problemMark.error(HbBundle.message("hb.parsing.invalid"));
             }
 
             parse();
@@ -127,7 +127,7 @@ public class HbParsing {
         PsiBuilder.Marker statementsMarker = builder.mark();
 
         if (!parseStatement(builder)) {
-            statementsMarker.error("Expected a statement"); // dm todo message; probably got EOF instead of something reasonable after a {{^}}, craft a nice message
+            statementsMarker.error(HbBundle.message("hb.parsing.expected.statement"));
             return false;
         }
 
@@ -209,9 +209,7 @@ public class HbParsing {
         }
 
         if (tokenType == COMMENT) {
-            PsiBuilder.Marker commentMark = builder.mark();
-            builder.advanceLexer();
-            commentMark.done(COMMENT);
+            parseLeafToken(builder, COMMENT);
             return true;
         }
 
@@ -231,7 +229,7 @@ public class HbParsing {
             openMustacheMarker.drop();
         } else {
             if (!openTagNamesStack.empty()) {
-                openMustacheMarker.errorBefore("\"" + openTagNamesStack.pop() + "\" block not closed", parseProgramMarker); // dm todo message
+                openMustacheMarker.errorBefore(HbBundle.message("hb.parsing.block.not.closed", openTagNamesStack.pop()), parseProgramMarker);
             } else {
                 openMustacheMarker.drop();
             }
@@ -246,18 +244,13 @@ public class HbParsing {
      * ;
      */
     private boolean parseOpenBlock(PsiBuilder builder) {
-        PsiBuilder.Marker openBlockMarker = builder.mark();
-
         if (!parseLeafToken(builder, OPEN_BLOCK)) {
-            openBlockMarker.error("Expected " + OPEN_BLOCK);
             return false;
         }
 
         if (parseInMustache(builder, true)) {
             parseLeafTokenGreedy(builder, CLOSE);
         }
-
-        openBlockMarker.done(BLOCK_STACHE);
         return true;
     }
 
@@ -267,18 +260,13 @@ public class HbParsing {
      * ;
      */
     private boolean parseOpenInverse(PsiBuilder builder) {
-        PsiBuilder.Marker openInverseMarker = builder.mark();
-
         if (!parseLeafToken(builder, OPEN_INVERSE)) {
-            openInverseMarker.error("Expected " + OPEN_INVERSE); // dm todo message
             return false;
         }
 
         if(parseInMustache(builder, true)) {
             parseLeafTokenGreedy(builder, CLOSE);
         }
-
-        openInverseMarker.done(INVERSE_STACHE);
         return true;
     }
 
@@ -291,7 +279,7 @@ public class HbParsing {
         PsiBuilder.Marker closeBlockMarker = builder.mark();
 
         if (!parseLeafToken(builder, OPEN_ENDBLOCK)) {
-            closeBlockMarker.error("Expected " + OPEN_ENDBLOCK); // dm todo message
+            closeBlockMarker.drop();
             return false;
         }
 
@@ -309,7 +297,8 @@ public class HbParsing {
                 if (builder.getTokenType() == CLOSE) {
                     builder.advanceLexer();
                 }
-                closeBlockMarker.error("\"" + actualCloseTag + "\" does not match \"" + expectedCloseTag + "\" from block start"); // dm todo message
+                closeBlockMarker.error(
+                        HbBundle.message("hb.parsing.end.tag.bad.match", actualCloseTag, expectedCloseTag));
                 return true;
             }
         }
@@ -335,8 +324,7 @@ public class HbParsing {
         } else if (builder.getTokenType() == OPEN_UNESCAPED) {
             parseLeafToken(builder, OPEN_UNESCAPED);
         } else {
-            mustacheMarker.error("Expected {{ or {{{"); // dm todo message; maybe exception?  Shouldn't see this...
-            return false;
+            throw new ShouldNotHappenException();
         }
 
         parseInMustache(builder, false);
@@ -414,7 +402,7 @@ public class HbParsing {
         }
 
         if (!parsePath(builder)) {
-            inMustacheMarker.error("Expected a path");
+            inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path"));
             return false;
         }
 
@@ -461,7 +449,7 @@ public class HbParsing {
         PsiBuilder.Marker paramsMarker = builder.mark();
 
         if (!parseParam(builder)) {
-            paramsMarker.error("Expected a parameter"); // dm todo message
+            paramsMarker.error(HbBundle.message("hb.parsing.expected.parameter"));
             return false;
         }
 
@@ -527,7 +515,7 @@ public class HbParsing {
             booleanMarker.rollbackTo();
         }
 
-        paramMarker.error("Expected a parameter"); // dm todo message
+        paramMarker.error(HbBundle.message("hb.parsing.expected.parameter"));
         return false;
     }
 
@@ -550,7 +538,7 @@ public class HbParsing {
         PsiBuilder.Marker hashSegmentsMarker = builder.mark();
 
         if (!parseHashSegment(builder)) {
-            hashSegmentsMarker.error("Expected a hash");  // dm todo message
+            hashSegmentsMarker.error(HbBundle.message("hb.parsing.expected.hash"));
             return false;
         }
 
@@ -691,10 +679,10 @@ public class HbParsing {
             while (!builder.eof() && builder.getTokenType() == INVALID) {
                 builder.advanceLexer();
             }
-            leafTokenMark.error("Expected " + leafTokenType);
+            recordLeafTokenError(leafTokenType, leafTokenMark);
             return false;
         } else {
-            leafTokenMark.error("Expected " + leafTokenType); // dm todo pretty up these message and put in the resource bundle
+            recordLeafTokenError(leafTokenType, leafTokenMark);
             return false;
         }
     }
@@ -710,18 +698,26 @@ public class HbParsing {
         // failed to parse expected token... chew up tokens marking this error until we encounter
         // a token which give the parser a good shot at resuming
         if (builder.getTokenType() != expectedToken) {
-            builder.error("Expected " + expectedToken);
             PsiBuilder.Marker unexpectedTokensMarker = builder.mark();
             while (!builder.eof()
                     && builder.getTokenType() != expectedToken
                     && !RECOVERY_SET.contains(builder.getTokenType())) {
                 builder.advanceLexer();
             }
-            unexpectedTokensMarker.error("Expected " + expectedToken);
+
+            recordLeafTokenError(expectedToken, unexpectedTokensMarker);
         }
 
         if (builder.getTokenType() == expectedToken) {
             parseLeafToken(builder, expectedToken);
+        }
+    }
+
+    private void recordLeafTokenError(IElementType expectedToken, PsiBuilder.Marker unexpectedTokensMarker) {
+        if (expectedToken instanceof HbElementType) {
+            unexpectedTokensMarker.error(((HbElementType) expectedToken).parseExpectedMessage());
+        } else {
+            unexpectedTokensMarker.error(HbBundle.message("hb.parsing.element.expected.invalid"));
         }
     }
 

@@ -32,28 +32,28 @@ public class HbTokenTypes {
     public static final IElementType STATEMENT = new HbCompositeElementType("STATEMENT");
     public static final IElementType STATEMENTS = new HbCompositeElementType("STATEMENTS");
 
-    public static final IElementType CONTENT = new HbElementType("CONTENT");
-    public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT");
+    public static final IElementType CONTENT = new HbElementType("CONTENT", "hb.parsing.element.expected.content");
+    public static final IElementType OUTER_ELEMENT_TYPE = new HbElementType("HB_FRAGMENT", "hb.parsing.element.expected.outer_element_type");
     public static final TemplateDataElementType TEMPLATE_ELEMENT_TYPE =
             new TemplateDataElementType("HB_TEMPLATE_DATA", StdFileTypes.HTML.getLanguage(), CONTENT, OUTER_ELEMENT_TYPE);
 
-    public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE");
-    public static final IElementType COMMENT = new HbElementType("COMMENT");
+    public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE", "hb.parsing.element.expected.white_space");
+    public static final IElementType COMMENT = new HbElementType("COMMENT", "hb.parsing.element.expected.comment");
 
-    public static final IElementType OPEN = new HbElementType("OPEN");
-    public static final IElementType OPEN_BLOCK = new HbElementType("OPEN_BLOCK");
-    public static final IElementType OPEN_PARTIAL = new HbElementType("OPEN_PARTIAL");
-    public static final IElementType OPEN_ENDBLOCK = new HbElementType("OPEN_ENDBLOCK");
-    public static final IElementType OPEN_INVERSE = new HbElementType("OPEN_INVERSE");
-    public static final IElementType OPEN_UNESCAPED = new HbElementType("OPEN_UNESCAPED");
-    public static final IElementType EQUALS = new HbElementType("EQUALS");
-    public static final IElementType ID = new HbElementType("ID");
-    public static final IElementType SEP = new HbElementType("SEP");
-    public static final IElementType CLOSE = new HbElementType("CLOSE");
-    public static final IElementType BOOLEAN = new HbElementType("BOOLEAN");
-    public static final IElementType INTEGER = new HbElementType("INTEGER");
-    public static final IElementType STRING = new HbElementType("STRING");
-    public static final IElementType INVALID = new HbElementType("INVALID");
+    public static final IElementType OPEN = new HbElementType("OPEN", "hb.parsing.element.expected.open");
+    public static final IElementType OPEN_BLOCK = new HbElementType("OPEN_BLOCK", "hb.parsing.element.expected.open_block");
+    public static final IElementType OPEN_PARTIAL = new HbElementType("OPEN_PARTIAL", "hb.parsing.element.expected.open_partial");
+    public static final IElementType OPEN_ENDBLOCK = new HbElementType("OPEN_ENDBLOCK", "hb.parsing.element.expected.open_end_block");
+    public static final IElementType OPEN_INVERSE = new HbElementType("OPEN_INVERSE", "hb.parsing.element.expected.open_inverse");
+    public static final IElementType OPEN_UNESCAPED = new HbElementType("OPEN_UNESCAPED", "hb.parsing.element.expected.open_unescaped");
+    public static final IElementType EQUALS = new HbElementType("EQUALS", "hb.parsing.element.expected.equals");
+    public static final IElementType ID = new HbElementType("ID", "hb.parsing.element.expected.id");
+    public static final IElementType SEP = new HbElementType("SEP", "hb.parsing.element.expected.separator");
+    public static final IElementType CLOSE = new HbElementType("CLOSE", "hb.parsing.element.expected.close");
+    public static final IElementType BOOLEAN = new HbElementType("BOOLEAN", "hb.parsing.element.expected.boolean");
+    public static final IElementType INTEGER = new HbElementType("INTEGER", "hb.parsing.element.expected.integer");
+    public static final IElementType STRING = new HbElementType("STRING", "hb.parsing.element.expected.string");
+    public static final IElementType INVALID = new HbElementType("INVALID", "hb.parsing.element.expected.invalid");
 
     public static final IFileElementType FILE = new IFileElementType("FILE", HbLanguage.INSTANCE);
 
