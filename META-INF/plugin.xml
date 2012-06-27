@@ -1,6 +1,6 @@
 <idea-plugin version="2" url="https://github.com/dmarcotte/idea-handlebars">
-  <id>com.dmarcotte.handlebars</id>
-  <name>Handlebars</name>
+  <id>com.dmarcotte.handlebars.beta</id>
+  <name>Handlebars-Beta</name>
   <description>
     <![CDATA[
       <a href="http://handlebarsjs.com/">Handlebars</a> template support
@@ -12,6 +12,14 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <br>
+      <b>Version 0.2-beta</b>
+      <br>
+      <br>
+      <ul>
+        <li>Adds parser and error highlighting</li>
+      </ul>
+
       <b>Version 0.1.1</b>
       <br>
       <br>
@@ -48,7 +56,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.1.1</version>
+  <version>0.2.beta-1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   
