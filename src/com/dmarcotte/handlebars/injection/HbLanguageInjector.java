@@ -20,7 +20,7 @@ public class HbLanguageInjector implements LanguageInjector {
                 XmlAttribute scriptTypeAttr = xmlText.getParentTag().getAttribute("type");
                 if (scriptTypeAttr != null
                         && scriptTypeAttr.getValue() != null
-                        && scriptTypeAttr.getValue().equals("text/x-handlebars")) {
+                        && scriptTypeAttr.getValue().equals("text/x-handlebars-template")) {
                     injectionPlacesRegistrar.addPlace(((LanguageFileType) FileTypeManager.getInstance().getFileTypeByExtension("handlebars")).getLanguage(),
                             new TextRange(1, xmlText.getTextLength() - 1),
                             null,
