@@ -15,21 +15,13 @@ public class HbTokenTypes {
     private HbTokenTypes() {}
 
     public static final IElementType CLOSEBLOCK_STACHE = new HbCompositeElementType("CLOSEBLOCK_STACHE");
-    public static final IElementType HASH = new HbCompositeElementType("HASH");
-    public static final IElementType HASH_SEGMENT = new HbCompositeElementType("HASH_SEGMENT");
     public static final IElementType HASH_SEGMENTS = new HbCompositeElementType("HASH_SEGMENTS");
     public static final IElementType IN_MUSTACHE = new HbCompositeElementType("IN_MUSTACHE");
     public static final IElementType MUSTACHE = new HbCompositeElementType("MUSTACHE");
-    public static final IElementType BLOCK_STACHE = new HbCompositeElementType("BLOCK_STACHE");
-    public static final IElementType INVERSE_STACHE = new HbCompositeElementType("INVERSE_STACHE");
     public static final IElementType PARAM = new HbCompositeElementType("PARAM");
     public static final IElementType PARAMS = new HbCompositeElementType("PARAMS");
     public static final IElementType PARTIAL_STACHE = new HbCompositeElementType("PARTIAL_STACHE");
-    public static final IElementType PATH = new HbCompositeElementType("PATH");
-    public static final IElementType PATH_SEGMENTS = new HbCompositeElementType("PATH_SEGMENTS");
-    public static final IElementType PROGRAM = new HbCompositeElementType("PROGRAM");
     public static final IElementType SIMPLE_INVERSE = new HbCompositeElementType("SIMPLE_INVERSE");
-    public static final IElementType STATEMENT = new HbCompositeElementType("STATEMENT");
     public static final IElementType STATEMENTS = new HbCompositeElementType("STATEMENTS");
 
     public static final IElementType CONTENT = new HbElementType("CONTENT", "hb.parsing.element.expected.content");
