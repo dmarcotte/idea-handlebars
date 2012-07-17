@@ -72,7 +72,6 @@ public class HbParsing {
         if (!builder.eof()) {
             // jumped out of the parser prematurely... try and figure out what's tripping it up,
             // then jump back in
-            // dm todo is this the right place to catch exceptions like this?
 
             // deal with some unexpected tokens
             IElementType tokenType = builder.getTokenType();

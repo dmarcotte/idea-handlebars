@@ -12,8 +12,6 @@ public class HbParser implements PsiParser {
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         final PsiBuilder.Marker rootMarker = builder.mark();
 
-        builder.setDebugMode(true);  // dm todo delete
-
         new HbParsing(builder).parse();
 
         rootMarker.done(root);
