@@ -14,7 +14,9 @@ public class HbTokenTypes {
      */
     private HbTokenTypes() {}
 
-    public static final IElementType CLOSEBLOCK_STACHE = new HbCompositeElementType("CLOSEBLOCK_STACHE");
+    public static final IElementType OPEN_BLOCK_STACHE = new HbCompositeElementType("OPEN_BLOCK_STACHE");
+    public static final IElementType OPEN_INVERSE_BLOCK_STACHE = new HbCompositeElementType("OPEN_INVERSE_BLOCK_STACHE");
+    public static final IElementType CLOSE_BLOCK_STACHE = new HbCompositeElementType("CLOSE_BLOCK_STACHE");
     public static final IElementType HASH_SEGMENTS = new HbCompositeElementType("HASH_SEGMENTS");
     public static final IElementType IN_MUSTACHE = new HbCompositeElementType("IN_MUSTACHE");
     public static final IElementType MUSTACHE = new HbCompositeElementType("MUSTACHE");
