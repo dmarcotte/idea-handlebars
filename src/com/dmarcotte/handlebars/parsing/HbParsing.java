@@ -9,31 +9,7 @@ import com.intellij.util.containers.Stack;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSEBLOCK_STACHE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.EQUALS;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INTEGER;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.IN_MUSTACHE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.MUSTACHE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_BLOCK;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_ENDBLOCK;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_INVERSE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARAM;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARAMS;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_STACHE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SIMPLE_INVERSE;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STATEMENTS;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STRING;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
 
 /**
  * The parser is based directly on Handlebars.yy
@@ -244,13 +220,17 @@ public class HbParsing {
      * ;
      */
     private boolean parseOpenBlock(PsiBuilder builder) {
+        PsiBuilder.Marker openBlockStacheMarker = builder.mark();
         if (!parseLeafToken(builder, OPEN_BLOCK)) {
+            openBlockStacheMarker.drop();
             return false;
         }
 
         if (parseInMustache(builder, true)) {
             parseLeafTokenGreedy(builder, CLOSE);
         }
+
+        openBlockStacheMarker.done(OPEN_BLOCK_STACHE);
         return true;
     }
 
@@ -260,13 +240,17 @@ public class HbParsing {
      * ;
      */
     private boolean parseOpenInverse(PsiBuilder builder) {
+        PsiBuilder.Marker openInverseBlockStacheMarker = builder.mark();
         if (!parseLeafToken(builder, OPEN_INVERSE)) {
+            openInverseBlockStacheMarker.drop();
             return false;
         }
 
         if(parseInMustache(builder, true)) {
             parseLeafTokenGreedy(builder, CLOSE);
         }
+
+        openInverseBlockStacheMarker.done(OPEN_INVERSE_BLOCK_STACHE);
         return true;
     }
 
@@ -307,7 +291,7 @@ public class HbParsing {
             parseLeafToken(builder, CLOSE);
         }
 
-        closeBlockMarker.done(CLOSEBLOCK_STACHE);
+        closeBlockMarker.done(CLOSE_BLOCK_STACHE);
         return true;
     }
 
