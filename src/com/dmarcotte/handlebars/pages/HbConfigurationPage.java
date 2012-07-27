@@ -1,6 +1,7 @@
 package com.dmarcotte.handlebars.pages;
 
 import com.dmarcotte.handlebars.HbBundle;
+import com.dmarcotte.handlebars.config.HbConfig;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import org.jetbrains.annotations.Nls;
@@ -46,17 +47,17 @@ public class HbConfigurationPage implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return false;
+        return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled();
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        HbConfig.setAutoGenerateCloseTagEnabled(myAutoGenerateClosingTagCheckBox.isSelected());
     }
 
     @Override
     public void reset() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        myAutoGenerateClosingTagCheckBox.setSelected(HbConfig.isAutoGenerateCloseTagEnabled());
     }
 
     @Override
