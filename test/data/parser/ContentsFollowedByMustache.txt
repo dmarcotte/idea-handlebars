@@ -1,0 +1,11 @@
+FILE
+  HbPsiElement(STATEMENTS)
+    PsiElement([Hb] CONTENT)('foo bar ')
+    HbPsiElement(MUSTACHE)
+      HbPsiElement([Hb] OPEN)
+        PsiElement([Hb] OPEN)('{{')
+      HbPsiElement(IN_MUSTACHE)
+        HbPsiElement([Hb] ID)
+          PsiElement([Hb] ID)('baz')
+      HbPsiElement([Hb] CLOSE)
+        PsiElement([Hb] CLOSE)('}}')

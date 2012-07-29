@@ -1,0 +1,11 @@
+FILE
+  PsiErrorElement:Expected a statement
+    <empty list>
+  PsiErrorElement:No corresponding open mustache
+    HbPsiElement(CLOSEBLOCK_STACHE)
+      HbPsiElement([Hb] OPEN_ENDBLOCK)
+        PsiElement([Hb] OPEN_ENDBLOCK)('{{/')
+      HbPsiElement([Hb] ID)
+        PsiElement([Hb] ID)('unopened')
+      HbPsiElement([Hb] CLOSE)
+        PsiElement([Hb] CLOSE)('}}')

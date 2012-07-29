@@ -7,13 +7,12 @@ import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
 public class HbParser implements PsiParser {
+
     @NotNull
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         final PsiBuilder.Marker rootMarker = builder.mark();
 
-        while (!builder.eof()) {
-            builder.advanceLexer();
-        }
+        new HbParsing(builder).parse();
 
         rootMarker.done(root);
 

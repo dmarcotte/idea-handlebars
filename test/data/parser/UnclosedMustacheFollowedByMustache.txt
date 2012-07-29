@@ -1,0 +1,19 @@
+FILE
+  HbPsiElement(STATEMENTS)
+    HbPsiElement(MUSTACHE)
+      HbPsiElement([Hb] OPEN)
+        PsiElement([Hb] OPEN)('{{')
+      HbPsiElement(IN_MUSTACHE)
+        HbPsiElement([Hb] ID)
+          PsiElement([Hb] ID)('foo')
+      PsiErrorElement:Expected Close "}}"
+        <empty list>
+    PsiWhiteSpace(' ')
+    HbPsiElement(MUSTACHE)
+      HbPsiElement([Hb] OPEN)
+        PsiElement([Hb] OPEN)('{{')
+      HbPsiElement(IN_MUSTACHE)
+        HbPsiElement([Hb] ID)
+          PsiElement([Hb] ID)('bar')
+      HbPsiElement([Hb] CLOSE)
+        PsiElement([Hb] CLOSE)('}}')
