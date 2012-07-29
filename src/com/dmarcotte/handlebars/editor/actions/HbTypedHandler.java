@@ -5,6 +5,7 @@ import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.file.HbFileViewProvider;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.dmarcotte.handlebars.psi.HbPsiElement;
+import com.dmarcotte.handlebars.psi.HbPsiUtil;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
@@ -79,22 +80,16 @@ public class HbTypedHandler extends TypedHandlerDelegate {
         if (c == '}' && previousChar.equals("}")) {
             PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
 
-            if (elementAtCaret != null
-                    && elementAtCaret.getParent() != null) {
-                // this is the element we are hoping is an open block type 'stache
-                PsiElement openBlockStache = elementAtCaret.getParent().getParent();
-                if (openBlockStache != null
-                        && (openBlockStache.getNode().getElementType() == HbTokenTypes.OPEN_BLOCK_STACHE
-                            || openBlockStache. getNode().getElementType() == HbTokenTypes.OPEN_INVERSE_BLOCK_STACHE)
-                        && openBlockStache.getChildren().length > 1) {
-                    // confirmed!  It's an open block type 'stache.  Find it's ID
-                    HbPsiElement idElem = (HbPsiElement) openBlockStache.getChildren()[1].getFirstChild();
+            PsiElement openTag = HbPsiUtil.findParentOpenTagElement(elementAtCaret);
 
-                    if (idElem != null
-                            && idElem.getNode().getElementType() == HbTokenTypes.ID) {
-                        // insert the corresponding close tag
-                        editor.getDocument().insertString(offset, "{{/" + idElem.getText() + "}}");
-                    }
+            if (openTag != null && openTag.getChildren().length > 1) {
+                // we've got an open block type stache... find its ID
+                HbPsiElement idElem = (HbPsiElement) openTag.getChildren()[1].getFirstChild();
+
+                if (idElem != null
+                        && idElem.getNode().getElementType() == HbTokenTypes.ID) {
+                    // insert the corresponding close tag
+                    editor.getDocument().insertString(offset, "{{/" + idElem.getText() + "}}");
                 }
             }
         }
