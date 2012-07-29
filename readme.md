@@ -2,21 +2,17 @@
 
 IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
-## _NEW:_ Syntax error highlighting beta
-* Syntax error highlighting has been implemented!  Grab [the beta](https://github.com/downloads/dmarcotte/idea-handlebars/idea-handlebars-0.2.beta-1.jar) and update [the pull](https://github.com/dmarcotte/idea-handlebars/pull/5) with your thoughts, and, of course, file any bugs you encounter.
-    * Intallating:
-        * In Settings->Plugins, disable IDEA-Handlebars (the beta installs along side the released version, which is nice in case you need to toggle back to the release for any reason)
-        * Download [the beta](https://github.com/downloads/dmarcotte/idea-handlebars/idea-handlebars-0.2.beta-1.jar) and in Settings->Plugins, choose "Install plugin from disk..." functionality
-    * Uninstalling:
+## _NEW:_ Syntax error highlighting
+* Syntax error highlighting has been released!
+    * If you were running the beta, reenable the stable version and **uninstall** the beta as follows:
         * In Settings->Plugins, right-click Handlebars-Beta and choose "Uninstall"
-    * Compatability: will work with build 110.000 and later.  (If you don't know how to check your IDE's build number, no worries.  If you try and install, your IDE will tell you if the plugin is not compatable.)
 
-## Installing the stable version
+## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
   * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars" on the list, right-click, and select "Download and Install"
 
 ## Features
-* Syntax error highlighting (currently in [beta](https://github.com/dmarcotte/idea-handlebars/pull/5))
+* Syntax error highlighting
 * Configurable syntax highlighting
 * Matched mustache pair highlighting
 * Full HTML highlighting, code completion, inspections, formatting and commenting for the HTML content in your Handlebars templates

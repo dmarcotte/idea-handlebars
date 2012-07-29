@@ -12,8 +12,13 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
-      <b>Version 0.1.1</b>
+      <b>Version 0.2</b>
       <br>
+      <ul>
+        <li>Adds syntax error highlighting</li>
+      </ul>
+
+      <b>Version 0.1.1</b>
       <br>
       <ul>
         <li>Adds .mustache and .hbs as default files extensions handled by this plugin</li>
@@ -48,7 +53,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.1.1</version>
+  <version>0.2</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   
