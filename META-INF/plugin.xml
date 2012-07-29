@@ -12,6 +12,13 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.3-alpha-1</b>
+      <br>
+      <ul>
+        <li>Adds auto-insert of close block 'staches</li>
+        <li>Adds smart enter for when enter is type between and open and close tag</li>
+      </ul>
+
       <b>Version 0.2</b>
       <br>
       <ul>
@@ -53,7 +60,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.2</version>
+  <version>0.3-alpha-1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   
