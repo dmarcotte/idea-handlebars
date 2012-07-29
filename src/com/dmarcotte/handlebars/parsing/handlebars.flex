@@ -117,15 +117,15 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
-  "."/[}\t \n\x0B\f\r] { return HbTokenTypes.ID; }
+  "."/["}"\t \n\x0B\f\r] { return HbTokenTypes.ID; }
   ".." { return HbTokenTypes.ID; }
   [\/.] { return HbTokenTypes.SEP; }
   [\t \n\x0B\f\r]* { return HbTokenTypes.WHITE_SPACE; }
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
   \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
-  "true"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
-  "false"/[}\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
+  "true"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
+  "false"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
