@@ -1,6 +1,6 @@
 <idea-plugin version="2" url="https://github.com/dmarcotte/idea-handlebars">
-  <id>com.dmarcotte.handlebars</id>
-  <name>Handlebars</name>
+  <id>com.dmarcotte.handlebars-alpha</id>
+  <name>Handlebars Alpha</name>
   <description>
     <![CDATA[
       <a href="http://handlebarsjs.com/">Handlebars</a> template support
