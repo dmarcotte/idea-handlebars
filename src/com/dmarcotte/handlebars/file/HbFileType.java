@@ -3,6 +3,7 @@ package com.dmarcotte.handlebars.file;
 import com.dmarcotte.handlebars.HbBundle;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.HbTemplateHighlighter;
+import com.intellij.ide.highlighter.HtmlFileType;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.EditorHighlighterProvider;
@@ -11,9 +12,7 @@ import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.encoding.EncodingManager;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,8 +59,10 @@ public class HbFileType extends LanguageFileType {
     }
 
     public String getCharset(@NotNull VirtualFile file, final byte[] content) {
-        Charset charset = EncodingManager.getInstance().getDefaultCharsetForPropertiesFiles(file);
-        String defaultCharsetName = charset == null ? CharsetToolkit.getDefaultSystemCharset().name() : charset.name();
-        return defaultCharsetName;
+        return HtmlFileType.INSTANCE.getCharset(file, content);
+    }
+
+    public Charset extractCharsetFromFileContent(@Nullable final Project project, @Nullable final VirtualFile file, @NotNull final String content) {
+        return HtmlFileType.INSTANCE.extractCharsetFromFileContent(project, file, content);
     }
 }
