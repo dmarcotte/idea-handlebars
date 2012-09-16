@@ -12,6 +12,30 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.3</b>
+      <br>
+      <ul>
+        <li>
+        Adds auto-insert of closing tags.
+          <ul>
+            <li>
+              This behavior can be toggled in the Settings->Handlebars page.
+            </li>
+            <li>
+              More info <a href="https://github.com/dmarcotte/idea-handlebars/pull/9">on the project site</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          Improves charset defaulting for files associated with this plugin.
+          <ul>
+            <li>
+            More info <a href="https://github.com/dmarcotte/idea-handlebars/pull/12">on the project site</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
       <b>Version 0.2</b>
       <br>
       <ul>
@@ -45,15 +69,14 @@
         <li>
           <b>Not yet implemented</b>
           <ul>
-            <li>Handlebars-specific syntax-error highlighting</li>
             <li>Find usages, Go-to declaration, etc. for references</li>
-            <li>Support for Handlebars templates embedded in script tags in html files</li>
+            <li>Support for Handlebars templates embedded in script tags in html files (<a href="https://github.com/dmarcotte/idea-handlebars/pull/8">more info</a>)</li>
           </ul>
          </li>
       </ul>
     ]]>
   </change-notes>
-  <version>0.2</version>
+  <version>0.3</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   

@@ -2,10 +2,8 @@
 
 IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
-## _NEW:_ Syntax error highlighting
-* Syntax error highlighting has been released!
-    * If you were running the beta, reenable the stable version and **uninstall** the beta as follows:
-        * In Settings->Plugins, right-click Handlebars-Beta and choose "Uninstall"
+## _NEW:_ Auto-insert of close tags
+The latest release adds [auto-inserting of closing tags](https://github.com/dmarcotte/idea-handlebars/pull/9) and improves the plugin's [charset defaulting](https://github.com/dmarcotte/idea-handlebars/pull/12)
 
 ## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
@@ -14,6 +12,7 @@ IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intel
 ## Features
 * Syntax error highlighting
 * Configurable syntax highlighting
+* Auto-insert of closing tags
 * Matched mustache pair highlighting
 * Full HTML highlighting, code completion, inspections, formatting and commenting for the HTML content in your Handlebars templates
 * Since Handlebars is a super-set of [Mustache](http://mustache.github.com/) syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too
