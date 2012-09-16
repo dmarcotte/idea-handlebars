@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * These tests are based on other children of {@link com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase},
  * in particular {@code com.intellij.application.options.codeInsight.editor.quotes.SelectionQuotingTypedHandlerTest}
+ *
+ * TODO this test cannot be run with our others due to some interdependency in the IDEA base tests.  Fix this or organize the code in such a way that it is clear these cannot be run together
  */
 public class HbTypedHandlerTest extends LightPlatformCodeInsightFixtureTestCase {
 
@@ -93,7 +95,7 @@ public class HbTypedHandlerTest extends LightPlatformCodeInsightFixtureTestCase 
         doTest('}', "{{foo}", "{{foo}}");
         doTest('}', "{{foo bar baz}", "{{foo bar baz}}");
 
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        HbConfig.setAutoGenerateCloseTagEnabled(false);
         doTest('}', "{{foo}", "{{foo}}");
         doTest('}', "{{foo bar baz}", "{{foo bar baz}}");
     }
