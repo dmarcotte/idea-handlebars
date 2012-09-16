@@ -32,13 +32,13 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
 
         // get the main language of the file
         Language dataLang = TemplateDataLanguageMappings.getInstance(manager.getProject()).getMapping(file);
-        if(dataLang == null) dataLang = StdFileTypes.HTML.getLanguage();
+        if(dataLang == null) dataLang = StdFileTypes.HTML.getLanguage(); // default language that we template is HTML
 
-        // some magic?
+        // some magic? TODO demystify this
         if(dataLang instanceof TemplateLanguage) {
             myTemplateDataLanguage = PlainTextLanguage.INSTANCE;
         } else {
-            myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
+                myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
         }
     }
 
