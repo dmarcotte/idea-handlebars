@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 public class HbTypedHandlerTest extends LightPlatformCodeInsightFixtureTestCase {
 
     private boolean myPrevAutoCloseSetting;
-    private String myPrevPlatformPrefix;
 
     private void performWriteAction(final Project project, final Runnable action) {
         ApplicationManager.getApplication().runWriteAction(new Runnable() {
@@ -34,10 +33,6 @@ public class HbTypedHandlerTest extends LightPlatformCodeInsightFixtureTestCase 
 
     @Override
     protected void setUp() throws Exception {
-        // this test's parent setup requires that this property be set
-        myPrevPlatformPrefix = System.getProperty("idea.platform.prefix");
-        System.setProperty("idea.platform.prefix", "Idea");
-
         super.setUp();
         myPrevAutoCloseSetting = HbConfig.isAutoGenerateCloseTagEnabled();
     }
@@ -45,11 +40,6 @@ public class HbTypedHandlerTest extends LightPlatformCodeInsightFixtureTestCase 
     @Override
     protected void tearDown() throws Exception {
         HbConfig.setAutoGenerateCloseTagEnabled(myPrevAutoCloseSetting);
-        if (myPrevPlatformPrefix == null) {
-            System.setProperty("idea.platform.prefix", "");
-        } else {
-            System.setProperty("idea.platform.prefix", myPrevPlatformPrefix);
-        }
         super.tearDown();
     }
 
