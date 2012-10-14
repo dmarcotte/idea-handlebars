@@ -76,11 +76,11 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.3</version>
+  <version>0.3 (Leda)</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
   
-  <idea-version since-build="110.000"/>
+  <idea-version since-build="122.000"/>
 
   <application-components>
     <!-- Add your application components here -->
