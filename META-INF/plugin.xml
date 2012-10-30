@@ -1,9 +1,10 @@
 <idea-plugin version="2" url="https://github.com/dmarcotte/idea-handlebars">
   <id>com.dmarcotte.handlebars</id>
-  <name>Handlebars</name>
+  <name>Handlebars/Mustache</name>
   <description>
     <![CDATA[
-      <a href="http://handlebarsjs.com/">Handlebars</a> template support
+      <a href="http://handlebarsjs.com/">Handlebars</a> and <a href="http://mustache.github.com/">Mustache</a> template support,
+      including syntax and error highlighting
       <br>
       <br>
       Issues, feature requests and contributions welcome: <a href="https://github.com/dmarcotte/idea-handlebars">https://github.com/dmarcotte/idea-handlebars</a>
@@ -16,10 +17,10 @@
       <br>
       <ul>
         <li>
-        Adds auto-insert of closing tags.
+          Adds auto-insert of closing tags.
           <ul>
             <li>
-              This behavior can be toggled in the Settings->Handlebars page.
+              This behavior can be toggled in the Settings->Handlebars/Mustache page.
             </li>
             <li>
               More info <a href="https://github.com/dmarcotte/idea-handlebars/pull/9">on the project site</a>
@@ -78,7 +79,7 @@
   </change-notes>
   <version>0.3</version>
   <depends>com.intellij.modules.lang</depends>
-  <vendor url="https://github.com/dmarcotte">dmarcotte</vendor>
+  <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   
   <idea-version since-build="110.000"/>
 

@@ -1,21 +1,20 @@
-# IDEA-Handlebars:  [Handlebars](http://handlebarsjs.com/) template plugin for Jetbrains IDEs
+# [Handlebars](http://handlebarsjs.com/)/[Mustache](http://mustache.github.com/) template plugin for Jetbrains IDEs
 
-IDEA-Handlebars adds support for Handlebars templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
+IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mustache](http://mustache.github.com/) templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
 ## _NEW:_ Auto-insert of close tags
 The latest release adds [auto-inserting of closing tags](https://github.com/dmarcotte/idea-handlebars/pull/9) and improves the plugin's [charset defaulting](https://github.com/dmarcotte/idea-handlebars/pull/12)
 
 ## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
-  * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars" on the list, right-click, and select "Download and Install"
+  * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars/Mustache" on the list, right-click, and select "Download and Install"
 
 ## Features
 * Syntax error highlighting
 * Configurable syntax highlighting
 * Auto-insert of closing tags
 * Matched mustache pair highlighting
-* Full HTML highlighting, code completion, inspections, formatting and commenting for the HTML content in your Handlebars templates
-* Since Handlebars is a super-set of [Mustache](http://mustache.github.com/) syntax, this plugin should greatly improve IDEA's editing experience for Mustache templates too
+* Full HTML highlighting, code completion, inspections, formatting and commenting for the HTML content in your templates
 * By default, files with the ".handlebars", ".hbs" or ".mustache" extensions are handled by this plugin
 
 ## Future directions
