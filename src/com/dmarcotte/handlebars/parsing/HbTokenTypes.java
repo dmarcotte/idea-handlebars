@@ -14,6 +14,7 @@ public class HbTokenTypes {
      */
     private HbTokenTypes() {}
 
+    public static final IElementType BLOCK_WRAPPER = new HbCompositeElementType("BLOCK_WRAPPER");
     public static final IElementType OPEN_BLOCK_STACHE = new HbCompositeElementType("OPEN_BLOCK_STACHE");
     public static final IElementType OPEN_INVERSE_BLOCK_STACHE = new HbCompositeElementType("OPEN_INVERSE_BLOCK_STACHE");
     public static final IElementType CLOSE_BLOCK_STACHE = new HbCompositeElementType("CLOSE_BLOCK_STACHE");

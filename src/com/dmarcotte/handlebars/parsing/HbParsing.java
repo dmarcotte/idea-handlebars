@@ -150,9 +150,10 @@ public class HbParsing {
                 inverseBlockStartMarker.drop();
             }
 
+            PsiBuilder.Marker blockMarker = builder.mark();
             PsiBuilder.Marker openInverseMarker = builder.mark();
             if (parseOpenInverse(builder)) {
-                openBlockMarker(builder, openInverseMarker);
+                openBlockMarker(builder, openInverseMarker, blockMarker);
             } else {
                 return false;
             }
@@ -161,9 +162,10 @@ public class HbParsing {
         }
 
         if (tokenType == OPEN_BLOCK) {
+            PsiBuilder.Marker blockMarker = builder.mark();
             PsiBuilder.Marker openBlockMarker = builder.mark();
             if (parseOpenBlock(builder)) {
-                openBlockMarker(builder, openBlockMarker);
+                openBlockMarker(builder, openBlockMarker, blockMarker);
             } else {
                 return false;
             }
@@ -196,9 +198,11 @@ public class HbParsing {
      * Helper method to take care of the business need after an "open-type mustache" (openBlock or openInverse),
      * including ensuring we've got the right close tag
      *
+     * todo refactor to parse whole block including open tag?
+     *
      * NOTE: will resolve the given openMustacheMarker
      */
-    private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker) {
+    private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker, PsiBuilder.Marker blockMarker) {
         PsiBuilder.Marker parseProgramMarker = builder.mark();
         parseProgram(builder);
         if(parseCloseBlock(builder)) {
@@ -211,6 +215,8 @@ public class HbParsing {
             }
         }
         parseProgramMarker.drop();
+
+        blockMarker.done(HbTokenTypes.BLOCK_WRAPPER);
         return true;
     }
 

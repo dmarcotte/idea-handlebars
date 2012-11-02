@@ -90,7 +90,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
           while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {
             yypushback(1);
           }
-          yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
+          yypushState(mu); if (yytext().toString().trim().length() == 0) return HbTokenTypes.WHITE_SPACE; if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
         }
 
   // Check for anything that is not a string containing "{{"; that's CONTENT
