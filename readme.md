@@ -19,11 +19,20 @@ The latest release adds [auto-inserting of closing tags](https://github.com/dmar
 * By default, files with the ".handlebars", ".hbs" or ".mustache" extensions are handled by this plugin
 
 ## Future directions
-* See [the pulls](https://github.com/dmarcotte/idea-handlebars/pulls) for a preview of in-progress and planned features
+* See [the pulls](https://github.com/dmarcotte/idea-handlebars/pulls) and [issues](https://github.com/dmarcotte/idea-handlebars/issues) for a preview of in-progress and planned features
 
-## Feedback
-* Please feel free to call out bugs and feaure requests in the [issue tracker](https://github.com/dmarcotte/idea-handlebars/issues)
-* Also, [pull requests](https://github.com/dmarcotte/idea-handlebars/pulls) are absolutely welcome
+## Contributing
+Contributions welcome!
+
+There's a variety of ways you can help this project out:
+
+* Contributing without coding
+    * [File issues](https://github.com/dmarcotte/idea-handlebars/issues/new) for bugs, suggestions and requests.  This is a great and easy way to help out
+    * Fluent in multiple languages?  [Provide a translation!]()
+* Contributing code
+    * Have a gander at the [contributor guidelines]()
+    * The [developer setup instructions]() should get you up and running in no time
+    * Look at [contribs-welcome issues]() for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
 
 ## Special thanks
 * [Bazaarvoice](http://www.bazaarvoice.com), my fantastic employer, for providing the time to work on this
