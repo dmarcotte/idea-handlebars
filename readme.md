@@ -28,11 +28,11 @@ There's a variety of ways you can help this project out:
 
 * Contributing without coding
     * [File issues](https://github.com/dmarcotte/idea-handlebars/issues/new) for bugs, suggestions and requests.  This is a great and easy way to help out
-    * Fluent in multiple languages?  [Provide a translation!]()
+    * Fluent in multiple languages?  [Provide a translation!](https://github.com/dmarcotte/idea-handlebars/issues/21)
 * Contributing code
-    * Have a gander at the [contributor guidelines]()
-    * The [developer setup instructions]() should get you up and running in no time
-    * Look at [contribs-welcome issues]() for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
+    * Have a gander at the [contributor guidelines](https://github.com/dmarcotte/idea-handlebars/blob/master/contributing.md)
+    * The [developer setup instructions](https://github.com/dmarcotte/idea-handlebars/blob/master/developer_environment.md) should get you up and running in no time
+    * Look at [contribs-welcome issues](https://github.com/dmarcotte/idea-handlebars/issues?direction=desc&labels=contrib-welcome&page=1&sort=created&state=open) for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
 
 ## Special thanks
 * [Bazaarvoice](http://www.bazaarvoice.com), my fantastic employer, for providing the time to work on this
