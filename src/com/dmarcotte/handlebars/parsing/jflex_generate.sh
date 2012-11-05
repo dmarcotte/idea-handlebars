@@ -2,10 +2,21 @@
 
 ####
 # Run this script to regenerate _HbLexer.java from handlebars.flex
-# NOTE: you'll need to update the absolute paths TODO make this not rely on absolute paths
 ####
+
+if [ ! -z $1 ]; then
+    IDEA_SRC_ROOT=$1
+fi
+
+
+if [ -z $IDEA_SRC_ROOT ]; then
+    echo 'ERROR: IDEA source soot not found.'
+    echo '  Pass the path to the root of the Intellij IDEA Community Edition\n  source code as a argument or set environment variable $IDEA_SRC_ROOT'
+    exit 1
+fi
 
 # thanks to http://code.google.com/p/google-closure-soy/source/browse/trunk/src/net/intellij/plugins/soy/lexer/build-lexer.cmd
 # for help with the command line switches
-/home/dmarcotte/workspace/code/intellij-community-11.x/tools/lexer/jflex-1.4/bin/jflex --charat --nobak --skel \
-  /home/dmarcotte/workspace/code/intellij-community-11.x/tools/lexer/idea-flex.skeleton -d . --verbose handlebars.flex
+${IDEA_SRC_ROOT}/tools/lexer/jflex-1.4/bin/jflex --charat --nobak --skel \
+  ${IDEA_SRC_ROOT}/tools/lexer/idea-flex.skeleton -d . --verbose handlebars.flex \
+  || echo '\nERROR: Lexer generation failed.  Check errors above\n  and ensure you provided the correct IDEA source root'
