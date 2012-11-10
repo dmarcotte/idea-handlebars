@@ -79,6 +79,18 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         }
 
         /**
+         * todo doc
+         */
+        @Override
+        protected boolean shouldBuildBlockFor(ASTNode childNode) {
+            return super.shouldBuildBlockFor(childNode)
+                    && (childNode.getElementType() != HbTokenTypes.CONTENT
+                    || (childNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
+                    && childNode.getTreeParent().getTreeParent() != null
+                    && childNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE));
+        }
+
+        /**
          * We indented the code in the following manner:
          *   * block expressions:
          *      {{#foo}}
@@ -137,7 +149,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
 
         @Override
         protected IElementType getTemplateTextElementType() {
-            return HbTokenTypes.CONTENT;
+            return HbTokenTypes.TEMPLATE_ELEMENT_TYPE;
         }
 
         @Override
