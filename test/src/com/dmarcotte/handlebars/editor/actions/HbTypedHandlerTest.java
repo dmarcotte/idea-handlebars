@@ -75,4 +75,9 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
         doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
     }
+
+    public void testFormatSimpleInverse() {
+        // todo test config on and off
+        doTest('}', "{{#if}}\nif stuff\n    {{else}", "{{#if}}\nif stuff\n{{else}}");
+    }
 }

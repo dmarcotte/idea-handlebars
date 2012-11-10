@@ -12,11 +12,11 @@ import com.intellij.formatting.templateLanguages.TemplateLanguageBlock;
 import com.intellij.formatting.templateLanguages.TemplateLanguageBlockFactory;
 import com.intellij.formatting.templateLanguages.TemplateLanguageFormattingModelBuilder;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.DocumentBasedFormattingModel;
-import com.intellij.psi.templateLanguages.SimpleTemplateLanguageFormattingModelBuilder;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,10 +51,10 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
 
         ASTNode node = element.getNode();
 
-        // If we're looking at a HbTokenTypes.OUTER_ELEMENT_TYPE element, then we've been invoked by our templated
-        // language.  Give back a SimpleTemplateLanguageFormattingModelBuilder to do a dummy format.
         if (node.getElementType() == HbTokenTypes.OUTER_ELEMENT_TYPE) {
-            return new SimpleTemplateLanguageFormattingModelBuilder().createModel(element, settings);
+            // If we're looking at a HbTokenTypes.OUTER_ELEMENT_TYPE element, then we've been invoked by our templated
+            // language.  Make a dummy block to allow that formatter to continue
+            rootBlock = createDummyBlock(node);
         } else {
             rootBlock = getRootBlock(file, file.getViewProvider(), settings);
         }
@@ -114,25 +114,12 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
                 return Indent.getNoneIndent();
             }
 
-            if (getNode().getElementType() == HbTokenTypes.BLOCK_WRAPPER) {
-                // we've got a mustache block expression wrapped
-                // inside a Formatting Block belonging to the templated language, let's indent
-                if (getParent() instanceof DataLanguageBlockWrapper) {
-                    return Indent.getNormalIndent();
-                }
-
-                // todo formalize this and either make it more robust or make sure it's surrounded by a test (the assumption that FILE is two nodes up from BLOCK_WRAPPER is brittle)
-                if (myNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
-                        && myNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE) {
-                    return Indent.getNormalIndent();
-                }
-
-                return Indent.getNoneIndent();
-            }
-
-            // todo doc what we're up to here
-            if (myNode.getTreeParent() != null && myNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS) {
-                return Indent.getNormalIndent(); // todo should we pass true for relativeToDirectParent?
+            // todo formalize this and either make it more robust or make sure it's surrounded by a test (the assumption that FILE is two nodes up from BLOCK_WRAPPER is brittle)
+            if (myNode.getTreeParent() != null
+                    && myNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
+                    && (getParent() instanceof DataLanguageBlockWrapper
+                        || myNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE)) {
+                return Indent.getNormalIndent();
             }
 
             return Indent.getNoneIndent();
@@ -151,6 +138,12 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         @Override
         protected IElementType getTemplateTextElementType() {
             return HbTokenTypes.CONTENT;
+        }
+
+        @Override
+        public boolean isRequiredRange(TextRange range) {
+            // todo not sure if there's ever a case where we should say true
+            return false;
         }
 
         /**
