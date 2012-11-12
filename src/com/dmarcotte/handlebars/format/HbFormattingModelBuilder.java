@@ -118,6 +118,8 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
          * root "program" element.  See {@link com.dmarcotte.handlebars.parsing.HbParsing#parseProgram} and
          * {@link com.dmarcotte.handlebars.parsing.HbParsing#parseStatement(com.intellij.lang.PsiBuilder)} for the
          * relevant parts of the parser.
+         *
+         * todo update this comment
          */
         @Override
         public Indent getIndent() {
@@ -126,7 +128,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
                 return Indent.getNoneIndent();
             }
 
-            // todo formalize this and either make it more robust or make sure it's surrounded by a test (the assumption that FILE is two nodes up from BLOCK_WRAPPER is brittle)
+            // todo formalize this and either make it more robust or make sure it's surrounded by a test (the assumption that FILE is two nodes up from children of statements is brittle)
             if (myNode.getTreeParent() != null
                     && myNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
                     && (getParent() instanceof DataLanguageBlockWrapper
@@ -160,7 +162,8 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
 
         /**
          * This method handles indent and alignment on Enter keypresses.
-         * todo implement this
+         *
+         * todo refactor the repeated STATEMENTS AND NOT FILE checks
          *
          * todo if/when we implement alignment, update this method to do alignment properly
          *  {{#foo}}
@@ -171,8 +174,18 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         @NotNull
         @Override
         public ChildAttributes getChildAttributes(int newChildIndex) {
-            //dummy impl for now
-            return new ChildAttributes(Indent.getNoneIndent(), null);
+            /**
+             * We indent if we're in a BLOCK_WRAPPER (note that this works nicely since Enter can only be invoked
+             * INSIDE a block (i.e. after the open block 'stache).
+             *
+             * Also indent if we are wrapped in a block created by the templated language.
+             */
+            if (getNode().getElementType() == HbTokenTypes.BLOCK_WRAPPER
+                    || getParent() instanceof DataLanguageBlockWrapper) {
+                return new ChildAttributes(Indent.getNormalIndent(), null);
+            } else {
+                return new ChildAttributes(Indent.getNoneIndent(), null);
+            }
         }
     }
 }

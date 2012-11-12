@@ -1,6 +1,17 @@
 package com.dmarcotte.handlebars.editor.actions;
 
 import com.dmarcotte.handlebars.config.HbConfig;
+import com.dmarcotte.handlebars.file.HbFileType;
+import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+import com.intellij.openapi.editor.actionSystem.EditorActionManager;
+import com.intellij.openapi.editor.actionSystem.TypedAction;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -9,75 +20,114 @@ import com.dmarcotte.handlebars.config.HbConfig;
  *
  * TODO this test cannot be run with our others due to some interdependency in the IDEA base tests.  Fix this or organize the code in such a way that it is clear these cannot be run together
  */
-public class HbTypedHandlerTest extends HbActionHandlerTest {
+public class HbTypedHandlerTest extends LightPlatformCodeInsightFixtureTestCase {
 
     private boolean myPrevAutoCloseSetting;
+    private String myPrevPlatformPrefix;
+
+    private void performWriteAction(final Project project, final Runnable action) {
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override
+            public void run() {
+                CommandProcessor.getInstance().executeCommand(project, action, "test command", null);
+            }
+        });
+    }
 
     @Override
     protected void setUp() throws Exception {
+        // this test's parent setup requires that this property be set
+        myPrevPlatformPrefix = System.getProperty("idea.platform.prefix");
+        System.setProperty("idea.platform.prefix", "Idea");
+
         super.setUp();
         myPrevAutoCloseSetting = HbConfig.isAutoGenerateCloseTagEnabled();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        super.tearDown();
         HbConfig.setAutoGenerateCloseTagEnabled(myPrevAutoCloseSetting);
+        if (myPrevPlatformPrefix == null) {
+            System.setProperty("idea.platform.prefix", "");
+        } else {
+            System.setProperty("idea.platform.prefix", myPrevPlatformPrefix);
+        }
+        super.tearDown();
+    }
+
+    private void doTest(final char c, @NotNull String before, @NotNull String expected) {
+        myFixture.configureByText(HbFileType.INSTANCE, before);
+        myFixture.getEditor().getCaretModel().moveToOffset(before.length());
+        final TypedAction typedAction = EditorActionManager.getInstance().getTypedAction();
+        performWriteAction(myFixture.getProject(), new Runnable() {
+            @Override
+            public void run() {
+                typedAction.actionPerformed(myFixture.getEditor(), c, ((EditorEx) myFixture.getEditor()).getDataContext());
+            }
+        });
+        myFixture.checkResult(expected);
+    }
+
+    private void doEnterTest(@NotNull String before, @NotNull String expected) {
+        myFixture.configureByText(HbFileType.INSTANCE, before);
+        final EditorActionHandler enterActionHandler = EditorActionManager.getInstance().getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
+        performWriteAction(myFixture.getProject(), new Runnable() {
+            @Override
+            public void run() {
+                enterActionHandler.execute(myFixture.getEditor(), ((EditorEx) myFixture.getEditor()).getDataContext());
+            }
+        });
+        myFixture.checkResult(expected);
     }
 
     public void testOpenBlockStache() {
         HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>{{/foo}}");
-        doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>{{/foo}}");
-        doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>{{/foo}}");
-
-        // test when caret is not at file boundary
-        doCharTest('}', "{{#foo}<caret>some\nother content", "{{#foo}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{#foo bar baz}<caret>some\nother content", "{{#foo bar baz}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>some\nother content", "{{#foo bar baz bat=\"bam\"}}<caret>{{/foo}}some\nother content");
+        doTest('}', "{{#foo}", "{{#foo}}{{/foo}}");
+        doTest('}', "{{#foo bar baz}", "{{#foo bar baz}}{{/foo}}");
+        doTest('}', "{{#foo bar baz bat=\"bam\"}", "{{#foo bar baz bat=\"bam\"}}{{/foo}}");
 
         HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>");
-        doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>");
-        doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>");
+        doTest('}', "{{#foo}", "{{#foo}}");
+        doTest('}', "{{#foo bar baz}", "{{#foo bar baz}}");
+        doTest('}', "{{#foo bar baz bat=\"bam\"}", "{{#foo bar baz bat=\"bam\"}}");
     }
 
     public void testOpenInverseStache(){
         HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>{{/foo}}");
-        doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>{{/foo}}");
-        doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>{{/foo}}");
-
-        // test when caret is not at file boundary
-        doCharTest('}', "{{^foo}<caret>some\nother content", "{{^foo}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{^foo bar baz}<caret>some\nother content", "{{^foo bar baz}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>some\nother content", "{{^foo bar baz bat=\"bam\"}}<caret>{{/foo}}some\nother content");
+        doTest('}', "{{^foo}", "{{^foo}}{{/foo}}");
+        doTest('}', "{{^foo bar baz}", "{{^foo bar baz}}{{/foo}}");
+        doTest('}', "{{^foo bar baz bat=\"bam\"}", "{{^foo bar baz bat=\"bam\"}}{{/foo}}");
 
         HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>");
-        doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>");
-        doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>");
+        doTest('}', "{{^foo}", "{{^foo}}");
+        doTest('}', "{{^foo bar baz}", "{{^foo bar baz}}");
+        doTest('}', "{{^foo bar baz bat=\"bam\"}", "{{^foo bar baz bat=\"bam\"}}");
     }
 
     public void testRegularStache() {
-        // ensure that nothing special happens for regular 'staches, whether autoGenerateCloseTag is enabled or not
-        
         HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
-        doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
-
-        // test when caret is not at file boundary
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{foo}<caret>some\nother stuff", "{{foo}}<caret>some\nother stuff");
-        doCharTest('}', "{{foo bar baz}<caret>some\nother stuff", "{{foo bar baz}}<caret>some\nother stuff");
+        doTest('}', "{{foo}", "{{foo}}");
+        doTest('}', "{{foo bar baz}", "{{foo bar baz}}");
 
         HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
-        doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
+        doTest('}', "{{foo}", "{{foo}}");
+        doTest('}', "{{foo bar baz}", "{{foo bar baz}}");
     }
 
     public void testFormatSimpleInverse() {
         // todo test config on and off
         doTest('}', "{{#if}}\nif stuff\n    {{else}", "{{#if}}\nif stuff\n{{else}}");
+    }
+
+    // todo rename.  Move enter action tests to another test file?
+    public void testFormatOnEnter() {
+        doEnterTest(
+
+                "{{#foo}}<caret>{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <caret>\n" +
+                "{{/foo}}"
+        );
     }
 }

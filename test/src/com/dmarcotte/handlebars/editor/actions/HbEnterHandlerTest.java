@@ -1,11 +1,15 @@
 package com.dmarcotte.handlebars.editor.actions;
 
+/**
+ * todo: disable formatter for this test?
+ */
 public class HbEnterHandlerTest extends HbActionHandlerTest {
 
     /**
      * On Enter between matching open/close tags,
      * expect an extra newline to be inserted with the caret placed
      * between the tags
+     * * todo adjust formatter settings?
      */
     public void testEnterBetweenMatchingHbTags() {
         doEnterTest(
@@ -13,7 +17,7 @@ public class HbEnterHandlerTest extends HbActionHandlerTest {
                 "{{#foo}}<caret>{{/foo}}",
 
                 "{{#foo}}\n" +
-                "<caret>\n" +
+                "    <caret>\n" +
                 "{{/foo}}"
         );
     }
@@ -47,7 +51,7 @@ public class HbEnterHandlerTest extends HbActionHandlerTest {
                 "other stuff",
 
                 "{{#foo}}\n" +
-                "<caret>" +
+                "    <caret>" +
                 "other stuff"
 
         );
@@ -59,6 +63,8 @@ public class HbEnterHandlerTest extends HbActionHandlerTest {
      *
      * Note: this used to result in an error.  The was a bug where we checked beyond the
      * end of the file for a close tag to go with this open tag.
+     *
+     * todo adjust formatter settings?
      */
     public void testEnterAtOpenTagOnFileBoundary() {
         doEnterTest(
@@ -66,7 +72,7 @@ public class HbEnterHandlerTest extends HbActionHandlerTest {
                 "{{#foo}}<caret>",
 
                 "{{#foo}}\n" +
-                "<caret>"
+                "    <caret>"
         );
     }
 }

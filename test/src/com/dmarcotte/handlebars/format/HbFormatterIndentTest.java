@@ -89,36 +89,36 @@ public class HbFormatterIndentTest extends HbFormatterTest {
         );
     }
 
+    public void testAttributeStaches() {
+        doStringBasedTest(
+
+                "<div {{foo}}>\n" +
+                        "<div class=\"{{bar}}\">\n" +
+                        "sweeet\n" +
+                        "</div>\n" +
+                        "</div>",
+
+                "<div {{foo}}>\n" +
+                        "    <div class=\"{{bar}}\">\n" +
+                        "        sweeet\n" +
+                        "    </div>\n" +
+                        "</div>"
+        );
+    }
+
     public void testMixedContentInDiv() {
         doStringBasedTest(
 
                 "<div>\n" +
                 "{{#foo}}\n" +
-                "<span>{{bar}}</span>\n" +
+                "<span class=\"{{bat}}\">{{bar}}</span>\n" +
                 "{{/foo}}\n" +
                 "</div>",
 
                 "<div>\n" +
                 "    {{#foo}}\n" +
-                "        <span>{{bar}}</span>\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
                 "    {{/foo}}\n" +
-                "</div>"
-        );
-    }
-
-    public void testAttributeStaches() {
-        doStringBasedTest(
-
-                "<div {{foo}}>\n" +
-                "<div class=\"{{bar}}\">\n" +
-                "sweeet\n" +
-                "</div>\n" +
-                "</div>",
-
-                "<div {{foo}}>\n" +
-                "    <div class=\"{{bar}}\">\n" +
-                "        sweeet\n" +
-                "    </div>\n" +
                 "</div>"
         );
     }
