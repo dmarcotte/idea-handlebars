@@ -17,6 +17,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Handler for custom plugin actions on chars typed by the user.  See {@link HbEnterHandler} for custom actions
+ * on Enter.
+ */
 public class HbTypedHandler extends TypedHandlerDelegate {
     @Override
     public Result beforeCharTyped(char c, Project project, Editor editor, PsiFile file, FileType fileType) {
