@@ -8,6 +8,7 @@ import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiUtil;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.codeInsight.generation.AutoIndentLinesHandler;
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.fileTypes.FileType;
@@ -125,11 +126,13 @@ public class HbTypedHandler extends TypedHandlerDelegate {
         // run the formatter if the user just completed typing a SIMPLE_INVERSE or a CLOSE_BLOCK_STACHE
         if (stacheType == HbTokenTypes.SIMPLE_INVERSE || stacheType == HbTokenTypes.CLOSE_BLOCK_STACHE) {
             // grab the current caret position (AutoIndentLinesHandler is about to mess with it)
-            LogicalPosition originalLogicalPosition = editor.getCaretModel().getLogicalPosition();
+            CaretModel caretModel = editor.getCaretModel();
+            LogicalPosition originalLogicalPosition = caretModel.getLogicalPosition();
             AutoIndentLinesHandler autoIndentLinesHandler = new AutoIndentLinesHandler();
             autoIndentLinesHandler.invoke(project, editor, file);
-            // restore the original caret position
-            editor.getCaretModel().moveToLogicalPosition(originalLogicalPosition);
+            // undo the "move caret to next line" from the autoIndentHandler
+            // todo this isn't quite right... fix the tests around it
+            caretModel.moveToLogicalPosition(originalLogicalPosition);
         }
     }
 }

@@ -357,6 +357,23 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest
         );
     }
 
+    public void testSimpleBlockInDiv7() {
+        doEnterTest(
+
+                "<div>\n" +
+                "    {{#foo}}<caret>\n" +
+                "        {{bar}}\n" +
+                "    {{/foo}}",
+
+                "<div>\n" +
+                "    {{#foo}}\n" +
+                "        <caret>\n" +
+                "        {{bar}}\n" +
+                "    {{/foo}}\n" +
+                "    <caret>"
+        );
+    }
+
     public void testAttributeStaches1() {
         doEnterTest(
 
