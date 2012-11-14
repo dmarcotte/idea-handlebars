@@ -1,10 +1,13 @@
-package com.dmarcotte.handlebars.editor.actions;
+package com.dmarcotte.handlebars.format;
+
+import com.dmarcotte.handlebars.editor.actions.HbActionHandlerTest;
 
 /**
  * todo make sure this is properly anchored to the code it is testing.  Do we make HandlebarsBlock a top level class and anchor tests to that?
  * todo make sure out tests are split into individual tests
  */
-public class HbFormatOnEnterTest extends HbActionHandlerTest {
+public class HbFormatOnEnterTest extends HbActionHandlerTest
+    implements HbFormattingModelBuilderTest {
     public void testSimpleStache() {
         doEnterTest(
 

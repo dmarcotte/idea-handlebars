@@ -26,7 +26,8 @@ import java.io.File;
 /**
  * Base class for Handlebars formatter tests.  Based on com.intellij.psi.formatter.java.AbstractJavaFormatterTest.
  */
-public abstract class HbFormatterTest extends LightIdeaTestCase {
+public abstract class HbFormatterTest extends LightIdeaTestCase
+        implements HbFormattingModelBuilderTest {
 
     private interface TestFormatAction {
         void run(PsiFile psiFile, int startOffset, int endOffset);

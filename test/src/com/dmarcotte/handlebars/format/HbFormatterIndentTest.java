@@ -93,16 +93,16 @@ public class HbFormatterIndentTest extends HbFormatterTest {
         doStringBasedTest(
 
                 "<div {{foo}}>\n" +
-                        "<div class=\"{{bar}}\">\n" +
-                        "sweeet\n" +
-                        "</div>\n" +
-                        "</div>",
+                "<div class=\"{{bar}}\">\n" +
+                "sweeet\n" +
+                "</div>\n" +
+                "</div>",
 
                 "<div {{foo}}>\n" +
-                        "    <div class=\"{{bar}}\">\n" +
-                        "        sweeet\n" +
-                        "    </div>\n" +
-                        "</div>"
+                "    <div class=\"{{bar}}\">\n" +
+                "        sweeet\n" +
+                "    </div>\n" +
+                "</div>"
         );
     }
 
