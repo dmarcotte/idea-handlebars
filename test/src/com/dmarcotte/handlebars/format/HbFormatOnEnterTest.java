@@ -336,7 +336,7 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest
                 "<div>\n" +
                 "    {{#foo}}\n" +
                 "        {{bar}}\n" +
-                "        <caret>\n" +
+                "    <caret>\n" +  // NOTE: this is not ideal, but it's tough to get the formatting right when there's unclosed blocks
                 "htmlPadding"
         );
     }
@@ -367,10 +367,27 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest
 
                 "<div>\n" +
                 "    {{#foo}}\n" +
+                "    <caret>\n" + // NOTE: this is not ideal, but it's tough to get the formatting right when there's unclosed html elements
+                "        {{bar}}\n" +
+                "    {{/foo}}"
+        );
+    }
+
+    public void testSimpleBlockInDiv8() {
+        doEnterTest(
+
+                "<div>\n" +
+                "    {{#foo}}<caret>\n" +
+                "        {{bar}}\n" +
+                "    {{/foo}}\n" +
+                "</div>",
+
+                "<div>\n" +
+                "    {{#foo}}\n" +
                 "        <caret>\n" +
                 "        {{bar}}\n" +
                 "    {{/foo}}\n" +
-                "    <caret>"
+                "</div>"
         );
     }
 
@@ -593,4 +610,22 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest
                 "    <caret>"
         );
     }
+
+//    dm todo test for this case:
+//    {{#if}}
+//    stuff
+//    {{else}}
+//        newline
+//            newline
+//                newline
+//                    ....
+
+
+
+
+
+
+
+
+
 }

@@ -7,10 +7,8 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiUtil;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
-import com.intellij.codeInsight.generation.AutoIndentLinesHandler;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -18,6 +16,7 @@ import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
@@ -126,13 +125,10 @@ public class HbTypedHandler extends TypedHandlerDelegate {
         // run the formatter if the user just completed typing a SIMPLE_INVERSE or a CLOSE_BLOCK_STACHE
         if (stacheType == HbTokenTypes.SIMPLE_INVERSE || stacheType == HbTokenTypes.CLOSE_BLOCK_STACHE) {
             // grab the current caret position (AutoIndentLinesHandler is about to mess with it)
+            PsiDocumentManager.getInstance(project).commitAllDocuments();
             CaretModel caretModel = editor.getCaretModel();
-            LogicalPosition originalLogicalPosition = caretModel.getLogicalPosition();
-            AutoIndentLinesHandler autoIndentLinesHandler = new AutoIndentLinesHandler();
-            autoIndentLinesHandler.invoke(project, editor, file);
-            // undo the "move caret to next line" from the autoIndentHandler
-            // todo this isn't quite right... fix the tests around it
-            caretModel.moveToLogicalPosition(originalLogicalPosition);
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
+            codeStyleManager.adjustLineIndent(file, editor.getDocument().getLineStartOffset(caretModel.getLogicalPosition().line));
         }
     }
 }

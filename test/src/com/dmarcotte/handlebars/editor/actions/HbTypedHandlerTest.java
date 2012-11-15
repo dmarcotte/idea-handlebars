@@ -76,7 +76,33 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
     }
 
-    public void testFormatOnCloseBlockCompleted() {
+    public void testFormatOnCloseBlockCompleted1() {
+        // todo test config on and off
+        doCharTest('}',
+
+                "{{#foo}}\n" +
+                "    stuff\n" +
+                "    {{/foo}<caret>",
+
+                "{{#foo}}\n" +
+                "    stuff\n" +
+                "{{/foo}}<caret>");
+    }
+
+    public void testFormatOnCloseBlockCompleted2() {
+        // todo test config on and off
+        doCharTest('}',
+
+                "{{#foo}}\n" +
+                "    stuff\n" +
+                "    {{/foo}<caret> other stuff",
+
+                "{{#foo}}\n" +
+                "    stuff\n" +
+                "{{/foo}}<caret> other stuff");
+    }
+
+    public void testFormatOnCloseBlockCompleted3() {
         // todo test config on and off
         doCharTest('}',
 
@@ -91,20 +117,33 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
                 "other stuff");
     }
 
-    public void testFormatOnCloseBlockCompletedAtEOF() {
+    public void testFormatOnSimpleInverseCompleted1() {
         // todo test config on and off
         doCharTest('}',
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "    {{/foo}<caret>",
+                "{{#if}}\n" +
+                        "    if stuff\n" +
+                        "    {{else}<caret>",
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "{{/foo}}<caret>");
+                "{{#if}}\n" +
+                        "    if stuff\n" +
+                        "{{else}}<caret>");
     }
 
-    public void testFormatOnSimpleInverseCompleted() {
+    public void testFormatOnSimpleInverseCompleted2() {
+        // todo test config on and off
+        doCharTest('}',
+
+                "{{#if}}\n" +
+                        "    if stuff\n" +
+                        "    {{else}<caret> other stuff",
+
+                "{{#if}}\n" +
+                        "    if stuff\n" +
+                        "{{else}}<caret> other stuff");
+    }
+
+    public void testFormatOnSimpleInverseCompleted3() {
         // todo test config on and off
         doCharTest('}',
 
@@ -117,19 +156,6 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
                 "    if stuff\n" +
                 "{{else}}<caret>\n" +
                 "other stuff");
-    }
-
-    public void testFormatOnSimpleInverseCompletedAtEOF() {
-        // todo test config on and off
-        doCharTest('}',
-
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "    {{else}<caret>",
-
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "{{else}}<caret>");
     }
 
     // todo turn off formatter to make this just test the enter functionality

@@ -181,7 +181,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
              * Also indent if we are wrapped in a block created by the templated language.
              */
             if (getNode().getElementType() == HbTokenTypes.BLOCK_WRAPPER
-                    || getParent() instanceof DataLanguageBlockWrapper) {
+                    || (getParent() instanceof DataLanguageBlockWrapper && getNode().getElementType() != HbTokenTypes.STATEMENTS)) {
                 return new ChildAttributes(Indent.getNormalIndent(), null);
             } else {
                 return new ChildAttributes(Indent.getNoneIndent(), null);
