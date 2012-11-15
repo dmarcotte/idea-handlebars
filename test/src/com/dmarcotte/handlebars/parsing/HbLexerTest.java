@@ -61,22 +61,30 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
          * @param tokenTypes The token types expected for the tokens in this TokenizerResult, in the order they are expected
          */
         public void shouldMatchTokenTypes(IElementType... tokenTypes) {
-            Assert.assertEquals(tokenTypes.length, _tokens.size());
 
-            for (int i = 0; i < _tokens.size(); i++) {
+            // compare tokens as far as we can (which is ideally all of them).  We'll check that
+            // these have the same length next - doing the content compare first yields more illuminating failures
+            // in the case of a mis-match
+            for (int i = 0; i < Math.min(_tokens.size(), tokenTypes.length); i++) {
                 Assert.assertEquals(tokenTypes[i], _tokens.get(i).getElementType());
             }
+
+            Assert.assertEquals(tokenTypes.length, _tokens.size());
         }
 
         /**
          * @param tokenContent The content string expected for the tokens in this TokenizerResult, in the order they are expected
          */
         public void shouldMatchTokenContent(String... tokenContent) {
-            Assert.assertEquals(tokenContent.length, _tokens.size());
 
-            for (int i = 0; i < _tokens.size(); i++) {
+            // compare tokens as far as we can (which is ideally all of them).  We'll check that
+            // these have the same length next - doing the content compare first yields more illuminating failures
+            // in the case of a mis-match
+            for (int i = 0; i < Math.min(_tokens.size(), tokenContent.length); i++) {
                 Assert.assertEquals(tokenContent[i], _tokens.get(i).getElementContent());
             }
+
+            Assert.assertEquals(tokenContent.length, _tokens.size());
         }
 
         /**

@@ -102,12 +102,7 @@ public class HbParsing {
     private boolean parseStatements(PsiBuilder builder) {
         PsiBuilder.Marker statementsMarker = builder.mark();
 
-        if (!parseStatement(builder)) {
-            statementsMarker.error(HbBundle.message("hb.parsing.expected.statement"));
-            return false;
-        }
-
-        // parse any additional statements
+        // parse zero or more statements (empty statements are acceptable)
         while (true) {
             PsiBuilder.Marker optionalStatementMarker = builder.mark();
             if (parseStatement(builder)) {

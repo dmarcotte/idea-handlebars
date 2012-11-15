@@ -1,5 +1,5 @@
 FILE
-  PsiErrorElement:Expected a statement
+  HbPsiElement(STATEMENTS)
     <empty list>
   PsiErrorElement:No corresponding open mustache
     HbPsiElement(CLOSE_BLOCK_STACHE)

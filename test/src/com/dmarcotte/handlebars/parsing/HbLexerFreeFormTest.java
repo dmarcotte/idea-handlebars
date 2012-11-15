@@ -17,7 +17,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.WHITE_SPACE;
  * See {@link HbTokenizerSpecTest} for the tests based on the formal Handlebars description in its tokenizer_spec.rb
  */
 public class HbLexerFreeFormTest extends HbLexerTest {
-    public void testPlainMustache() {
+    public void testPlainMustache1() {
         TokenizerResult result = tokenize("{{mustacheContent}}");
         result.shouldMatchTokenTypes(OPEN, ID, CLOSE);
         result.shouldMatchTokenContent("{{", "mustacheContent", "}}");
