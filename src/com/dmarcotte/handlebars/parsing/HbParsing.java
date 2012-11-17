@@ -20,7 +20,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
  * Places where we've gone off book to make the live syntax detection a more pleasant experience are
  * marked HB_CUSTOMIZATION.  If we find bugs, or the grammar is ever updated, these are the first candidates to check.
  */
-public class HbParsing {
+class HbParsing {
     private final PsiBuilder builder;
     private final Stack<String> openTagNamesStack = new Stack<String>();
 

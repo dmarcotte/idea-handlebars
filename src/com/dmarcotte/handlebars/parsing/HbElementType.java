@@ -6,7 +6,7 @@ import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-public class HbElementType extends IElementType {
+class HbElementType extends IElementType {
     private String _parseExpectedMessageKey;
 
     /**
