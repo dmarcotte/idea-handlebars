@@ -2,12 +2,8 @@ package com.dmarcotte.handlebars.format;
 
 import com.dmarcotte.handlebars.editor.actions.HbActionHandlerTest;
 
-/**
- * todo make sure this is properly anchored to the code it is testing.  Do we make HandlebarsBlock a top level class and anchor tests to that?
- * todo make sure out tests are split into individual tests
- */
-public class HbFormatOnEnterTest extends HbActionHandlerTest
-    implements HbFormattingModelBuilderTest {
+public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormattingModelBuilderTest {
+
     public void testSimpleStache() {
         doEnterTest(
 
@@ -611,21 +607,49 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest
         );
     }
 
-//    dm todo test for this case:
-//    {{#if}}
-//    stuff
-//    {{else}}
-//        newline
-//            newline
-//                newline
-//                    ....
+    public void testEmptyLinesAfterOpenBlock1() {
+        doEnterTest(
 
+                "{{#foo}}\n" +
+                "    \n" +
+                "    \n" +
+                "    \n" +
+                "    <caret>\n" +
+                "    \n",
 
+                "{{#foo}}\n" +
+                "    \n" +
+                "    \n" +
+                "    \n" +
+                "    \n" +
+                "    <caret>\n" +
+                "    \n"
+        );
+    }
 
+    public void testEmptyLinesAfterOpenBlock2() {
+        doEnterTest(
 
+                "{{#if}}\n" +
+                "    \n" +
+                "    \n" +
+                "{{else}}\n" +
+                "    \n" +
+                "    \n" +
+                "    <caret>\n" +
+                "    \n" +
+                "    \n",
 
-
-
-
-
+                "{{#if}}\n" +
+                "    \n" +
+                "    \n" +
+                "{{else}}\n" +
+                "    \n" +
+                "    \n" +
+                "    \n" +
+                "    <caret>\n" +
+                "    \n" +
+                "    \n"
+        );
+    }
 }

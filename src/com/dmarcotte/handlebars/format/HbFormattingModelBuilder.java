@@ -86,8 +86,8 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
             return super.shouldBuildBlockFor(childNode)
                     && (childNode.getElementType() != HbTokenTypes.CONTENT
                     || (childNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
-                    && childNode.getTreeParent().getTreeParent() != null
-                    && childNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE));
+                        && childNode.getTreeParent().getTreeParent() != null
+                        && childNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE));
         }
 
         /**
@@ -161,15 +161,11 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         }
 
         /**
-         * This method handles indent and alignment on Enter keypresses.
-         *
          * todo refactor the repeated STATEMENTS AND NOT FILE checks
          *
          * todo if/when we implement alignment, update this method to do alignment properly
-         *  {{#foo}}
-         *      SOMESTUFF<ENTER>
-         *      |<-- caret lands here, instead of indented
-         *      TEXT
+         *
+         * This method handles indent and alignment on Enter.
          */
         @NotNull
         @Override
