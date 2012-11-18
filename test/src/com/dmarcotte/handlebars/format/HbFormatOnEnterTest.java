@@ -694,9 +694,9 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
 
                 "{{#foo}}\n" +
                 "    <div><caret>\n" +
-                "       {{#bar}}\n" +
-                "           stuff\n" +
-                "       {{/bar}}\n" +
+                "        {{#bar}}\n" +
+                "            stuff\n" +
+                "        {{/bar}}\n" +
                 "    </div>\n" +
                 "{{/foo}}",
 
@@ -716,9 +716,9 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
 
                 "{{#foo}}\n" +
                 "    <div>\n" +
-                "       {{#bar}}<caret>\n" +
-                "           stuff\n" +
-                "       {{/bar}}\n" +
+                "        {{#bar}}<caret>\n" +
+                "            stuff\n" +
+                "        {{/bar}}\n" +
                 "    </div>\n" +
                 "{{/foo}}",
 
@@ -738,9 +738,9 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
 
                 "{{#foo}}\n" +
                 "    <div>\n" +
-                "       {{#bar}}\n" +
-                "           stuff<caret>\n" +
-                "       {{/bar}}\n" +
+                "        {{#bar}}\n" +
+                "            stuff<caret>\n" +
+                "        {{/bar}}\n" +
                 "    </div>\n" +
                 "{{/foo}}",
 
@@ -760,9 +760,9 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
 
                 "{{#foo}}\n" +
                 "    <div>\n" +
-                "       {{#bar}}\n" +
-                "           stuff\n" +
-                "       {{/bar}}<caret>\n" +
+                "        {{#bar}}\n" +
+                "            stuff\n" +
+                "        {{/bar}}<caret>\n" +
                 "    </div>\n" +
                 "{{/foo}}",
 

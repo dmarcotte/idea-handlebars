@@ -8,6 +8,7 @@ import com.intellij.formatting.ChildAttributes;
 import com.intellij.formatting.FormattingModel;
 import com.intellij.formatting.Indent;
 import com.intellij.formatting.Wrap;
+import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
 import com.intellij.formatting.templateLanguages.TemplateLanguageBlock;
 import com.intellij.formatting.templateLanguages.TemplateLanguageBlockFactory;
@@ -18,6 +19,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.DocumentBasedFormattingModel;
+import com.intellij.psi.formatter.xml.SyntheticBlock;
 import com.intellij.psi.templateLanguages.SimpleTemplateLanguageFormattingModelBuilder;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -88,23 +90,10 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         }
 
         /**
-         * todo doc
-         */
-        @Override
-        protected boolean shouldBuildBlockFor(ASTNode childNode) {
-            return super.shouldBuildBlockFor(childNode)
-                    && (childNode.getElementType() != HbTokenTypes.CONTENT
-                    || (!(getParent() instanceof DataLanguageBlockWrapper)
-                        && childNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
-                        && childNode.getTreeParent().getTreeParent() != null
-                        && childNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE));
-        }
-
-        /**
          * We indented the code in the following manner:
          *   * block expressions:
          *      {{#foo}}
-         *          INDENTED_CONTENET
+         *          INDENTED_CONTENT
          *      {{/foo}}
          *   * inverse block expressions:
          *      {{^bar}}
@@ -129,7 +118,8 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
          * {@link com.dmarcotte.handlebars.parsing.HbParsing#parseStatement(com.intellij.lang.PsiBuilder)} for the
          * relevant parts of the parser.
          *
-         * todo update this comment
+         * todo update this comment to reflect the approach of indent from the "outside" of
+         *      statements in certain cases, and from the "inside" in other cases
          */
         @Override
         public Indent getIndent() {
@@ -138,12 +128,36 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
                 return Indent.getNoneIndent();
             }
 
+            if (myNode.getElementType() == HbTokenTypes.STATEMENTS
+                    && myNode.getTreeParent().getElementType() != HbTokenTypes.FILE) {
+                BlockWithParent parent = getParent();
+                boolean hasDataLanguageParent = false;
+
+                while (parent != null) {
+                    if (parent instanceof DataLanguageBlockWrapper) {
+                        hasDataLanguageParent = true;
+                        break;
+                    }
+                    parent = parent.getParent();
+                }
+
+                if (!hasDataLanguageParent) {
+                    return Indent.getNormalIndent();
+                }
+            }
+
             // todo formalize this and either make it more robust or make sure it's surrounded by a test (the assumption that FILE is two nodes up from children of statements is brittle)
             if (myNode.getTreeParent() != null
                     && myNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
-                    && (getParent() instanceof DataLanguageBlockWrapper
-                        || myNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE)) {
-                return Indent.getNormalIndent(myNode.getElementType() != HbTokenTypes.CONTENT); // confession: I'm not 100% sure what "relative to parent = true" means, but this seems to make us play nice with our templated language
+                    && myNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE) {
+                if (getParent() instanceof HandlebarsBlock
+                        && ((HandlebarsBlock) getParent()).getIndent() == Indent.getNoneIndent()) {
+                    return Indent.getNormalIndent();
+                }
+            }
+
+            if (getRealBlockParent() instanceof DataLanguageBlockWrapper) {
+                return Indent.getNormalIndent();
             }
 
             return Indent.getNoneIndent();
@@ -161,7 +175,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
 
         @Override
         protected IElementType getTemplateTextElementType() {
-            return HbTokenTypes.TEMPLATE_ELEMENT_TYPE;
+            return HbTokenTypes.CONTENT;
         }
 
         @Override
@@ -192,6 +206,27 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
             } else {
                 return new ChildAttributes(Indent.getNoneIndent(), null);
             }
+        }
+
+        /**
+         * The template formatting system inserts a lot of block wrappers of type
+         * "Synthetic Block".  To decide when to indent, we need to get our hands on
+         * the "Real" parent.
+         *
+         * @return The first non-synthetic parent block
+         */
+        private BlockWithParent getRealBlockParent() {
+            // if we can follow the chain of synthetic parent blocks, and if we end up
+            // at a real DataLanguage block (i.e. the synthetic blocks didn't lead to an HbBlock),
+            // we're a child of a templated language node and need an indent
+            BlockWithParent parent = getParent();
+            while (parent instanceof DataLanguageBlockWrapper
+                    && ((DataLanguageBlockWrapper) parent).getOriginal() instanceof SyntheticBlock) {
+                parent = parent.getParent();
+            }
+
+
+            return parent;
         }
     }
 }
