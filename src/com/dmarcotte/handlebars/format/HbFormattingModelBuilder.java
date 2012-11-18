@@ -63,7 +63,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         if (node.getElementType() == HbTokenTypes.OUTER_ELEMENT_TYPE) {
             // If we're looking at a HbTokenTypes.OUTER_ELEMENT_TYPE element, then we've been invoked by our templated
             // language.  Make a dummy block to allow that formatter to continue
-            rootBlock = createDummyBlock(node);
+            return new SimpleTemplateLanguageFormattingModelBuilder().createModel(element, settings);
         } else {
             rootBlock = getRootBlock(file, file.getViewProvider(), settings);
         }
@@ -94,7 +94,8 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
         protected boolean shouldBuildBlockFor(ASTNode childNode) {
             return super.shouldBuildBlockFor(childNode)
                     && (childNode.getElementType() != HbTokenTypes.CONTENT
-                    || (childNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
+                    || (!(getParent() instanceof DataLanguageBlockWrapper)
+                        && childNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
                         && childNode.getTreeParent().getTreeParent() != null
                         && childNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE));
         }
@@ -142,7 +143,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
                     && myNode.getTreeParent().getElementType() == HbTokenTypes.STATEMENTS
                     && (getParent() instanceof DataLanguageBlockWrapper
                         || myNode.getTreeParent().getTreeParent().getElementType() != HbTokenTypes.FILE)) {
-                return Indent.getNormalIndent();
+                return Indent.getNormalIndent(myNode.getElementType() != HbTokenTypes.CONTENT); // confession: I'm not 100% sure what "relative to parent = true" means, but this seems to make us play nice with our templated language
             }
 
             return Indent.getNoneIndent();

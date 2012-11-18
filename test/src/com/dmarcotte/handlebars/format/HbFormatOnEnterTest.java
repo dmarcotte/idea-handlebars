@@ -455,11 +455,11 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
         doEnterTest(
 
                 "<div {{foo}}>\n" +
-                        "    <div class=\"{{bar}}\"><caret>",
+                "    <div class=\"{{bar}}\"><caret>",
 
                 "<div {{foo}}>\n" +
-                        "    <div class=\"{{bar}}\">\n" +
-                        "        <caret>"
+                "    <div class=\"{{bar}}\">\n" +
+                "        <caret>"
         );
     }
 
@@ -481,16 +481,16 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
         doEnterTest(
 
                 "<div>\n" +
-                "{{#foo}}\n" +
-                "<span class=\"{{bat}}\">{{bar}}</span><caret>\n" +
-                "{{/foo}}\n" +
+                "    {{#foo}}\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span><caret>\n" +
+                "    {{/foo}}\n" +
                 "</div>",
 
                 "<div>\n" +
-                "{{#foo}}\n" +
-                "<span class=\"{{bat}}\">{{bar}}</span>\n" +
-                "    <caret>\n" +
-                "{{/foo}}\n" +
+                "    {{#foo}}\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
+                "        <caret>\n" +
+                "    {{/foo}}\n" +
                 "</div>"
         );
     }
@@ -499,17 +499,17 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
         doEnterTest(
 
                 "<div>\n" +
-                        "    {{#foo}}<caret>\n" +
-                        "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
-                        "    {{/foo}}\n" +
-                        "</div>",
+                "    {{#foo}}<caret>\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
+                "    {{/foo}}\n" +
+                "</div>",
 
                 "<div>\n" +
-                        "    {{#foo}}\n" +
-                        "        <caret>\n" +
-                        "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
-                        "    {{/foo}}\n" +
-                        "</div>"
+                "    {{#foo}}\n" +
+                "        <caret>\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
+                "    {{/foo}}\n" +
+                "</div>"
         );
     }
 
@@ -517,17 +517,17 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
         doEnterTest(
 
                 "<div>\n" +
-                        "    {{#foo}}\n" +
-                        "        <span class=\"{{bat}}\">{{bar}}</span><caret>\n" +
-                        "    {{/foo}}\n" +
-                        "</div>",
+                "    {{#foo}}\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span><caret>\n" +
+                "    {{/foo}}\n" +
+                "</div>",
 
                 "<div>\n" +
-                        "    {{#foo}}\n" +
-                        "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
-                        "        <caret>\n" +
-                        "    {{/foo}}\n" +
-                        "</div>"
+                "    {{#foo}}\n" +
+                "        <span class=\"{{bat}}\">{{bar}}</span>\n" +
+                "        <caret>\n" +
+                "    {{/foo}}\n" +
+                "</div>"
         );
     }
 
@@ -652,4 +652,129 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
                 "    \n"
         );
     }
+
+    public void testSimpleStacheInNestedDiv1() {
+        doEnterTest(
+
+                "{{#foo}}\n" +
+                "    <div><caret>\n" +
+                "        {{bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        <caret>\n" +
+                "        {{bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testSimpleStacheInNestedDiv2() {
+        doEnterTest(
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{bar}}<caret>\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{bar}}\n" +
+                "        <caret>\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testBlockStacheInNestedDiv1() {
+        doEnterTest(
+
+                "{{#foo}}\n" +
+                "    <div><caret>\n" +
+                "       {{#bar}}\n" +
+                "           stuff\n" +
+                "       {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        <caret>\n" +
+                "        {{#bar}}\n" +
+                "            stuff\n" +
+                "        {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testBlockStacheInNestedDiv2() {
+        doEnterTest(
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "       {{#bar}}<caret>\n" +
+                "           stuff\n" +
+                "       {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{#bar}}\n" +
+                "            <caret>\n" +
+                "            stuff\n" +
+                "        {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testBlockStacheInNestedDiv3() {
+        doEnterTest(
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "       {{#bar}}\n" +
+                "           stuff<caret>\n" +
+                "       {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{#bar}}\n" +
+                "            stuff\n" +
+                "            <caret>\n" +
+                "        {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testBlockStacheInNestedDiv4() {
+        doEnterTest(
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "       {{#bar}}\n" +
+                "           stuff\n" +
+                "       {{/bar}}<caret>\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{#bar}}\n" +
+                "            stuff\n" +
+                "        {{/bar}}\n" +
+                "        <caret>\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
 }

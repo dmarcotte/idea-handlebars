@@ -106,7 +106,7 @@ public class HbFormatterIndentTest extends HbFormatterTest {
         );
     }
 
-    public void testMixedContentInDiv() {
+    public void testMixedContentInDiv1() {
         doStringBasedTest(
 
                 "<div>\n" +
@@ -122,4 +122,90 @@ public class HbFormatterIndentTest extends HbFormatterTest {
                 "</div>"
         );
     }
+
+    public void testMixedContentInDiv2() {
+        doStringBasedTest(
+
+                "<div>\n" +
+                "{{#foo}}\n" +
+                "bar {{baz}}\n" +
+                "{{/foo}}\n" +
+                "</div>",
+
+                "<div>\n" +
+                "    {{#foo}}\n" +
+                "        bar {{baz}}\n" +
+                "    {{/foo}}\n" +
+                "</div>"
+        );
+    }
+
+    public void testSimpleStacheInNestedDiv() {
+        doStringBasedTest(
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "{{bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testBlockStacheInNestedDiv() {
+        doStringBasedTest(
+
+                "{{#foo}}\n" +
+                "<div>\n" +
+                "{{#bar}}\n" +
+                "stuff\n" +
+                "{{/bar}}\n" +
+                "</div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        {{#bar}}\n" +
+                "            stuff\n" +
+                "        {{/bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    public void testNestedDivsInBlock() {
+        doStringBasedTest(
+
+                "{{#foo}}\n" +
+                "<div>\n" +
+                "<div>\n" +
+                "<div>\n" +
+                "{{bar}}\n" +
+                "{{#foo}}\n" +
+                "{{/foo}}\n" +
+                "</div>\n" +
+                "</div>\n" +
+                "</div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "        <div>\n" +
+                "            <div>\n" +
+                "                {{bar}}\n" +
+                "                {{#foo}}\n" +
+                "                {{/foo}}\n" +
+                "            </div>\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "{{/foo}}"
+        );
+    }
+
+    // todo indent line behaves differently from reformat file.  Sigh.  retest!
 }
