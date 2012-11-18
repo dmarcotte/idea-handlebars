@@ -1,5 +1,6 @@
 package com.dmarcotte.handlebars.format;
 
+import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.intellij.formatting.Alignment;
 import com.intellij.formatting.Block;
@@ -17,6 +18,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.DocumentBasedFormattingModel;
+import com.intellij.psi.templateLanguages.SimpleTemplateLanguageFormattingModelBuilder;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +48,13 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
      */
     @NotNull
     public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
+
+        if (!HbConfig.isFormattingEnabled()) {
+            // formatting is disabled, return the no-op formatter (note that this still delegates formatting
+            // to the templated language, which lets the users manage that separately)
+            return new SimpleTemplateLanguageFormattingModelBuilder().createModel(element, settings);
+        }
+
         final PsiFile file = element.getContainingFile();
         Block rootBlock;
 
