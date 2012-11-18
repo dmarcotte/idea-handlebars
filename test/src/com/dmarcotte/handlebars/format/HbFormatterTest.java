@@ -1,22 +1,17 @@
 package com.dmarcotte.handlebars.format;
 
-import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.util.HbTestUtils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.impl.DocumentImpl;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.testFramework.LightIdeaTestCase;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
@@ -28,24 +23,29 @@ import java.io.File;
  */
 public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFormattingModelBuilderTest {
 
+    private FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
+
+    @Override
+    protected void setUp()
+            throws Exception {
+        super.setUp();
+
+        formatterTestSettings.setUp();
+    }
+
+    @Override
+    protected void tearDown()
+            throws Exception {
+        formatterTestSettings.tearDown();
+
+        super.tearDown();
+    }
+
     private interface TestFormatAction {
         void run(PsiFile psiFile, int startOffset, int endOffset);
     }
 
     private static final String BASE_PATH = HbTestUtils.getBaseTestDataPath() + "/formatter";
-
-    public TextRange myTextRange;
-    public TextRange myLineRange;
-
-    public static CommonCodeStyleSettings getSettings() {
-        CodeStyleSettings rootSettings = CodeStyleSettingsManager.getSettings(getProject());
-        return rootSettings.getCommonSettings(HbLanguage.INSTANCE);
-    }
-
-    public static CommonCodeStyleSettings.IndentOptions getIndentOptions() {
-        // todo do we want HB-specific indent settings?
-        return getSettings().getRootSettings().getIndentOptions(StdFileTypes.HTML);
-    }
 
     // todo add a non-trivial file to validate the formatter against
     public void doTest() throws Exception {
@@ -63,13 +63,6 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
     public void doTextTest(final String text, String textAfter) throws IncorrectOperationException {
         final PsiFile file = createFile("A.hbs", text);
 
-        // todo do we need this?
-        if (myLineRange != null) {
-            final DocumentImpl document = new DocumentImpl(text);
-            myTextRange =
-                    new TextRange(document.getLineStartOffset(myLineRange.getStartOffset()), document.getLineEndOffset(myLineRange.getEndOffset()));
-        }
-
         final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
         final Document document = manager.getDocument(file);
 
@@ -82,10 +75,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                         document.replaceString(0, document.getTextLength(), text);
                         manager.commitDocument(document);
                         try {
-                            TextRange rangeToUse = myTextRange;
-                            if (rangeToUse == null) {
-                                rangeToUse = file.getTextRange();
-                            }
+                            TextRange rangeToUse = file.getTextRange();
                             new TestFormatAction() {
                                 @Override
                                 public void run(PsiFile psiFile, int startOffset, int endOffset) {

@@ -1,6 +1,7 @@
 package com.dmarcotte.handlebars.editor.actions;
 
 import com.dmarcotte.handlebars.config.HbConfig;
+import com.dmarcotte.handlebars.format.FormatterTestSettings;
 
 
 /**
@@ -12,17 +13,23 @@ import com.dmarcotte.handlebars.config.HbConfig;
 public class HbTypedHandlerTest extends HbActionHandlerTest {
 
     private boolean myPrevAutoCloseSetting;
+    private FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
         myPrevAutoCloseSetting = HbConfig.isAutoGenerateCloseTagEnabled();
+        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        formatterTestSettings.setUp();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        super.tearDown();
         HbConfig.setAutoGenerateCloseTagEnabled(myPrevAutoCloseSetting);
+        formatterTestSettings.tearDown();
+
+        super.tearDown();
     }
 
     public void testOpenBlockStache() {
@@ -77,7 +84,6 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
     }
 
     public void testFormatOnCloseBlockCompleted1() {
-        // todo test config on and off
         doCharTest('}',
 
                 "{{#foo}}\n" +
@@ -90,7 +96,6 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
     }
 
     public void testFormatOnCloseBlockCompleted2() {
-        // todo test config on and off
         doCharTest('}',
 
                 "{{#foo}}\n" +
@@ -103,7 +108,6 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
     }
 
     public void testFormatOnCloseBlockCompleted3() {
-        // todo test config on and off
         doCharTest('}',
 
                 "{{#foo}}\n" +
@@ -117,34 +121,48 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
                 "other stuff");
     }
 
+    public void testFormatDisabledCloseBlockCompleted() {
+        boolean previousFormatSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(false);
+
+        doCharTest('}',
+
+                   "{{#foo}}\n" +
+                           "    stuff\n" +
+                           "    {{/foo}<caret>",
+
+                   "{{#foo}}\n" +
+                           "    stuff\n" +
+                           "    {{/foo}}<caret>");
+
+        HbConfig.setFormattingEnabled(previousFormatSetting);
+    }
+
     public void testFormatOnSimpleInverseCompleted1() {
-        // todo test config on and off
         doCharTest('}',
 
                 "{{#if}}\n" +
-                        "    if stuff\n" +
-                        "    {{else}<caret>",
+                "    if stuff\n" +
+                "    {{else}<caret>",
 
                 "{{#if}}\n" +
-                        "    if stuff\n" +
-                        "{{else}}<caret>");
+                "    if stuff\n" +
+                "{{else}}<caret>");
     }
 
     public void testFormatOnSimpleInverseCompleted2() {
-        // todo test config on and off
         doCharTest('}',
 
                 "{{#if}}\n" +
-                        "    if stuff\n" +
-                        "    {{else}<caret> other stuff",
+                "    if stuff\n" +
+                "    {{else}<caret> other stuff",
 
                 "{{#if}}\n" +
-                        "    if stuff\n" +
-                        "{{else}}<caret> other stuff");
+                "    if stuff\n" +
+                "{{else}}<caret> other stuff");
     }
 
     public void testFormatOnSimpleInverseCompleted3() {
-        // todo test config on and off
         doCharTest('}',
 
                 "{{#if}}\n" +
@@ -158,7 +176,23 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
                 "other stuff");
     }
 
-    // todo turn off formatter to make this just test the enter functionality
+    public void testFormatDisabledSimpleInverseCompleted() {
+        boolean previousFormatSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(false);
+
+        doCharTest('}',
+
+                   "{{#if}}\n" +
+                           "    if stuff\n" +
+                           "    {{else}<caret>",
+
+                   "{{#if}}\n" +
+                           "    if stuff\n" +
+                           "    {{else}}<caret>");
+
+        HbConfig.setFormattingEnabled(previousFormatSetting);
+    }
+
     public void testEnterBetweenBlockTags() {
         doEnterTest(
 
@@ -168,5 +202,21 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
                 "    <caret>\n" +
                 "{{/foo}}"
         );
+    }
+
+    public void testFormatterDisabledEnterBetweenBlockTags() {
+        boolean previousFormatSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(false);
+
+        doEnterTest(
+
+                "{{#foo}}<caret>{{/foo}}",
+
+                "{{#foo}}\n" +
+                "<caret>\n" +
+                "{{/foo}}"
+        );
+
+        HbConfig.setFormattingEnabled(previousFormatSetting);
     }
 }

@@ -1,6 +1,57 @@
 package com.dmarcotte.handlebars.format;
 
+import com.dmarcotte.handlebars.config.HbConfig;
+import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
+
 public class HbFormatterIndentTest extends HbFormatterTest {
+
+    /**
+     * This sanity check should be enough to ensure that we don't format
+     * when the formatter is disabled
+     */
+    public void testFormatterDisabled() {
+        boolean previousFormatterSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(false);
+
+        doStringBasedTest(
+
+                "{{#foo}}\n" +
+                "{{bar}}\n" +
+                "{{/foo}}\n",
+
+                "{{#foo}}\n" +
+                "{{bar}}\n" +
+                "{{/foo}}\n"
+        );
+
+        HbConfig.setFormattingEnabled(previousFormatterSetting);
+    }
+
+    /**
+     * Sanity check that we respect non-default (i.e. 4) indent sizes
+     */
+    public void testNonDefaultIndentSize() {
+        int previousIndentSize = CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE;
+        CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE = 2;
+
+        doStringBasedTest(
+
+                "{{#foo}}\n" +
+                "    <div>\n" +
+                "{{bar}}\n" +
+                "    </div>\n" +
+                "{{/foo}}",
+
+                "{{#foo}}\n" +
+                "  <div>\n" +
+                "    {{bar}}\n" +
+                "  </div>\n" +
+                "{{/foo}}"
+        );
+
+        CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE = previousIndentSize;
+    }
 
     public void testSimpleStache() {
         doStringBasedTest(
@@ -12,7 +63,6 @@ public class HbFormatterIndentTest extends HbFormatterTest {
     }
 
     public void testSimpleBlock() {
-        // todo set the settings?
         doStringBasedTest(
 
               "{{#foo}}\n" +

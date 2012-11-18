@@ -109,7 +109,10 @@ public class HbTypedHandler extends TypedHandlerDelegate {
      *  and simple inverses ("{{^}}" and "{{else}}")
      */
     private void adjustMustacheFormatting(Project project, int offset, Editor editor, PsiFile file, FileViewProvider provider) {
-        // todo check code style settings
+        if (!HbConfig.isFormattingEnabled()) {
+            // formatting disabled; nothing to do
+            return;
+        }
 
         PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
         if (elementAtCaret == null

@@ -1,8 +1,47 @@
 package com.dmarcotte.handlebars.format;
 
+import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.editor.actions.HbActionHandlerTest;
 
 public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormattingModelBuilderTest {
+
+    private boolean myPrevFormatSetting;
+
+    @Override
+    protected void setUp()
+            throws Exception {
+        super.setUp();
+
+        myPrevFormatSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(true);
+    }
+
+    @Override
+    protected void tearDown()
+            throws Exception {
+        HbConfig.setFormattingEnabled(myPrevFormatSetting);
+
+        super.tearDown();
+    }
+
+    /**
+     * This sanity check should be enough to ensure that we don't format on Enter
+     * when the formatter is disabled
+     */
+    public void testEnterWithFormatterDisabled() {
+        boolean previousFormatterSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(false);
+
+        doEnterTest(
+
+                "{{#foo}}<caret>",
+
+                "{{#foo}}\n" +
+                "<caret>"
+        );
+
+        HbConfig.setFormattingEnabled(previousFormatterSetting);
+    }
 
     public void testSimpleStache() {
         doEnterTest(
@@ -15,7 +54,6 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
     }
 
     public void testSimpleBlock1() {
-        // todo set the settings?
         doEnterTest(
 
                 "{{#foo}}<caret>",
@@ -332,7 +370,7 @@ public class HbFormatOnEnterTest extends HbActionHandlerTest implements HbFormat
                 "<div>\n" +
                 "    {{#foo}}\n" +
                 "        {{bar}}\n" +
-                "    <caret>\n" +  // NOTE: this is not ideal, but it's tough to get the formatting right when there's unclosed blocks
+                "        <caret>\n" +
                 "htmlPadding"
         );
     }
