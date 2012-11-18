@@ -13,7 +13,7 @@ import com.dmarcotte.handlebars.format.FormatterTestSettings;
 public class HbTypedHandlerTest extends HbActionHandlerTest {
 
     private boolean myPrevAutoCloseSetting;
-    private FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
+    private FormatterTestSettings formatterTestSettings;
 
     @Override
     protected void setUp() throws Exception {
@@ -21,6 +21,8 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
 
         myPrevAutoCloseSetting = HbConfig.isAutoGenerateCloseTagEnabled();
         HbConfig.setAutoGenerateCloseTagEnabled(true);
+
+        formatterTestSettings = new FormatterTestSettings(getProject());
         formatterTestSettings.setUp();
     }
 

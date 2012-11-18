@@ -256,6 +256,4 @@ public class HbFormatterIndentTest extends HbFormatterTest {
                 "{{/foo}}"
         );
     }
-
-    // todo indent line behaves differently from reformat file.  Sigh.  retest!
 }
