@@ -2,6 +2,7 @@ package com.dmarcotte.handlebars.format;
 
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
+import com.dmarcotte.handlebars.psi.HbPsiUtil;
 import com.intellij.formatting.Alignment;
 import com.intellij.formatting.Block;
 import com.intellij.formatting.ChildAttributes;
@@ -161,7 +162,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
                 return Indent.getNoneIndent();
             }
 
-            if (isNonRootStatementsElement(myNode)) {
+            if (HbPsiUtil.isNonRootStatementsElement(myNode.getPsi())) {
                 // we're computing the indent for a non-root STATEMENTS:
                 //      if it's not contained in a foreign block, indent!
                 if (!hasDataLanguageParent()) {
@@ -169,7 +170,8 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
                 }
             }
 
-            if (isNonRootStatementsElement(myNode.getTreeParent())) {
+            if (myNode.getTreeParent() != null
+                    && HbPsiUtil.isNonRootStatementsElement(myNode.getTreeParent().getPsi())) {
                 // we're computing the indent for a direct descendant of a non-root STATEMENTS:
                 //      if its Block parent (i.e. not HB AST Tree parent) is a Handlebars block
                 //      which has NOT been indented, then have the element provide the indent itself
@@ -249,17 +251,6 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
             }
 
             return hasDataLanguageParent;
-        }
-
-        /**
-         * Test to see if the given astNode is the root statements expression of the grammar
-         * todo test to ensure that the structure of the AST tree doesn't change and we start getting false positives
-         */
-        private boolean isNonRootStatementsElement(ASTNode astNode) {
-            return astNode != null
-                    && astNode.getElementType() == HbTokenTypes.STATEMENTS
-                    && astNode.getTreeParent().getElementType() != HbTokenTypes.FILE;
-
         }
 
         /**

@@ -5,7 +5,6 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 
-// todo test this class
 public class HbPsiUtil {
 
     /**
@@ -21,7 +20,7 @@ public class HbPsiUtil {
      * or {@link com.dmarcotte.handlebars.parsing.HbTokenTypes#OPEN_INVERSE_BLOCK_STACHE} or null if none exists
      */
     public static PsiElement findParentOpenTagElement(PsiElement element) {
-        return PsiTreeUtil.findFirstParent(element, new Condition<PsiElement>() {
+        return PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
             @Override
             public boolean value(PsiElement element) {
                 return element != null
@@ -45,7 +44,7 @@ public class HbPsiUtil {
      * or null if none exists
      */
     public static PsiElement findParentCloseTagElement(PsiElement element) {
-        return PsiTreeUtil.findFirstParent(element, new Condition<PsiElement>() {
+        return PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
             @Override
             public boolean value(PsiElement element) {
                 return element != null
@@ -53,5 +52,23 @@ public class HbPsiUtil {
                         && element.getNode().getElementType() == HbTokenTypes.CLOSE_BLOCK_STACHE;
             }
         });
+    }
+
+    /**
+     * Tests to see if the given element is the "root" statements expression of the grammar
+     */
+    public static boolean isNonRootStatementsElement(PsiElement element) {
+        PsiElement statementsParent = PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
+            @Override
+            public boolean value(PsiElement element) {
+                return element != null
+                        && element.getNode() != null
+                        && element.getNode().getElementType() == HbTokenTypes.STATEMENTS;
+            }
+        });
+
+        // we're a non-root statements if we're of type statements, and we have a statements parent
+        return element.getNode().getElementType() == HbTokenTypes.STATEMENTS
+                && statementsParent != null;
     }
 }
