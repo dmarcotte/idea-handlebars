@@ -193,8 +193,6 @@ class HbParsing {
      * Helper method to take care of the business need after an "open-type mustache" (openBlock or openInverse),
      * including ensuring we've got the right close tag
      *
-     * todo refactor to parse whole block including open tag?
-     *
      * NOTE: will resolve the given openMustacheMarker
      */
     private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker, PsiBuilder.Marker blockMarker) {

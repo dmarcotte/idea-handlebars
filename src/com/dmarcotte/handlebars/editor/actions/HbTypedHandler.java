@@ -11,18 +11,21 @@ import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for custom plugin actions on chars typed by the user.  See {@link HbEnterHandler} for custom actions
  * on Enter.
+ *
+ * TODO add a test for this class
  */
 public class HbTypedHandler extends TypedHandlerDelegate {
     @Override
@@ -115,18 +118,18 @@ public class HbTypedHandler extends TypedHandlerDelegate {
         }
 
         PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
-        if (elementAtCaret == null
-                || elementAtCaret.getParent() == null
-                || elementAtCaret.getParent().getParent() == null) {
-            // nothing to do
-            return;
-        }
-
-        // todo formalize this in HbPsiUtil
-        IElementType stacheType = elementAtCaret.getParent().getParent().getNode().getElementType();
+        PsiElement closeOrSimpleInverseParent = PsiTreeUtil.findFirstParent(elementAtCaret, true, new Condition<PsiElement>() {
+            @Override
+            public boolean value(PsiElement element) {
+                return element != null
+                        && element.getNode() != null
+                        && (element.getNode().getElementType() == HbTokenTypes.SIMPLE_INVERSE
+                        || element.getNode().getElementType() == HbTokenTypes.CLOSE_BLOCK_STACHE);
+            }
+        });
 
         // run the formatter if the user just completed typing a SIMPLE_INVERSE or a CLOSE_BLOCK_STACHE
-        if (stacheType == HbTokenTypes.SIMPLE_INVERSE || stacheType == HbTokenTypes.CLOSE_BLOCK_STACHE) {
+        if (closeOrSimpleInverseParent != null) {
             // grab the current caret position (AutoIndentLinesHandler is about to mess with it)
             PsiDocumentManager.getInstance(project).commitAllDocuments();
             CaretModel caretModel = editor.getCaretModel();
