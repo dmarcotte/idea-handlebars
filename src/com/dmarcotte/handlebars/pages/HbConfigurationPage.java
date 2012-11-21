@@ -31,7 +31,6 @@ public class HbConfigurationPage implements SearchableConfigurable {
         return HbBundle.message("hb.pages.options.title");
     }
 
-    @Override
     public Icon getIcon() {
         return null;
     }
