@@ -32,7 +32,10 @@ public class HbFormatterIndentTest extends HbFormatterTest {
      * Sanity check that we respect non-default (i.e. 4) indent sizes
      */
     public void testNonDefaultIndentSize() {
-        int previousIndentSize = CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE;
+        int previousGeneralIndent = CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(null).INDENT_SIZE;
+        CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(null).INDENT_SIZE = 2;
+
+        int previousHtmlIndent = CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE;
         CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE = 2;
 
         doStringBasedTest(
@@ -50,7 +53,8 @@ public class HbFormatterIndentTest extends HbFormatterTest {
                 "{{/foo}}"
         );
 
-        CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE = previousIndentSize;
+        CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(null).INDENT_SIZE = previousGeneralIndent;
+        CodeStyleSettingsManager.getSettings(getProject()).getIndentOptions(StdFileTypes.HTML).INDENT_SIZE = previousHtmlIndent;
     }
 
     public void testSimpleStache() {
