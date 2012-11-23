@@ -18,4 +18,8 @@ public class HbParserFreeFormTest extends HbParserTest {
     public void testNoOpenQuote() { doTest(true); }
     public void testInvalidCharacters() { doTest(true); }
     public void testCloseNotFollowingOpen() { doTest(true); }
+    /**
+     * Empty blocks should not be errors.  (For a while, the parser was flagging {{#foo}}{{/foo}}-type blocks)
+     */
+    public void testEmptyBlocks() { doTest(true); }
 }

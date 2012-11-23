@@ -38,7 +38,7 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
         if(dataLang instanceof TemplateLanguage) {
             myTemplateDataLanguage = PlainTextLanguage.INSTANCE;
         } else {
-                myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
+            myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
         }
     }
 
@@ -74,7 +74,7 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
 
 
     @Override
-    protected PsiFile createFile(Language lang) {
+    protected PsiFile createFile(@NotNull Language lang) {
         // creating file for main lang (HTML)
         if(lang == myTemplateDataLanguage) {
             PsiFileImpl file = (PsiFileImpl) LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this);

@@ -90,7 +90,15 @@ WhiteSpace = {LineTerminator} | [ \t\f]
           while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {
             yypushback(1);
           }
-          yypushState(mu); if (!yytext().toString().equals("")) return HbTokenTypes.CONTENT;
+          // we stray from the Handlebars grammar a bit here since we need our WHITE_SPACE more clearly delineated
+          //    and we need to avoid creating extra tokens for empty strings (makes the parser and formatter happier)
+          yypushState(mu); if (!yytext().toString().equals("")) {
+                                             if (yytext().toString().trim().length() == 0) {
+                                                 return HbTokenTypes.WHITE_SPACE;
+                                             } else {
+                                                 return HbTokenTypes.CONTENT;
+                                             }
+                                         }
         }
 
   // Check for anything that is not a string containing "{{"; that's CONTENT

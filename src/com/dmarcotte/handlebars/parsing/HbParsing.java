@@ -20,7 +20,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
  * Places where we've gone off book to make the live syntax detection a more pleasant experience are
  * marked HB_CUSTOMIZATION.  If we find bugs, or the grammar is ever updated, these are the first candidates to check.
  */
-public class HbParsing {
+class HbParsing {
     private final PsiBuilder builder;
     private final Stack<String> openTagNamesStack = new Stack<String>();
 
@@ -102,12 +102,7 @@ public class HbParsing {
     private boolean parseStatements(PsiBuilder builder) {
         PsiBuilder.Marker statementsMarker = builder.mark();
 
-        if (!parseStatement(builder)) {
-            statementsMarker.error(HbBundle.message("hb.parsing.expected.statement"));
-            return false;
-        }
-
-        // parse any additional statements
+        // parse zero or more statements (empty statements are acceptable)
         while (true) {
             PsiBuilder.Marker optionalStatementMarker = builder.mark();
             if (parseStatement(builder)) {
@@ -150,9 +145,10 @@ public class HbParsing {
                 inverseBlockStartMarker.drop();
             }
 
+            PsiBuilder.Marker blockMarker = builder.mark();
             PsiBuilder.Marker openInverseMarker = builder.mark();
             if (parseOpenInverse(builder)) {
-                openBlockMarker(builder, openInverseMarker);
+                openBlockMarker(builder, openInverseMarker, blockMarker);
             } else {
                 return false;
             }
@@ -161,9 +157,10 @@ public class HbParsing {
         }
 
         if (tokenType == OPEN_BLOCK) {
+            PsiBuilder.Marker blockMarker = builder.mark();
             PsiBuilder.Marker openBlockMarker = builder.mark();
             if (parseOpenBlock(builder)) {
-                openBlockMarker(builder, openBlockMarker);
+                openBlockMarker(builder, openBlockMarker, blockMarker);
             } else {
                 return false;
             }
@@ -198,7 +195,7 @@ public class HbParsing {
      *
      * NOTE: will resolve the given openMustacheMarker
      */
-    private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker) {
+    private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker, PsiBuilder.Marker blockMarker) {
         PsiBuilder.Marker parseProgramMarker = builder.mark();
         parseProgram(builder);
         if(parseCloseBlock(builder)) {
@@ -211,6 +208,8 @@ public class HbParsing {
             }
         }
         parseProgramMarker.drop();
+
+        blockMarker.done(HbTokenTypes.BLOCK_WRAPPER);
         return true;
     }
 

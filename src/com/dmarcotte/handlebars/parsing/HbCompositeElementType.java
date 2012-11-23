@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * Distinct interface to distinguish the leaf elements we get from the lexer from the synthetic
  * composite elements we create in the parser
  */
-public class HbCompositeElementType extends IElementType {
+class HbCompositeElementType extends IElementType {
     public HbCompositeElementType(@NotNull @NonNls String debugName) {
         super(debugName, HbLanguage.INSTANCE);
     }

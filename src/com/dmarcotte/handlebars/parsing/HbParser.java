@@ -6,7 +6,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
-public class HbParser implements PsiParser {
+class HbParser implements PsiParser {
 
     @NotNull
     public ASTNode parse(IElementType root, PsiBuilder builder) {
