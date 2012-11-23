@@ -38,7 +38,7 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
         if(dataLang instanceof TemplateLanguage) {
             myTemplateDataLanguage = PlainTextLanguage.INSTANCE;
         } else {
-                myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
+            myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
         }
     }
 
