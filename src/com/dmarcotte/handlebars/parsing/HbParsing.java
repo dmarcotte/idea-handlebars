@@ -130,7 +130,7 @@ class HbParsing {
     private boolean parseStatement(PsiBuilder builder) {
         IElementType tokenType = builder.getTokenType();
 
-        if (tokenType == OPEN_INVERSE) {
+        if (atOpenInverseExpression(builder)) {
             PsiBuilder.Marker inverseBlockStartMarker = builder.mark();
             PsiBuilder.Marker lookAheadMarker = builder.mark();
             boolean isSimpleInverse = parseSimpleInverse(builder);
@@ -240,9 +240,19 @@ class HbParsing {
      */
     private boolean parseOpenInverse(PsiBuilder builder) {
         PsiBuilder.Marker openInverseBlockStacheMarker = builder.mark();
+
+        PsiBuilder.Marker regularInverseMarker = builder.mark();
         if (!parseLeafToken(builder, OPEN_INVERSE)) {
-            openInverseBlockStacheMarker.drop();
-            return false;
+            // didn't find a standard open inverse token,
+            // check for the "{{else" version
+            regularInverseMarker.rollbackTo();
+            if (!parseLeafToken(builder, OPEN)
+                    || !parseLeafToken(builder, ELSE)) {
+                openInverseBlockStacheMarker.drop();
+                return false;
+            }
+        } else {
+            regularInverseMarker.drop();
         }
 
         if(parseInMustache(builder, true)) {
@@ -353,15 +363,39 @@ class HbParsing {
      */
     private boolean parseSimpleInverse(PsiBuilder builder) {
         PsiBuilder.Marker simpleInverseMarker = builder.mark();
+        boolean isSimpleInverse;
 
+        // try and parse "{{^"
+        PsiBuilder.Marker regularInverseMarker = builder.mark();
         if (!parseLeafToken(builder, OPEN_INVERSE)
                 || !parseLeafToken(builder, CLOSE)) {
-            simpleInverseMarker.rollbackTo();
-            return false;
+            regularInverseMarker.rollbackTo();
+            isSimpleInverse = false;
+        } else {
+            regularInverseMarker.drop();
+            isSimpleInverse = true;
         }
 
-        simpleInverseMarker.done(SIMPLE_INVERSE);
-        return true;
+        // if we didn't find "{{^", check for "{{else"
+        PsiBuilder.Marker elseInverseMarker = builder.mark();
+        if (!isSimpleInverse
+                && (!parseLeafToken(builder, OPEN)
+                || !parseLeafToken(builder, ELSE)
+                || !parseLeafToken(builder, CLOSE))) {
+            elseInverseMarker.rollbackTo();
+            isSimpleInverse = false;
+        } else {
+            elseInverseMarker.drop();
+            isSimpleInverse = true;
+        }
+
+        if (isSimpleInverse) {
+            simpleInverseMarker.done(SIMPLE_INVERSE);
+            return true;
+        } else {
+            simpleInverseMarker.drop();
+            return false;
+        }
     }
 
     /**
@@ -704,4 +738,28 @@ class HbParsing {
         }
     }
 
+    /**
+     * Helper method to check whether the builder is an open inverse expression.
+     *
+     * An open inverse expression is either an OPEN_INVERSE token (i.e. "{{^"), or
+     * and OPEN token followed immediate by an ELSE token (i.e. "{{else")
+     */
+    private boolean atOpenInverseExpression(PsiBuilder builder) {
+        boolean atOpenInverse = false;
+
+        if (builder.getTokenType() == OPEN_INVERSE) {
+            atOpenInverse = true;
+        }
+
+        PsiBuilder.Marker lookAheadMarker = builder.mark();
+        if (builder.getTokenType() == OPEN) {
+            builder.advanceLexer();
+            if (builder.getTokenType() == ELSE) {
+                atOpenInverse = true;
+            }
+        }
+
+        lookAheadMarker.rollbackTo();
+        return atOpenInverse;
+    }
 }

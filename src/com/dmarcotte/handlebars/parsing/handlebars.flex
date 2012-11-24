@@ -111,7 +111,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   "{{#" { return HbTokenTypes.OPEN_BLOCK; }
   "{{/" { return HbTokenTypes.OPEN_ENDBLOCK; }
   "{{^" { return HbTokenTypes.OPEN_INVERSE; }
-  "{{"[\t \n\x0B\f\r]*"else" { return HbTokenTypes.OPEN_INVERSE; }
+  // NOTE: a standard Handlebars lexer would check for "{{else" here.  We instead want to lex it as two tokens to highlight the "{{" and the "else" differently.  See where we make an HbTokens.ELSE below.
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
   // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
@@ -132,6 +132,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
   \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
+  "else"/["}"\t \n\x0B\f\r] { return HbTokenTypes.ELSE; } // create a custom token for "else" so that we can highlight it independently of the "{{" but still parse it as an inverse operator
   "true"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
