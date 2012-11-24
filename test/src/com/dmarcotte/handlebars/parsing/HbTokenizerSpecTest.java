@@ -172,8 +172,10 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizeInverseSection() {
         tokenize("{{^}}").shouldMatchTokenTypes(OPEN_INVERSE, CLOSE);
-        tokenize("{{else}}").shouldMatchTokenTypes(OPEN_INVERSE, CLOSE);
-        tokenize("{{ else }}").shouldMatchTokenTypes(OPEN_INVERSE, WHITE_SPACE, CLOSE);
+
+        // NOTE: we lex "else"-type inverses in a non-standard was to allow us to highlight it properly
+        tokenize("{{else}}").shouldMatchTokenTypes(OPEN, ELSE, CLOSE);
+        tokenize("{{ else }}").shouldMatchTokenTypes(OPEN, WHITE_SPACE, ELSE, WHITE_SPACE, CLOSE);
     }
 
     /**
