@@ -7,19 +7,25 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiUtil;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for custom plugin actions on chars typed by the user.  See {@link HbEnterHandler} for custom actions
  * on Enter.
+ *
+ * TODO add a test for this class
  */
 public class HbTypedHandler extends TypedHandlerDelegate {
     @Override
@@ -43,6 +49,7 @@ public class HbTypedHandler extends TypedHandlerDelegate {
                 editor.getDocument().insertString(offset, Character.toString(c));
                 // ... and position their caret after it as they'd expect...
                 editor.getCaretModel().moveToOffset(offset + 1);
+
                 // ... then finally telling subsequent responses to this charTyped to do nothing
                 return Result.STOP;
             }
@@ -63,9 +70,11 @@ public class HbTypedHandler extends TypedHandlerDelegate {
         String previousChar = editor.getDocument().getText(new TextRange(offset - 2, offset - 1));
 
         if (file.getViewProvider() instanceof HbFileViewProvider) {
-            PsiDocumentManager.getInstance(project).commitAllDocuments();
-
-            autoInsertCloseTag(c, previousChar, offset, editor, provider);
+            // if we're looking at a close stache, we may have some business too attend to
+            if (c == '}' && previousChar.equals("}")) {
+                autoInsertCloseTag(project, offset, editor, provider);
+                adjustMustacheFormatting(project, offset, editor, file, provider);
+            }
         }
 
         return Result.CONTINUE;
@@ -75,27 +84,57 @@ public class HbTypedHandler extends TypedHandlerDelegate {
      * When appropriate, auto-inserts Handlebars close tags.  i.e.  When "{{#tagId}}" or "{{^tagId}} is typed,
      *      {{/tagId}} is automatically inserted
      */
-    private void autoInsertCloseTag(char c, String previousChar, int offset, Editor editor, FileViewProvider provider) {
+    private void autoInsertCloseTag(Project project, int offset, Editor editor, FileViewProvider provider) {
         if (!HbConfig.isAutoGenerateCloseTagEnabled()) {
             return;
         }
 
-        // if we're looking at a close stache, we'll auto complete an end tag when appropriate
-        if (c == '}' && previousChar.equals("}")) {
-            PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
+        PsiDocumentManager.getInstance(project).commitAllDocuments();
 
-            PsiElement openTag = HbPsiUtil.findParentOpenTagElement(elementAtCaret);
+        PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
 
-            if (openTag != null && openTag.getChildren().length > 1) {
-                // we've got an open block type stache... find its ID
-                HbPsiElement idElem = (HbPsiElement) openTag.getChildren()[1].getFirstChild();
+        PsiElement openTag = HbPsiUtil.findParentOpenTagElement(elementAtCaret);
 
-                if (idElem != null
-                        && idElem.getNode().getElementType() == HbTokenTypes.ID) {
-                    // insert the corresponding close tag
-                    editor.getDocument().insertString(offset, "{{/" + idElem.getText() + "}}");
-                }
+        if (openTag != null && openTag.getChildren().length > 1) {
+            // we've got an open block type stache... find its ID
+            HbPsiElement idElem = (HbPsiElement) openTag.getChildren()[1].getFirstChild();
+
+            if (idElem != null
+                    && idElem.getNode().getElementType() == HbTokenTypes.ID) {
+                // insert the corresponding close tag
+                editor.getDocument().insertString(offset, "{{/" + idElem.getText() + "}}");
             }
+        }
+    }
+
+    /**
+     * When appropriate, adjusts the formatting for some 'staches, particularily close 'staches
+     *  and simple inverses ("{{^}}" and "{{else}}")
+     */
+    private void adjustMustacheFormatting(Project project, int offset, Editor editor, PsiFile file, FileViewProvider provider) {
+        if (!HbConfig.isFormattingEnabled()) {
+            // formatting disabled; nothing to do
+            return;
+        }
+
+        PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
+        PsiElement closeOrSimpleInverseParent = PsiTreeUtil.findFirstParent(elementAtCaret, true, new Condition<PsiElement>() {
+            @Override
+            public boolean value(PsiElement element) {
+                return element != null
+                        && element.getNode() != null
+                        && (element.getNode().getElementType() == HbTokenTypes.SIMPLE_INVERSE
+                        || element.getNode().getElementType() == HbTokenTypes.CLOSE_BLOCK_STACHE);
+            }
+        });
+
+        // run the formatter if the user just completed typing a SIMPLE_INVERSE or a CLOSE_BLOCK_STACHE
+        if (closeOrSimpleInverseParent != null) {
+            // grab the current caret position (AutoIndentLinesHandler is about to mess with it)
+            PsiDocumentManager.getInstance(project).commitAllDocuments();
+            CaretModel caretModel = editor.getCaretModel();
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
+            codeStyleManager.adjustLineIndent(file, editor.getDocument().getLineStartOffset(caretModel.getLogicalPosition().line));
         }
     }
 }

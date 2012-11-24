@@ -12,6 +12,7 @@ import javax.swing.*;
 public class HbConfigurationPage implements SearchableConfigurable {
     private JCheckBox myAutoGenerateClosingTagCheckBox;
     private JPanel myWholePanel;
+    private JCheckBox myFormattingCheckBox;
 
     @NotNull
     @Override
@@ -27,10 +28,9 @@ public class HbConfigurationPage implements SearchableConfigurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return HbBundle.message("hb.pages.options.generate.title");
+        return HbBundle.message("hb.pages.options.title");
     }
 
-    @Override
     public Icon getIcon() {
         return null;
     }
@@ -47,17 +47,21 @@ public class HbConfigurationPage implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled();
+        return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled()
+                || myFormattingCheckBox.isSelected() != HbConfig.isFormattingEnabled();
+
     }
 
     @Override
     public void apply() throws ConfigurationException {
         HbConfig.setAutoGenerateCloseTagEnabled(myAutoGenerateClosingTagCheckBox.isSelected());
+        HbConfig.setFormattingEnabled(myFormattingCheckBox.isSelected());
     }
 
     @Override
     public void reset() {
         myAutoGenerateClosingTagCheckBox.setSelected(HbConfig.isAutoGenerateCloseTagEnabled());
+        myFormattingCheckBox.setSelected(HbConfig.isFormattingEnabled());
     }
 
     @Override

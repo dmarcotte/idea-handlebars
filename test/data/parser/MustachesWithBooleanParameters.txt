@@ -13,7 +13,7 @@ FILE
               PsiElement([Hb] BOOLEAN)('true')
       HbPsiElement([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')
-    PsiElement([Hb] CONTENT)('\n')
+    PsiWhiteSpace('\n')
     HbPsiElement(MUSTACHE)
       HbPsiElement([Hb] OPEN)
         PsiElement([Hb] OPEN)('{{')

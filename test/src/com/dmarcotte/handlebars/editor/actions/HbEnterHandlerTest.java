@@ -1,6 +1,28 @@
 package com.dmarcotte.handlebars.editor.actions;
 
+import com.dmarcotte.handlebars.config.HbConfig;
+
 public class HbEnterHandlerTest extends HbActionHandlerTest {
+
+    private boolean myPrevFormatSetting;
+
+    @Override
+    protected void setUp()
+            throws Exception {
+        super.setUp();
+
+        // disable the formatter for these tests
+        myPrevFormatSetting = HbConfig.isFormattingEnabled();
+        HbConfig.setFormattingEnabled(false);
+    }
+
+    @Override
+    protected void tearDown()
+            throws Exception {
+        HbConfig.setFormattingEnabled(myPrevFormatSetting);
+
+        super.tearDown();
+    }
 
     /**
      * On Enter between matching open/close tags,

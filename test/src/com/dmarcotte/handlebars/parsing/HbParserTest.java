@@ -1,5 +1,6 @@
 package com.dmarcotte.handlebars.parsing;
 
+import com.dmarcotte.handlebars.util.HbTestUtils;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.testFramework.ParsingTestCase;
@@ -30,6 +31,6 @@ public abstract class HbParserTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "test/data";
+        return HbTestUtils.getBaseTestDataPath();
     }
 }
