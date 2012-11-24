@@ -3,8 +3,7 @@
   <name>Handlebars/Mustache</name>
   <description>
     <![CDATA[
-      <a href="http://handlebarsjs.com/">Handlebars</a> and <a href="http://mustache.github.com/">Mustache</a> template support,
-      including syntax and error highlighting
+      <a href="http://handlebarsjs.com/">Handlebars</a> and <a href="http://mustache.github.com/">Mustache</a> template support
       <br>
       <br>
       Issues, feature requests and contributions welcome: <a href="https://github.com/dmarcotte/idea-handlebars">https://github.com/dmarcotte/idea-handlebars</a>
@@ -13,6 +12,37 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.4</b>
+      <br>
+      <ul>
+        <li>
+        Adds full template formatting
+          <ul>
+            <li>
+              Includes support for "Reformat Code", line-by-line formatting and format-on-Enter
+            </li>
+            <li>
+              Indent size is controlled by the "Settings->Code Style->General" setting
+            </li>
+            <li>
+              This behavior can be toggled in the "Settings->Handlebars/Mustache" page.
+            </li>
+            <li>
+              More info <a href="https://github.com/dmarcotte/idea-handlebars/pull/27">on the project site</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="https://github.com/dmarcotte/idea-handlebars/pull/25">Formalizes support for Mustache</a>
+        </li>
+        <li>
+          <a href="https://github.com/dmarcotte/idea-handlebars/pull/31">Improves "else" highlighting</a>
+        </li>
+        <li>
+          <a href="https://github.com/dmarcotte/idea-handlebars/pull/28">Fixes an issue in the Enter Handler</a>
+        </li>
+      </ul>
+
       <b>Version 0.3</b>
       <br>
       <ul>
@@ -77,7 +107,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.3</version>
+  <version>0.4</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   
