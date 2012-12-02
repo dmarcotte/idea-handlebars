@@ -5,6 +5,10 @@ IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mus
 ## _NEW:_ Template formatting
 The latest release now includes [a full template formatter](https://github.com/dmarcotte/idea-handlebars/pull/9).  Full release notes on the [plugin repository page](http://plugins.jetbrains.com/plugin?pr=idea&pluginId=6884).
 
+* If you were running the beta, you can switch back to the released verion as follows:
+  * Right-click the beta in the "Settings->Plugins" list and choose "Uninstall"
+  * Re-enable the released version, Right-click and choose "Reload List of Plugins" to find the latest version
+
 ## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
   * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars/Mustache" on the list, right-click, and select "Download and Install"
