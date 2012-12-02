@@ -45,6 +45,8 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.util.containers.Stack;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 
+// suppress various warnings/inspections for the generated class
+@SuppressWarnings ({"FieldCanBeLocal", "UnusedDeclaration", "UnusedAssignment", "AccessStaticViaInstance", "MismatchedReadAndWriteOfArray", "WeakerAccess", "SameParameterValue", "CanBeFinal", "SameReturnValue", "RedundantThrows", "ConstantConditions"})
 %%
 
 %class _HbLexer

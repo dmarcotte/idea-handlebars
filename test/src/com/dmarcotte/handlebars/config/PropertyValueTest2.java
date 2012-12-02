@@ -11,7 +11,7 @@ import java.util.List;
 @RunWith (value = Parameterized.class)
 public class PropertyValueTest2 {
 
-    private PropertyValueTestDefinition propertyValueTestDefinition;
+    private final PropertyValueTestDefinition propertyValueTestDefinition;
 
     static final List<PropertyValueTestDefinition> PROPERTY_VALUE_TEST_DEFINITIONS = new ArrayList<PropertyValueTestDefinition>();
     static {
@@ -45,8 +45,8 @@ public class PropertyValueTest2 {
      * Associates a {@link PropertyValue} with its expected attributes to ensure stability and backwards compatibility
      */
     static class PropertyValueTestDefinition {
-        PropertyValue propertyValue;
-        String expectedStringValue;
+        final PropertyValue propertyValue;
+        final String expectedStringValue;
 
         PropertyValueTestDefinition(PropertyValue propertyValue, String expectedStringValue) {
             this.propertyValue = propertyValue;

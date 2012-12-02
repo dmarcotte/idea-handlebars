@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class HbLexerTest extends PlatformLiteFixture {
 
-    Lexer _lexer;
+    private Lexer _lexer;
 
     @Override
     protected void setUp() throws Exception {
@@ -32,9 +32,9 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
         return new TokenizerResult(tokens);
     }
 
-    protected static class Token {
-        private IElementType _elementType;
-        private String _elementContent;
+    static class Token {
+        private final IElementType _elementType;
+        private final String _elementContent;
 
         private Token(IElementType elementType, String elementContent) {
             _elementType = elementType;
@@ -50,8 +50,8 @@ public abstract class HbLexerTest extends PlatformLiteFixture {
         }
     }
 
-    protected static class TokenizerResult {
-        private List<Token> _tokens;
+    static class TokenizerResult {
+        private final List<Token> _tokens;
 
         public TokenizerResult(List<Token> tokens) {
             _tokens = tokens;

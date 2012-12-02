@@ -9,7 +9,34 @@ import com.intellij.util.containers.Stack;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE_BLOCK_STACHE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ELSE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.EQUALS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INTEGER;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.IN_MUSTACHE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.MUSTACHE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_BLOCK;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_BLOCK_STACHE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_ENDBLOCK;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_INVERSE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_INVERSE_BLOCK_STACHE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARAM;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARAMS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_STACHE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SIMPLE_INVERSE;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STATEMENTS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STRING;
 
 /**
  * The parser is based directly on Handlebars.yy
@@ -78,19 +105,16 @@ class HbParsing {
      * | ""
      * ;
      */
-    private boolean parseProgram(PsiBuilder builder) {
+    private void parseProgram(PsiBuilder builder) {
         if (builder.eof()) {
-            return true;
+            return;
         }
 
-        if (parseStatements(builder)) {
-            if (parseSimpleInverse(builder)) {
-                // if we have a simple inverse, must have more statements
-                parseStatements(builder);
-            }
+        parseStatements(builder);
+        if (parseSimpleInverse(builder)) {
+            // if we have a simple inverse, must have more statements
+            parseStatements(builder);
         }
-
-        return true;
     }
 
     /**
@@ -99,7 +123,7 @@ class HbParsing {
      * | statements statement
      * ;
      */
-    private boolean parseStatements(PsiBuilder builder) {
+    private void parseStatements(PsiBuilder builder) {
         PsiBuilder.Marker statementsMarker = builder.mark();
 
         // parse zero or more statements (empty statements are acceptable)
@@ -114,7 +138,6 @@ class HbParsing {
         }
 
         statementsMarker.done(STATEMENTS);
-        return true;
     }
 
     /**
@@ -169,11 +192,13 @@ class HbParsing {
         }
 
         if (tokenType == OPEN || tokenType == OPEN_UNESCAPED) {
-            return parseMustache(builder);
+            parseMustache(builder);
+            return true;
         }
 
         if (tokenType == OPEN_PARTIAL) {
-            return parsePartial(builder);
+            parsePartial(builder);
+            return true;
         }
 
         if (tokenType == CONTENT) {
@@ -195,7 +220,7 @@ class HbParsing {
      *
      * NOTE: will resolve the given openMustacheMarker
      */
-    private boolean openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker, PsiBuilder.Marker blockMarker) {
+    private void openBlockMarker(PsiBuilder builder, PsiBuilder.Marker openMustacheMarker, PsiBuilder.Marker blockMarker) {
         PsiBuilder.Marker parseProgramMarker = builder.mark();
         parseProgram(builder);
         if(parseCloseBlock(builder)) {
@@ -210,7 +235,6 @@ class HbParsing {
         parseProgramMarker.drop();
 
         blockMarker.done(HbTokenTypes.BLOCK_WRAPPER);
-        return true;
     }
 
     /**
@@ -310,7 +334,7 @@ class HbParsing {
      * | OPEN_UNESCAPED inMustache CLOSE { $$ = new yy.MustacheNode($2[0], $2[1], true); }
      * ;
      */
-    private boolean parseMustache(PsiBuilder builder) {
+    private void parseMustache(PsiBuilder builder) {
         PsiBuilder.Marker mustacheMarker = builder.mark();
         if (builder.getTokenType() == OPEN) {
             parseLeafToken(builder, OPEN);
@@ -326,7 +350,6 @@ class HbParsing {
         parseLeafTokenGreedy(builder, CLOSE);
 
         mustacheMarker.done(MUSTACHE);
-        return true;
     }
 
     /**
@@ -335,7 +358,7 @@ class HbParsing {
      * | OPEN_PARTIAL path path CLOSE { $$ = new yy.PartialNode($2, $3); }
      * ;
      */
-    private boolean parsePartial(PsiBuilder builder) {
+    private void parsePartial(PsiBuilder builder) {
         PsiBuilder.Marker partialMarker = builder.mark();
 
         parseLeafToken(builder, OPEN_PARTIAL);
@@ -353,7 +376,6 @@ class HbParsing {
         parseLeafTokenGreedy(builder, CLOSE);
 
         partialMarker.done(PARTIAL_STACHE);
-        return true;
     }
 
     /**
@@ -648,19 +670,19 @@ class HbParsing {
     /**
      * See {@link #parsePathSegments(com.intellij.lang.PsiBuilder)} for more info on this method
      */
-    private boolean parsePathSegmentsPrime(PsiBuilder builder) {
+    private void parsePathSegmentsPrime(PsiBuilder builder) {
         PsiBuilder.Marker pathSegmentsPrimeMarker = builder.mark();
 
         if (!parseLeafToken(builder, SEP)) {
             // the epsilon case
             pathSegmentsPrimeMarker.rollbackTo();
-            return false;
+            return;
         }
 
         /* HB_CUSTOMIZATION*/
         if (isHashNextLookAhead(builder)) {
             pathSegmentsPrimeMarker.rollbackTo();
-            return false;
+            return;
         }
 
         if (parseLeafToken(builder, ID)) {
@@ -668,7 +690,6 @@ class HbParsing {
         }
 
         pathSegmentsPrimeMarker.drop();
-        return true;
     }
 
     /**
@@ -711,6 +732,7 @@ class HbParsing {
      *
      * Will also stop if it encounters a {@link #RECOVERY_SET} token
      */
+    @SuppressWarnings ("SameParameterValue") // though this method is only being used for CLOSE right now, it reads better this way
     private void parseLeafTokenGreedy(PsiBuilder builder, IElementType expectedToken) {
         // failed to parse expected token... chew up tokens marking this error until we encounter
         // a token which give the parser a good shot at resuming

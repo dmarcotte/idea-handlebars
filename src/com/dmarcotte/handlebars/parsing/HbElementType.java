@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 class HbElementType extends IElementType {
-    private String _parseExpectedMessageKey;
+    private final String _parseExpectedMessageKey;
 
     /**
      * @param parseExpectedMessageKey Key to the {@link HbBundle} message to show the user when the parser
