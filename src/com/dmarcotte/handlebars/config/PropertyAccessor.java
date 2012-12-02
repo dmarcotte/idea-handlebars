@@ -7,7 +7,7 @@ import com.intellij.ide.util.PropertiesComponent;
  */
 class PropertyAccessor {
 
-    private PropertiesComponent myPropertiesComponent;
+    private final PropertiesComponent myPropertiesComponent;
 
     PropertyAccessor(PropertiesComponent myPropertiesComponent) {
         this.myPropertiesComponent = myPropertiesComponent;

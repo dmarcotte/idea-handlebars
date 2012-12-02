@@ -14,7 +14,7 @@ import java.util.Set;
 @RunWith (value = Parameterized.class)
 public class PropertyTest2 {
 
-    private PropertyTestDefinition propertyTestDefinition;
+    private final PropertyTestDefinition propertyTestDefinition;
 
     static final List<PropertyTestDefinition> PROPERTY_TEST_DEFINITIONS = new ArrayList<PropertyTestDefinition>();
     static {
@@ -64,9 +64,9 @@ public class PropertyTest2 {
      * Associates a {@link Property} with its expected attributes to ensure stability and backwards compatibility
      */
     static class PropertyTestDefinition {
-        Property property;
-        String expectedPropertyName;
-        Set<PropertyValue> expectedSupportedValues;
+        final Property property;
+        final String expectedPropertyName;
+        final Set<PropertyValue> expectedSupportedValues;
 
         PropertyTestDefinition(Property property, String expectedPropertyName, Set<PropertyValue> expectedSupportedValues) {
             this.property = property;

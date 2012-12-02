@@ -31,6 +31,6 @@ public abstract class HbParserTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return HbTestUtils.getBaseTestDataPath();
+        return HbTestUtils.BASE_TEST_DATA_PATH;
     }
 }

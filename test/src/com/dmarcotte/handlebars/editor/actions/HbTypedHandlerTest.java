@@ -34,6 +34,17 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         super.tearDown();
     }
 
+    /**
+     * Sanity check that we do nothing when something other than "}" completes a stache
+     */
+    public void testNonStacheClosingCharacter() {
+        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
+
+        HbConfig.setAutoGenerateCloseTagEnabled(false);
+        doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
+    }
+
     public void testOpenBlockStache() {
         HbConfig.setAutoGenerateCloseTagEnabled(true);
         doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>{{/foo}}");

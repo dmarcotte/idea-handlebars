@@ -61,7 +61,7 @@ public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtur
      * @param before The text before the character is typed, with substring "<caret>" to indicate the position of the caret
      * @param expected The text expected after the character is typed, with substring "<caret>" to indicate the position of the caret
      */
-    protected void doCharTest(final char c, @NotNull String before, @NotNull String expected) {
+    void doCharTest(final char c, @NotNull String before, @NotNull String expected) {
         validateTestStrings(before, expected);
 
         myFixture.configureByText(HbFileType.INSTANCE, before);

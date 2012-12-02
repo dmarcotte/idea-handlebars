@@ -12,13 +12,15 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.Icon;
 import java.util.Map;
+import java.util.Set;
 
 public class HbColorsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] ATTRS;
 
     static {
         ATTRS = new AttributesDescriptor[HbHighlighter.DISPLAY_NAMES.size()];
-        TextAttributesKey[] keys = HbHighlighter.DISPLAY_NAMES.keySet().toArray(new TextAttributesKey[0]);
+        Set<TextAttributesKey> textAttributesKeys = HbHighlighter.DISPLAY_NAMES.keySet();
+        TextAttributesKey[] keys = textAttributesKeys.toArray(new TextAttributesKey[textAttributesKeys.size()]);
         for (int i = 0; i < keys.length; i++) {
             TextAttributesKey key = keys[i];
             String name = HbHighlighter.DISPLAY_NAMES.get(key).getFirst();
