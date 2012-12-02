@@ -3,15 +3,7 @@
 IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mustache](http://mustache.github.com/) templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
 ## _NEW:_ Template formatting
-The next release is now in beta and includes [a full template formatter](https://github.com/dmarcotte/idea-handlebars/pull/9) now in beta.
-
-* To install the beta:
-    * Download [the beta jar](https://github.com/downloads/dmarcotte/idea-handlebars/idea-handlebars-0.4-beta-1.jar)
-    * In Settings->Plugins, disable the released Handlebars plugin, choose "Install plugin from disk..."
-     * Select the jar you just downloaded
-* To uninstall:
-    * Right-click the beta in the "Settings->Plugins" list and choose "Uninstall"
-    * Re-enable the released version
+The latest release now includes [a full template formatter](https://github.com/dmarcotte/idea-handlebars/pull/9).  Full release notes on the [plugin repository page](http://plugins.jetbrains.com/plugin?pr=idea&pluginId=6884).
 
 ## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
@@ -41,9 +33,3 @@ There's a variety of ways you can help this project out:
     * Have a gander at the [contributor guidelines](https://github.com/dmarcotte/idea-handlebars/blob/master/contributing.md)
     * The [developer setup instructions](https://github.com/dmarcotte/idea-handlebars/blob/master/developer_environment.md) should get you up and running in no time
     * Look at [contribs-welcome issues](https://github.com/dmarcotte/idea-handlebars/issues?direction=desc&labels=contrib-welcome&page=1&sort=created&state=open) for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
-
-## Special thanks
-* [Bazaarvoice](http://www.bazaarvoice.com), my fantastic employer, for providing the time to work on this
-* Yehuda Katz for creating and maintaining [Handlebars](http://handlebarsjs.com/)
-* The Jetbrains team for making such a great, extensible IDE platform
-* Extra special thanks to Jan Dolecek and the [intellij-latte](https://github.com/juzna/intellij-latte) project (for having a clean code-base to learn from, and taking the time to make posts like [this gem](http://devnet.jetbrains.net/message/5450284?tstart=0); these went a long way to making this plug-in possible)
