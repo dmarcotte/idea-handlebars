@@ -23,7 +23,7 @@ import java.io.File;
  */
 public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFormattingModelBuilderTest {
 
-    private FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
+    private final FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
 
     @Override
     protected void setUp()
@@ -41,27 +41,23 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
         super.tearDown();
     }
 
-    private interface TestFormatAction {
-        void run(PsiFile psiFile, int startOffset, int endOffset);
-    }
-
-    private static final String BASE_PATH = HbTestUtils.getBaseTestDataPath() + "/formatter";
+    private static final String TEST_DATA_PATH = HbTestUtils.BASE_TEST_DATA_PATH + "/formatter";
 
     /**
-     * Call this to run the formatter on a test file in the {@link #BASE_PATH} directory.
+     * Call this to run the formatter on a test file in the {@link #TEST_DATA_PATH} directory.
      *
      * The test will validate the results against a file of the same name with "_expected" appended.
-     * (i.e. for fileNameBefore "TestFile.hbs", the formatter will be run on {@link #BASE_PATH}/TestFile.hbs
-     * the test will look for {@link #BASE_PATH}/TestFile_expected.hbs to validate the results).
+     * (i.e. for fileNameBefore "TestFile.hbs", the formatter will be run on {@link #TEST_DATA_PATH}/TestFile.hbs
+     * the test will look for {@link #TEST_DATA_PATH}/TestFile_expected.hbs to validate the results).
      *
      * @param fileNameBefore The name of the file to test.
      * @throws Exception
      */
-    public void doFileBasedTest(@NonNls String fileNameBefore) throws Exception {
+    void doFileBasedTest(@NonNls String fileNameBefore) throws Exception {
         doTextTest(loadFile(fileNameBefore), loadFile(fileNameBefore.replace(".hbs", "_expected.hbs")));
     }
 
-    public void doStringBasedTest(@NonNls final String text, @NonNls String textAfter) throws IncorrectOperationException {
+    void doStringBasedTest(@NonNls final String text, @NonNls String textAfter) throws IncorrectOperationException {
         doTextTest(text, textAfter);
     }
 
@@ -76,7 +72,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
      * @param textAfter The expected result after running the formatter
      * @throws IncorrectOperationException
      */
-    public void doTextTest(final String beforeText, String textAfter) throws IncorrectOperationException {
+    void doTextTest(final String beforeText, String textAfter) throws IncorrectOperationException {
         // run "Reformat Code" on the whole "file" defined by beforeText
         {
             final PsiFile file = createFile("A.hbs", beforeText);
@@ -94,12 +90,8 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                             manager.commitDocument(document);
                             try {
                                 TextRange rangeToUse = file.getTextRange();
-                                new TestFormatAction() {
-                                    @Override
-                                    public void run(PsiFile psiFile, int startOffset, int endOffset) {
-                                        CodeStyleManager.getInstance(getProject()).reformatText(psiFile, startOffset, endOffset);
-                                    }
-                                }.run(file, rangeToUse.getStartOffset(), rangeToUse.getEndOffset());
+                                CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
+                                styleManager.reformatText(file, rangeToUse.getStartOffset(), rangeToUse.getEndOffset());
                             }
                             catch (IncorrectOperationException e) {
                                 assertTrue(e.getLocalizedMessage(), false);
@@ -151,12 +143,8 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
 //                            @Override
 //                            public void run() {
 //                                try {
-//                                    new TestFormatAction() {
-//                                        @Override
-//                                        public void run(PsiFile psiFile, int startOffset, int endOffset) {
-//                                            CodeStyleManager.getInstance(getProject()).adjustLineIndent(psiFile, document.getLineStartOffset(lineNum));
-//                                        }
-//                                    }.run(file, 0, 0);
+//                                    CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
+//                                    styleManager.adjustLineIndent(file, document.getLineStartOffset(lineNum));
 //                                }
 //                                catch (IncorrectOperationException e) {
 //                                    assertTrue(e.getLocalizedMessage(), false);
@@ -199,7 +187,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
     }
 
     private static String loadFile(String name) throws Exception {
-        String fullName = BASE_PATH + File.separatorChar + name;
+        String fullName = TEST_DATA_PATH + File.separatorChar + name;
         String text = FileUtil.loadFile(new File(fullName));
         text = StringUtil.convertLineSeparators(text);
         return text;

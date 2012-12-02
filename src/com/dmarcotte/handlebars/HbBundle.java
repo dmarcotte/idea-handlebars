@@ -12,7 +12,7 @@ public class HbBundle {
     private static Reference<ResourceBundle> ourBundle;
 
     @NonNls
-    protected static final String PATH_TO_BUNDLE = "messages.HbBundle";
+    private static final String PATH_TO_BUNDLE = "messages.HbBundle";
 
     private HbBundle() {
     }

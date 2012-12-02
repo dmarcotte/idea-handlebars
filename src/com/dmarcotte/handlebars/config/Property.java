@@ -65,6 +65,7 @@ enum Property {
     /**
      * The default/initial value for a user
      */
+    @SuppressWarnings ("SameReturnValue") // remove this Suppress once there's an implementer not returning "ENABLED"
     public abstract PropertyValue getDefault();
 
     /**

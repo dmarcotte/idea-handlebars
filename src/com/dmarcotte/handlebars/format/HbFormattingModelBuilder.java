@@ -85,7 +85,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
 
     private static class HandlebarsBlock extends TemplateLanguageBlock {
 
-        protected HandlebarsBlock(@NotNull TemplateLanguageBlockFactory blockFactory, @NotNull CodeStyleSettings settings,
+        HandlebarsBlock(@NotNull TemplateLanguageBlockFactory blockFactory, @NotNull CodeStyleSettings settings,
                                         @NotNull ASTNode node, @Nullable List<DataLanguageBlockWrapper> foreignChildren) {
             super(blockFactory, settings, node, foreignChildren);
         }
@@ -165,7 +165,7 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
             if (HbPsiUtil.isNonRootStatementsElement(myNode.getPsi())) {
                 // we're computing the indent for a non-root STATEMENTS:
                 //      if it's not contained in a foreign block, indent!
-                if (!hasDataLanguageParent()) {
+                if (hasOnlyHbLanguageParents()) {
                     return Indent.getNormalIndent();
                 }
             }
@@ -238,19 +238,19 @@ public class HbFormattingModelBuilder extends TemplateLanguageFormattingModelBui
             }
         }
 
-        private boolean hasDataLanguageParent() {
+        private boolean hasOnlyHbLanguageParents() {
             BlockWithParent parent = getParent();
-            boolean hasDataLanguageParent = false;
+            boolean hasOnlyHbLanguageParents = true;
 
             while (parent != null) {
                 if (parent instanceof DataLanguageBlockWrapper) {
-                    hasDataLanguageParent = true;
+                    hasOnlyHbLanguageParents = false;
                     break;
                 }
                 parent = parent.getParent();
             }
 
-            return hasDataLanguageParent;
+            return hasOnlyHbLanguageParents;
         }
 
         /**

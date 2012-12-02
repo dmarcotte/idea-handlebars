@@ -12,7 +12,7 @@ import java.util.Map;
 public class PropertyAccessorTest {
 
     // grab a Property to use in this test.  NOTE: the specific property is not significant.
-    private Property myTestProperty = Property.FORMATTER;
+    private final Property myTestProperty = Property.FORMATTER;
 
     @Test
     public void testGetPropertyValue() {
@@ -51,7 +51,7 @@ public class PropertyAccessorTest {
     }
 
     private class PropertiesComponentStub extends PropertiesComponent {
-        private Map<String, String> fakeStorage = new HashMap<String, String>();
+        private final Map<String, String> fakeStorage = new HashMap<String, String>();
         @Override
         public void unsetValue(String name) {
             throw new UnsupportedOperationException();
@@ -78,6 +78,7 @@ public class PropertyAccessorTest {
             throw new UnsupportedOperationException();
         }
 
+        @SuppressWarnings ("EmptyMethod") // see comment in method for why this is cool
         @Override
         public String getOrInit(@NonNls String name, String defaultValue) {
             // parent is implemented using isValueSet and getValue, so use that to keep things

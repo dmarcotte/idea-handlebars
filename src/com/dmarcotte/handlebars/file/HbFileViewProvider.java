@@ -4,6 +4,7 @@ import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageParserDefinitions;
+import com.intellij.lang.ParserDefinition;
 import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -43,8 +44,8 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
     }
 
     // constructor to be used by self
-    public HbFileViewProvider(PsiManager psiManager, VirtualFile virtualFile, boolean physical, Language myTemplateDataLanguage) {
-        super(psiManager, virtualFile, physical);
+    private HbFileViewProvider(PsiManager psiManager, VirtualFile virtualFile, Language myTemplateDataLanguage) {
+        super(psiManager, virtualFile, false);
         this.myTemplateDataLanguage = myTemplateDataLanguage;
     }
 
@@ -69,19 +70,24 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
 
     @Override
     protected MultiplePsiFilesPerDocumentFileViewProvider cloneInner(VirtualFile virtualFile) {
-        return new HbFileViewProvider(getManager(), virtualFile, false, myTemplateDataLanguage);
+        return new HbFileViewProvider(getManager(), virtualFile, myTemplateDataLanguage);
     }
 
 
     @Override
     protected PsiFile createFile(@NotNull Language lang) {
         // creating file for main lang (HTML)
+        ParserDefinition parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(lang);
+        if (parserDefinition == null) {
+            return null;
+        }
+
         if(lang == myTemplateDataLanguage) {
-            PsiFileImpl file = (PsiFileImpl) LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this);
+            PsiFileImpl file = (PsiFileImpl) parserDefinition.createFile(this);
             file.setContentElementType(HbTokenTypes.TEMPLATE_ELEMENT_TYPE);
             return file;
         } else if(lang == HbLanguage.INSTANCE) {
-            return LanguageParserDefinitions.INSTANCE.forLanguage(lang).createFile(this);
+            return parserDefinition.createFile(this);
         } else {
             return null;
         }

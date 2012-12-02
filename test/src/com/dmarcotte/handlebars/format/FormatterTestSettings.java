@@ -10,7 +10,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
  * with a standard set of formatter settings
  */
 public class FormatterTestSettings {
-    private Project myProject;
+    private final Project myProject;
     private boolean myPrevFormatSetting;
     private int myPrevIndentSize;
 

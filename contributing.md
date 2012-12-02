@@ -21,7 +21,8 @@ The coding guidelines are pretty simple:
 
 * Write tests surrounding your change
 * Ensure that all existing tests pass with your change
-    * **NOTE:** The tests in `com.dmarcotte.handlebars.editor.actions` and `com.dmarcotte.handlebars.parsing` must currently be **run separately** due to a bad dependency between the different IDEA test scaffolding these tests need.
+    * **NOTE:** The tests in each package of `com.dmarcotte.handlebars` must currently be **run separately** due to a bad dependency between the different IDEA test scaffolding these tests need.
+* Ensure that running "Analyze->Inspect Code..." in IDEA results only in warnings for spelling and the expected syntax errors in the test/data files
 * Generally keep it clean and follow the coding style of the existing code
 
 ## Pull Requests

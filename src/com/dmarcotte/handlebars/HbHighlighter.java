@@ -27,32 +27,32 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         return new HbLexer();
     }
 
-    public static final TextAttributesKey MUSTACHES = TextAttributesKey.createTextAttributesKey(
+    private static final TextAttributesKey MUSTACHES = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.MUSTACHES",
             new TextAttributes(null, null, null, null, 1)
     );
 
-    public static final TextAttributesKey IDENTIFIERS = TextAttributesKey.createTextAttributesKey(
+    private static final TextAttributesKey IDENTIFIERS = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.IDENTIFIERS",
             SyntaxHighlighterColors.KEYWORD.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey COMMENTS = TextAttributesKey.createTextAttributesKey(
+    private static final TextAttributesKey COMMENTS = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.COMMENTS",
             SyntaxHighlighterColors.DOC_COMMENT.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey OPERATORS = TextAttributesKey.createTextAttributesKey(
+    private static final TextAttributesKey OPERATORS = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.OPERATORS",
             SyntaxHighlighterColors.OPERATION_SIGN.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey VALUES = TextAttributesKey.createTextAttributesKey(
+    private static final TextAttributesKey VALUES = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.VALUES",
             SyntaxHighlighterColors.NUMBER.getDefaultAttributes()
     );
 
-    public static final TextAttributesKey STRINGS = TextAttributesKey.createTextAttributesKey(
+    private static final TextAttributesKey STRINGS = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.STRINGS",
             SyntaxHighlighterColors.STRING.getDefaultAttributes()
     );
