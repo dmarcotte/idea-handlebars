@@ -134,6 +134,8 @@
     <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory"/>
     <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.HandlebarsCommenter"/>
     <lang.braceMatcher language="Handlebars" implementationClass="com.dmarcotte.handlebars.HbBraceMatcher"/>
+    <lang.foldingBuilder language="Handlebars"
+                         implementationClass="com.dmarcotte.handlebars.HbFoldingBuilder" />
     <typedHandler implementation="com.dmarcotte.handlebars.editor.actions.HbTypedHandler"/>
     <enterHandlerDelegate implementation="com.dmarcotte.handlebars.editor.actions.HbEnterHandler"/>
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>
