@@ -1,13 +1,7 @@
 package com.dmarcotte.handlebars.config;
 
-import com.intellij.ide.util.PropertiesComponent;
 import junit.framework.Assert;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class PropertyAccessorTest {
 
@@ -50,41 +44,4 @@ public class PropertyAccessorTest {
         Assert.assertEquals("Value was not properly persisted", testValue.getStringValue(), propertiesComponentValue);
     }
 
-    private class PropertiesComponentStub extends PropertiesComponent {
-        private final Map<String, String> fakeStorage = new HashMap<String, String>();
-        @Override
-        public void unsetValue(String name) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isValueSet(String name) {
-            return fakeStorage.containsKey(name);
-        }
-
-        @Override
-        public String getValue(@NonNls String name) {
-            return fakeStorage.get(name);
-        }
-
-        @Override
-        public void setValue(@NonNls String name, String value) {
-            fakeStorage.put(name, value);
-        }
-
-        @NotNull
-        @Override
-        public String getValue(@NonNls String name, @NotNull String defaultValue) {
-            throw new UnsupportedOperationException();
-        }
-
-        @SuppressWarnings ("EmptyMethod") // see comment in method for why this is cool
-        @Override
-        public String getOrInit(@NonNls String name, String defaultValue) {
-            // parent is implemented using isValueSet and getValue, so use that to keep things
-            // true to form.  There is a tiny chance that will change and this test will start behaving odd...
-            // hopefully if that happens, this comment helps resolve the issue
-            return super.getOrInit(name, defaultValue);
-        }
-    }
 }

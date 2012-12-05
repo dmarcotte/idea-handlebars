@@ -44,6 +44,7 @@ import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.containers.Stack;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
+import com.dmarcotte.handlebars.config.HbConfig;
 
 // suppress various warnings/inspections for the generated class
 @SuppressWarnings ({"FieldCanBeLocal", "UnusedDeclaration", "UnusedAssignment", "AccessStaticViaInstance", "MismatchedReadAndWriteOfArray", "WeakerAccess", "SameParameterValue", "CanBeFinal", "SameReturnValue", "RedundantThrows", "ConstantConditions"})
@@ -87,7 +88,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
   // simulate the lookahead by matching with anything that ends in "{{", and then backtracking away from
   // any trailing "{" characters we've picked up
-  ~"{{" {
+~"{{" {
           // backtrack over any stache characters at the end of this string
           while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {
             yypushback(1);
@@ -111,6 +112,12 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
   "{{>" { return HbTokenTypes.OPEN_PARTIAL; }
   "{{#" { return HbTokenTypes.OPEN_BLOCK; }
+  "{{_" {
+    if ( ! HbConfig.isCustomBlockEnabled() ) {
+      yypushback(1);
+    }
+    return HbTokenTypes.OPEN_BLOCK;
+  }
   "{{/" { return HbTokenTypes.OPEN_ENDBLOCK; }
   "{{^" { return HbTokenTypes.OPEN_INVERSE; }
   // NOTE: a standard Handlebars lexer would check for "{{else" here.  We instead want to lex it as two tokens to highlight the "{{" and the "else" differently.  See where we make an HbTokens.ELSE below.
