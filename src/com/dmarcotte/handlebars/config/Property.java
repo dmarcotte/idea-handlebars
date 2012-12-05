@@ -50,6 +50,46 @@ enum Property {
             supportedValues.add(PropertyValue.DISABLED);
             return Collections.unmodifiableSet(supportedValues);
         }
+    },
+
+    CUSTOM_OPEN_BLOCK {
+        @Override
+        public String getStringName() {
+            return "HbCustomOpenBlock";
+        }
+
+        @Override
+        public PropertyValue getDefault() {
+            return PropertyValue.DISABLED;
+        }
+
+        @Override
+        public Set<PropertyValue> getSupportedValues() {
+            Set<PropertyValue> supportedValues = new HashSet<PropertyValue>();
+            supportedValues.add(PropertyValue.ENABLED);
+            supportedValues.add(PropertyValue.DISABLED);
+            return Collections.unmodifiableSet(supportedValues);
+        }
+    },
+
+    AUTO_COLLAPSE_BLOCKS {
+        @Override
+        public String getStringName() {
+            return "HbAutoCollapseBlocks";
+        }
+
+        @Override
+        public PropertyValue getDefault() {
+            return PropertyValue.DISABLED;
+        }
+
+        @Override
+        public Set<PropertyValue> getSupportedValues() {
+            Set<PropertyValue> supportedValues = new HashSet<PropertyValue>();
+            supportedValues.add(PropertyValue.ENABLED);
+            supportedValues.add(PropertyValue.DISABLED);
+            return Collections.unmodifiableSet(supportedValues);
+        }
     };
 
     /**

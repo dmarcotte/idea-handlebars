@@ -25,6 +25,14 @@ public class PropertyTest2 {
         PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.FORMATTER,
                                                                  "HbFormatter",
                                                                  valueSet(PropertyValue.ENABLED, PropertyValue.DISABLED)));
+
+        PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.CUSTOM_OPEN_BLOCK,
+                                                                 "HbCustomOpenBlock",
+                                                                 valueSet(PropertyValue.ENABLED, PropertyValue.DISABLED)));
+
+        PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.AUTO_COLLAPSE_BLOCKS,
+                                                                 "BhAutoCollapseBlocks",
+                                                                 valueSet(PropertyValue.ENABLED, PropertyValue.DISABLED)));
     }
 
     @Parameterized.Parameters

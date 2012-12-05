@@ -13,6 +13,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
     private JCheckBox myAutoGenerateClosingTagCheckBox;
     private JPanel myWholePanel;
     private JCheckBox myFormattingCheckBox;
+    private JCheckBox myCustomOpenBlock;
 
     @NotNull
     @Override
@@ -48,7 +49,8 @@ public class HbConfigurationPage implements SearchableConfigurable {
     @Override
     public boolean isModified() {
         return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled()
-                || myFormattingCheckBox.isSelected() != HbConfig.isFormattingEnabled();
+                || myFormattingCheckBox.isSelected() != HbConfig.isFormattingEnabled()
+                || myCustomOpenBlock.isSelected() != HbConfig.isCustomBlockEnabled();
 
     }
 
@@ -56,15 +58,21 @@ public class HbConfigurationPage implements SearchableConfigurable {
     public void apply() throws ConfigurationException {
         HbConfig.setAutoGenerateCloseTagEnabled(myAutoGenerateClosingTagCheckBox.isSelected());
         HbConfig.setFormattingEnabled(myFormattingCheckBox.isSelected());
+        HbConfig.setCustomBlockEnabled(myCustomOpenBlock.isSelected());
     }
 
     @Override
     public void reset() {
         myAutoGenerateClosingTagCheckBox.setSelected(HbConfig.isAutoGenerateCloseTagEnabled());
         myFormattingCheckBox.setSelected(HbConfig.isFormattingEnabled());
+        myCustomOpenBlock.setSelected(HbConfig.isCustomBlockEnabled());
     }
 
     @Override
     public void disposeUIResources() {
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }

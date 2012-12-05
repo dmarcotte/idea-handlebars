@@ -1,5 +1,7 @@
 package com.dmarcotte.handlebars.parsing;
 
+import com.dmarcotte.handlebars.config.HbConfig;
+
 /**
  * Java representations of the validations in Handlebars parser_spec.rb
  * (Precise revision: https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/spec/parser_spec.rb)
