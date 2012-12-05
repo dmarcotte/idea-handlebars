@@ -31,7 +31,7 @@ public class PropertyTest2 {
                                                                  valueSet(PropertyValue.ENABLED, PropertyValue.DISABLED)));
 
         PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.AUTO_COLLAPSE_BLOCKS,
-                                                                 "BhAutoCollapseBlocks",
+                                                                 "HbAutoCollapseBlocks",
                                                                  valueSet(PropertyValue.ENABLED, PropertyValue.DISABLED)));
     }
 
