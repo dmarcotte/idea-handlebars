@@ -1,9 +1,15 @@
 package com.dmarcotte.handlebars.parsing;
 
+import com.dmarcotte.handlebars.config.PropertiesComponentStub;
 import com.dmarcotte.handlebars.util.HbTestUtils;
+import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.ide.util.PropertiesComponentImpl;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.testFramework.ParsingTestCase;
+import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusFactory;
+import org.picocontainer.MutablePicoContainer;
 
 /**
  * ParsingTestCase test are created by placing a MyTestName.hbs file in the test/data/parsing directory with the syntax
@@ -32,5 +38,14 @@ public abstract class HbParserTest extends ParsingTestCase {
     @Override
     protected String getTestDataPath() {
         return HbTestUtils.BASE_TEST_DATA_PATH;
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        final MutablePicoContainer appContainer = getApplication().getPicoContainer();
+        appContainer.registerComponentInstance(PropertiesComponent.class.getName(),
+                new PropertiesComponentStub());
     }
 }

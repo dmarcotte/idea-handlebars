@@ -1,5 +1,6 @@
 package com.dmarcotte.handlebars;
 
+import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilder;
@@ -66,7 +67,7 @@ public class HbFoldingBuilder implements FoldingBuilder {
 
     @Override
     public boolean isCollapsedByDefault(@NotNull ASTNode node) {
-        return true;
+        return HbConfig.isAutoCollapseBlocksEnabled();
     }
 
     private static boolean isMultiline(PsiElement element) {

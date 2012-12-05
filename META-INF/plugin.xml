@@ -139,5 +139,7 @@
     <typedHandler implementation="com.dmarcotte.handlebars.editor.actions.HbTypedHandler"/>
     <enterHandlerDelegate implementation="com.dmarcotte.handlebars.editor.actions.HbEnterHandler"/>
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>
+    <codeFoldingOptionsProvider
+        instance="com.dmarcotte.handlebars.config.HbFoldingOptionsProvider" />
   </extensions>
 </idea-plugin>
