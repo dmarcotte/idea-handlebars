@@ -5,7 +5,7 @@ IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mus
 ## _NEW:_ Template formatting
 The latest release now includes [a full template formatter](https://github.com/dmarcotte/idea-handlebars/pull/9).  Full release notes on the [plugin repository page](http://plugins.jetbrains.com/plugin?pr=idea&pluginId=6884).
 
-* If you were running the beta, you can switch back to the released verion as follows:
+* If you were running the beta, you can switch back to the released version as follows:
   * Right-click the beta in the "Settings->Plugins" list and choose "Uninstall"
   * Re-enable the released version, Right-click and choose "Reload List of Plugins" to find the latest version
 
@@ -36,4 +36,4 @@ There's a variety of ways you can help this project out:
 * Contributing code
     * Have a gander at the [contributor guidelines](https://github.com/dmarcotte/idea-handlebars/blob/master/contributing.md)
     * The [developer setup instructions](https://github.com/dmarcotte/idea-handlebars/blob/master/developer_environment.md) should get you up and running in no time
-    * Look at [contribs-welcome issues](https://github.com/dmarcotte/idea-handlebars/issues?direction=desc&labels=contrib-welcome&page=1&sort=created&state=open) for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
+    * Look at [contrib-welcome issues](https://github.com/dmarcotte/idea-handlebars/issues?direction=desc&labels=contrib-welcome&page=1&sort=created&state=open) for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
