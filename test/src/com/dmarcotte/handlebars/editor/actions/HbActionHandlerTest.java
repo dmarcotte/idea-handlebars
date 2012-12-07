@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.actionSystem.TypedAction;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.IdeaTestCase;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,10 @@ import org.jetbrains.annotations.NotNull;
  * Base test for plugin action handlers
  */
 public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtureTestCase {
-    private String myPrevPlatformPrefix;
+
+    protected HbActionHandlerTest() {
+        IdeaTestCase.initPlatformPrefix();
+    }
 
     private void performWriteAction(final Project project, final Runnable action) {
         ApplicationManager.getApplication().runWriteAction(new Runnable() {
@@ -25,25 +29,6 @@ public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtur
                 CommandProcessor.getInstance().executeCommand(project, action, "test command", null);
             }
         });
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        // this test's parent setup requires that this property be set
-        myPrevPlatformPrefix = System.getProperty("idea.platform.prefix");
-        System.setProperty("idea.platform.prefix", "Idea");
-
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        if (myPrevPlatformPrefix == null) {
-            System.setProperty("idea.platform.prefix", "");
-        } else {
-            System.setProperty("idea.platform.prefix", myPrevPlatformPrefix);
-        }
-        super.tearDown();
     }
 
     private void validateTestStrings(@NotNull String before, @NotNull String expected) {
