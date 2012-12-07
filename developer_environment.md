@@ -14,12 +14,13 @@ git checkout idea/117.963
 git pull --tags
 ```
 
-##Create an IDEA-Handlebars project
+## Create an IDEA-Handlebars project
 * Fork this project, clone it to your dev machine, and launch IDEA (can be the Community Edition you downloaded above, or some other edition you use in your day-to-day work)
 * In IDEA, create a new project from scratch, and configure it like the following, with `/code/idea-handlebars` replaced with the path where you cloned your fork of the project.  Note that the module is of type **Plugin Module**.
 ![ProjectSettings](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/project_setup.png)
 * IDEA will tell you sources have been found.  Press `Next`.
 * When you are asked to "Please select Intellij IDEA Plugin SDK", chances are you don't have any yet.  Click `Next`, and say `OK` when it warns you **No SDK Specified**.  We'll configure one in a second.
+* Right-click idea-handlebars/resources, and choose "Mark Directory As->Source Root"
 
 ## Configure an IDEA Plugin SDK
 * Open the "Project Structure" pane (`File -> Product Structure`)
