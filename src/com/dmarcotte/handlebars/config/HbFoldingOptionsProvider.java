@@ -7,16 +7,14 @@ import com.intellij.openapi.options.BeanConfigurable;
 public class HbFoldingOptionsProvider
         extends BeanConfigurable<HbFoldingOptionsProvider.HbCodeFoldingOptionsBean> implements CodeFoldingOptionsProvider {
 
+    @SuppressWarnings ("UnusedDeclaration") // the properties in this class are accessed using reflection by the parent
     public static class HbCodeFoldingOptionsBean {
-        private boolean AUTO_COLLAPSE_BLOCKS = false;
 
         public boolean isAutoCollapseBlocks() {
-            AUTO_COLLAPSE_BLOCKS = HbConfig.isAutoCollapseBlocksEnabled();
-            return AUTO_COLLAPSE_BLOCKS;
+            return HbConfig.isAutoCollapseBlocksEnabled();
         }
 
         public void setAutoCollapseBlocks(boolean value) {
-            AUTO_COLLAPSE_BLOCKS = value;
             HbConfig.setAutoCollapseBlocks(value);
         }
     }

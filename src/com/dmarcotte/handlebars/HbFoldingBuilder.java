@@ -20,13 +20,16 @@ public class HbFoldingBuilder implements FoldingBuilder {
     @Override
     public FoldingDescriptor[] buildFoldRegions(@NotNull ASTNode node, @NotNull Document document) {
         List<FoldingDescriptor> descriptors = new ArrayList<FoldingDescriptor>();
-        appendDescriptors(node.getPsi(), document, descriptors);
+        appendDescriptors(node.getPsi(), descriptors);
         return descriptors.toArray(new FoldingDescriptor[descriptors.size()]);
     }
 
-    private void appendDescriptors(PsiElement psi, Document document, List<FoldingDescriptor> descriptors) {
+    private void appendDescriptors(PsiElement psi, List<FoldingDescriptor> descriptors) {
         ASTNode node = psi.getNode();
-        if (node == null || !isMultiline(psi)) return;
+        if (node == null || isSingleLine(psi)) {
+            return;
+        }
+
         IElementType type = node.getElementType();
 
         if (HbTokenTypes.BLOCK_WRAPPER == type) {
@@ -35,7 +38,7 @@ public class HbFoldingBuilder implements FoldingBuilder {
 
         PsiElement child = psi.getFirstChild();
         while (child != null) {
-            appendDescriptors(child, document, descriptors);
+            appendDescriptors(child, descriptors);
             child = child.getNextSibling();
         }
     }
@@ -70,8 +73,8 @@ public class HbFoldingBuilder implements FoldingBuilder {
         return HbConfig.isAutoCollapseBlocksEnabled();
     }
 
-    private static boolean isMultiline(PsiElement element) {
+    private static boolean isSingleLine(PsiElement element) {
         String text = element.getText();
-        return text.contains("\n") || text.contains("\r") || text.contains("\r\n");
+        return !(text.contains("\n") || text.contains("\r") || text.contains("\r\n"));
     }
 }

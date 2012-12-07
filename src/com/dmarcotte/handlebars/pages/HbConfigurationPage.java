@@ -71,8 +71,4 @@ public class HbConfigurationPage implements SearchableConfigurable {
     @Override
     public void disposeUIResources() {
     }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
 }
