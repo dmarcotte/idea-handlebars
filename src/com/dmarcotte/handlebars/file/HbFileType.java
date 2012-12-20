@@ -41,7 +41,7 @@ public class HbFileType extends LanguageFileType {
 
     @NotNull
     public String getName() {
-        return "Handlebars";
+        return "Handlebars/Mustache";
     }
 
     @NotNull
