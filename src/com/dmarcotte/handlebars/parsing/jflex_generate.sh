@@ -10,7 +10,7 @@ fi
 
 
 if [ -z ${IDEA_SRC_ROOT} ]; then
-    echo 'ERROR: IDEA source soot not found.'
+    echo 'ERROR: IDEA source root not specified.'
     echo '  Pass the path to the root of the Intellij IDEA Community Edition\n  source code as a argument or set environment variable $IDEA_SRC_ROOT'
     exit 1
 fi
