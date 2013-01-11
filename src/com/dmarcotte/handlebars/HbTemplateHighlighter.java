@@ -29,7 +29,7 @@ public class HbTemplateHighlighter extends LayeredLexerEditorHighlighter {
         } else {
             Language language = TemplateDataLanguageMappings.getInstance(project).getMapping(virtualFile);
             if(language != null) type = language.getAssociatedFileType();
-            if(type == null) type = StdFileTypes.HTML;
+            if(type == null) type = HbLanguage.getDefaultTemplateLang();
         }
         SyntaxHighlighter outerHighlighter = SyntaxHighlighter.PROVIDER.create(type, project, virtualFile);
 

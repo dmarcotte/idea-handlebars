@@ -5,16 +5,14 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.lang.ParserDefinition;
-import com.intellij.openapi.fileTypes.PlainTextLanguage;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.LanguageSubstitutors;
 import com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.source.PsiFileImpl;
+import com.intellij.psi.templateLanguages.TemplateDataElementType;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
-import com.intellij.psi.templateLanguages.TemplateLanguage;
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider;
 import gnu.trove.THashSet;
 import org.jetbrains.annotations.NotNull;
@@ -23,32 +21,29 @@ import java.util.Arrays;
 import java.util.Set;
 
 public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvider implements TemplateLanguageFileViewProvider {
-    // main language of the file (HTML)
-    private final Language myTemplateDataLanguage;
 
+    private final PsiManager myManager;
+    private final VirtualFile myFile;
 
-    // default constructor from parent
     public HbFileViewProvider(PsiManager manager, VirtualFile file, boolean physical) {
         super(manager, file, physical);
 
-        // get the main language of the file
+        myManager = manager;
+        myFile = file;
+
+        getTemplateDataLanguage(myManager, myFile);
+    }
+
+    private Language getTemplateDataLanguage(PsiManager manager, VirtualFile file) {
         Language dataLang = TemplateDataLanguageMappings.getInstance(manager.getProject()).getMapping(file);
-        if(dataLang == null) dataLang = StdFileTypes.HTML.getLanguage(); // default language that we template is HTML
-
-        // some magic? TODO demystify this
-        if(dataLang instanceof TemplateLanguage) {
-            myTemplateDataLanguage = PlainTextLanguage.INSTANCE;
-        } else {
-            myTemplateDataLanguage = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
+        if(dataLang == null) {
+            dataLang = HbLanguage.getDefaultTemplateLang().getLanguage();
         }
-    }
 
-    // constructor to be used by self
-    private HbFileViewProvider(PsiManager psiManager, VirtualFile virtualFile, Language myTemplateDataLanguage) {
-        super(psiManager, virtualFile, false);
-        this.myTemplateDataLanguage = myTemplateDataLanguage;
-    }
+        dataLang = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
 
+        return dataLang;
+    }
 
     @NotNull
     @Override
@@ -59,34 +54,33 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
     @NotNull
     @Override
     public Language getTemplateDataLanguage() {
-        return myTemplateDataLanguage;
+        return getTemplateDataLanguage(myManager, myFile);
     }
 
     @NotNull
     @Override
     public Set<Language> getLanguages() {
-        return new THashSet<Language>(Arrays.asList(new Language[] {HbLanguage.INSTANCE, myTemplateDataLanguage}));
+        return new THashSet<Language>(Arrays.asList(new Language[] {HbLanguage.INSTANCE, getTemplateDataLanguage(myManager, myFile)}));
     }
 
     @Override
     protected MultiplePsiFilesPerDocumentFileViewProvider cloneInner(VirtualFile virtualFile) {
-        return new HbFileViewProvider(getManager(), virtualFile, myTemplateDataLanguage);
+        return new HbFileViewProvider(getManager(), virtualFile, false);
     }
-
 
     @Override
     protected PsiFile createFile(@NotNull Language lang) {
-        // creating file for main lang (HTML)
         ParserDefinition parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(lang);
         if (parserDefinition == null) {
             return null;
         }
 
-        if(lang == myTemplateDataLanguage) {
+        Language templateDataLanguage = getTemplateDataLanguage(myManager, myFile);
+        if (lang == templateDataLanguage) {
             PsiFileImpl file = (PsiFileImpl) parserDefinition.createFile(this);
-            file.setContentElementType(HbTokenTypes.TEMPLATE_ELEMENT_TYPE);
+            file.setContentElementType(new TemplateDataElementType("HB_TEMPLATE_DATA", templateDataLanguage, HbTokenTypes.CONTENT, HbTokenTypes.OUTER_ELEMENT_TYPE));
             return file;
-        } else if(lang == HbLanguage.INSTANCE) {
+        } else if (lang == HbLanguage.INSTANCE) {
             return parserDefinition.createFile(this);
         } else {
             return null;
