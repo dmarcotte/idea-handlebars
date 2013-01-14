@@ -10,6 +10,7 @@ import com.intellij.openapi.fileTypes.EditorHighlighterProvider;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import com.intellij.openapi.fileTypes.TemplateLanguageFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.Icon;
 import java.nio.charset.Charset;
 
-public class HbFileType extends LanguageFileType {
+public class HbFileType extends LanguageFileType implements TemplateLanguageFileType {
     public static final Icon FILE_ICON = IconLoader.getIcon("/icons/handlebars_icon.png");
     public static final LanguageFileType INSTANCE = new HbFileType();
 
