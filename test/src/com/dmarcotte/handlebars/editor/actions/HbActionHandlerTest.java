@@ -1,6 +1,8 @@
 package com.dmarcotte.handlebars.editor.actions;
 
 import com.dmarcotte.handlebars.file.HbFileType;
+import com.intellij.codeInsight.generation.CommentByBlockCommentHandler;
+import com.intellij.codeInsight.generation.CommentByLineCommentHandler;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
@@ -14,7 +16,15 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCa
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Base test for plugin action handlers
+ * Base test for plugin action handlers<br/>
+ * <br/>
+ * In general, all the tests here work on the same principles: run an action on the given "before" text and compare
+ * the result to the given "expected" text.<br/>
+ * <br/>
+ * Both "before" and "expected" text must include substring "&lt;caret&gt;" to indicate the caret position in the text.<br/>
+ * <br/>
+ * Optionally, a chunk of the given text may be marked with "&lt;selection&gt;SELECTED TEXT&lt;/selection&gt;"
+ * to indicate a selection.
  */
 public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtureTestCase {
 
@@ -39,45 +49,64 @@ public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtur
     }
 
     /**
-     * Call this method to test behavior when the given char c is typed.  Use the String {@code "<caret>"} in your
-     * 'before' and 'expected' arguments to indicate the position of the caret in those strings.
-     *
-     * @param c The character to type
-     * @param before The text before the character is typed, with substring "<caret>" to indicate the position of the caret
-     * @param expected The text expected after the character is typed, with substring "<caret>" to indicate the position of the caret
+     * Call this method to test behavior when the given charToType is typed at the &lt;caret&gt;.
+     * See class documentation for more info: {@link HbActionHandlerTest}
      */
-    void doCharTest(final char c, @NotNull String before, @NotNull String expected) {
-        validateTestStrings(before, expected);
-
-        myFixture.configureByText(HbFileType.INSTANCE, before);
+    void doCharTest(final char charToType, @NotNull String before, @NotNull String expected) {
         final TypedAction typedAction = EditorActionManager.getInstance().getTypedAction();
-        performWriteAction(myFixture.getProject(), new Runnable() {
+        doExecuteActionTest(before, expected, new Runnable() {
             @Override
             public void run() {
-                typedAction.actionPerformed(myFixture.getEditor(), c, ((EditorEx) myFixture.getEditor()).getDataContext());
+                typedAction.actionPerformed(myFixture.getEditor(), charToType, ((EditorEx) myFixture.getEditor()).getDataContext());
             }
         });
-        myFixture.checkResult(expected);
     }
 
     /**
-     * Call this method to test behavior when Enter is typed.  Use the String {@code "<caret>"} in your
-     * 'before' and 'expected' arguments to indicate the position of the caret in those strings.
-     *
-     * @param before The text before Enter typed, with substring "<caret>" to indicate the position of the caret
-     * @param expected The text after Enter is typed, with substring "<caret>" to indicate the position of the caret
+     * Call this method to test behavior when Enter is typed.
+     * See class documentation for more info: {@link HbActionHandlerTest}
      */
     protected void doEnterTest(@NotNull String before, @NotNull String expected) {
-        validateTestStrings(before, expected);
-
-        myFixture.configureByText(HbFileType.INSTANCE, before);
         final EditorActionHandler enterActionHandler = EditorActionManager.getInstance().getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
-        performWriteAction(myFixture.getProject(), new Runnable() {
+        doExecuteActionTest(before, expected, new Runnable() {
             @Override
             public void run() {
                 enterActionHandler.execute(myFixture.getEditor(), ((EditorEx) myFixture.getEditor()).getDataContext());
             }
         });
+    }
+
+    /**
+     * Call this method to test behavior when the "Comment with Line Comment" action is executed.
+     * See class documentation for more info: {@link HbActionHandlerTest}
+     */
+    void doLineCommentTest(@NotNull String before, @NotNull String expected) {
+        doExecuteActionTest(before, expected, new Runnable() {
+            @Override
+            public void run() {
+                new CommentByLineCommentHandler().invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile());
+            }
+        });
+    }
+
+    /**
+     * Call this method to test behavior when the "Comment with Block Comment" action is executed.
+     * See class documentation for more info: {@link HbActionHandlerTest}
+     */
+    void doBlockCommentTest(@NotNull String before, @NotNull String expected) {
+        doExecuteActionTest(before, expected, new Runnable() {
+            @Override
+            public void run() {
+                new CommentByBlockCommentHandler().invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile());
+            }
+        });
+    }
+
+    private void doExecuteActionTest(@NotNull String before, @NotNull String expected, @NotNull Runnable action) {
+        validateTestStrings(before, expected);
+
+        myFixture.configureByText(HbFileType.INSTANCE, before);
+        performWriteAction(myFixture.getProject(), action);
         myFixture.checkResult(expected);
     }
 }

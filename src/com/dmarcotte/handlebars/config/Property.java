@@ -1,8 +1,8 @@
 package com.dmarcotte.handlebars.config;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.intellij.lang.html.HTMLLanguage;
+import groovy.lang.PropertyValue;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Formalizes the properties which we will persist using {@link com.intellij.ide.util.PropertiesComponent}
@@ -11,6 +11,7 @@ import java.util.Set;
  */
 enum Property {
     AUTO_GENERATE_CLOSE_TAG {
+        @NotNull
         @Override
         public String getStringName() {
             // please excuse the "disabled" in this name.  This is an artifact from an earlier approach
@@ -18,79 +19,71 @@ enum Property {
             return "HbDisableAutoGenerateCloseTag";
         }
 
+        @NotNull
         @Override
-        public PropertyValue getDefault() {
-            return PropertyValue.ENABLED;
-        }
-
-        @Override
-        public Set<PropertyValue> getSupportedValues() {
-            Set<PropertyValue> supportedValues = new HashSet<PropertyValue>();
-            supportedValues.add(PropertyValue.ENABLED);
-            supportedValues.add(PropertyValue.DISABLED);
-            return Collections.unmodifiableSet(supportedValues);
+        public String getDefault() {
+            return ENABLED;
         }
     },
 
     FORMATTER {
+        @NotNull
         @Override
         public String getStringName() {
             return "HbFormatter";
         }
 
+        @NotNull
         @Override
-        public PropertyValue getDefault() {
-            return PropertyValue.ENABLED;
-        }
-
-        @Override
-        public Set<PropertyValue> getSupportedValues() {
-            Set<PropertyValue> supportedValues = new HashSet<PropertyValue>();
-            supportedValues.add(PropertyValue.ENABLED);
-            supportedValues.add(PropertyValue.DISABLED);
-            return Collections.unmodifiableSet(supportedValues);
+        public String getDefault() {
+            return ENABLED;
         }
     },
 
     CUSTOM_OPEN_BLOCK {
+        @NotNull
         @Override
         public String getStringName() {
             return "HbCustomOpenBlock";
         }
 
+        @NotNull
         @Override
-        public PropertyValue getDefault() {
-            return PropertyValue.DISABLED;
-        }
-
-        @Override
-        public Set<PropertyValue> getSupportedValues() {
-            Set<PropertyValue> supportedValues = new HashSet<PropertyValue>();
-            supportedValues.add(PropertyValue.ENABLED);
-            supportedValues.add(PropertyValue.DISABLED);
-            return Collections.unmodifiableSet(supportedValues);
+        public String getDefault() {
+            return DISABLED;
         }
     },
 
     AUTO_COLLAPSE_BLOCKS {
+        @NotNull
         @Override
         public String getStringName() {
             return "HbAutoCollapseBlocks";
         }
 
+        @NotNull
         @Override
-        public PropertyValue getDefault() {
-            return PropertyValue.DISABLED;
+        public String getDefault() {
+            return DISABLED;
+        }
+    },
+
+    COMMENTER_LANGUAGE_ID {
+        @NotNull
+        @Override
+        public String getStringName() {
+            return "HbCommenterLanguageId";
         }
 
+        @NotNull
         @Override
-        public Set<PropertyValue> getSupportedValues() {
-            Set<PropertyValue> supportedValues = new HashSet<PropertyValue>();
-            supportedValues.add(PropertyValue.ENABLED);
-            supportedValues.add(PropertyValue.DISABLED);
-            return Collections.unmodifiableSet(supportedValues);
+        public String getDefault() {
+            return HTMLLanguage.INSTANCE.getID();
         }
     };
+
+    public static final String ENABLED = "enabled";
+    public static final String DISABLED = "disabled";
 
     /**
      * The String which will actually be persisted in a user's properties using {@link com.intellij.ide.util.PropertiesComponent}.
@@ -98,21 +91,13 @@ enum Property {
      * This value must be unique amongst Property entries
      *
      * IMPORTANT: these should probably never change so that we don't lose a user's preferences between releases.
-     * See also {@link com.dmarcotte.handlebars.config.PropertyValue#getStringValue()}
      */
+    @NotNull
     public abstract String getStringName();
 
     /**
      * The default/initial value for a user
      */
-    @SuppressWarnings ("SameReturnValue") // remove this Suppress once there's an implementer not returning "ENABLED"
-    public abstract PropertyValue getDefault();
-
-    /**
-     * The set of possible values this property supports.
-     *
-     * IMPORTANT: this set should never have elements removed.  As in {@link #getStringName},
-     * we need to maintain a users preferences across releases.
-     */
-    public abstract Set<PropertyValue> getSupportedValues();
+    @NotNull
+    public abstract String getDefault();
 }
