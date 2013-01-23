@@ -3,12 +3,9 @@ package com.dmarcotte.handlebars.parsing;
 import com.dmarcotte.handlebars.config.PropertiesComponentStub;
 import com.dmarcotte.handlebars.util.HbTestUtils;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.ide.util.PropertiesComponentImpl;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.testFramework.ParsingTestCase;
-import com.intellij.util.messages.MessageBus;
-import com.intellij.util.messages.MessageBusFactory;
 import org.picocontainer.MutablePicoContainer;
 
 /**

@@ -1,17 +1,20 @@
 package com.dmarcotte.handlebars.format;
 
+import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.util.HbTestUtils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.impl.DocumentImpl;
+import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import com.intellij.testFramework.LightIdeaTestCase;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
@@ -50,15 +53,27 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
      * (i.e. for fileNameBefore "TestFile.hbs", the formatter will be run on {@link #TEST_DATA_PATH}/TestFile.hbs
      * the test will look for {@link #TEST_DATA_PATH}/TestFile_expected.hbs to validate the results).
      *
-     * @param fileNameBefore The name of the file to test.
+     * @param fileNameBefore The name of the file to test (must have the '.hbs' extension).
      * @throws Exception
      */
     void doFileBasedTest(@NonNls String fileNameBefore) throws Exception {
-        doTextTest(loadFile(fileNameBefore), loadFile(fileNameBefore.replace(".hbs", "_expected.hbs")));
+        doFileBasedTest(fileNameBefore, HbLanguage.getDefaultTemplateLang());
+    }
+
+    /**
+     * Specialization of {@link #doFileBasedTest(String)} which adds the option of specifying a templated language
+     * other than {@link com.dmarcotte.handlebars.HbLanguage#getDefaultTemplateLang()}
+     *
+     * @param fileNameBefore The name of the file to test
+     * @param templateDataLanguageType The LanguageFileType of the templated file
+     * @throws Exception
+     */
+    void doFileBasedTest(@NonNls String fileNameBefore, LanguageFileType templateDataLanguageType) throws Exception {
+        doTextTest(loadFile(fileNameBefore), loadFile(fileNameBefore.replace(".hbs", "_expected.hbs")), templateDataLanguageType);
     }
 
     void doStringBasedTest(@NonNls final String text, @NonNls String textAfter) throws IncorrectOperationException {
-        doTextTest(text, textAfter);
+        doTextTest(text, textAfter, HbLanguage.getDefaultTemplateLang());
     }
 
     /**
@@ -70,15 +85,18 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
      *
      * @param beforeText The text run the formatter on
      * @param textAfter The expected result after running the formatter
+     * @param templateDataLanguageType The templated language of the file
      * @throws IncorrectOperationException
      */
-    void doTextTest(final String beforeText, String textAfter) throws IncorrectOperationException {
+    void doTextTest(final String beforeText, String textAfter, LanguageFileType templateDataLanguageType) throws IncorrectOperationException {
         // run "Reformat Code" on the whole "file" defined by beforeText
         {
             final PsiFile file = createFile("A.hbs", beforeText);
 
             final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
             final Document document = manager.getDocument(file);
+
+            TemplateDataLanguageMappings.getInstance(getProject()).setMapping(file.getVirtualFile(), templateDataLanguageType.getLanguage());
 
             CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
                 @Override
@@ -88,6 +106,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                         public void run() {
                             document.replaceString(0, document.getTextLength(), beforeText);
                             manager.commitDocument(document);
+
                             try {
                                 TextRange rangeToUse = file.getTextRange();
                                 CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
@@ -96,6 +115,8 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                             catch (IncorrectOperationException e) {
                                 assertTrue(e.getLocalizedMessage(), false);
                             }
+
+                            TemplateDataLanguageMappings.getInstance(getProject()).cleanupForNextTest();
                         }
                     });
                 }
@@ -106,6 +127,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                 fail("Don't expect the document to be null");
                 return;
             }
+
             assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(document.getText()));
             manager.commitDocument(document);
             assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(file.getText()));
