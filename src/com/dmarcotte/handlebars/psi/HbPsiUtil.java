@@ -55,7 +55,7 @@ public class HbPsiUtil {
     }
 
     /**
-     * Tests to see if the given element is the "root" statements expression of the grammar
+     * Tests to see if the given element is not the "root" statements expression of the grammar
      */
     public static boolean isNonRootStatementsElement(PsiElement element) {
         PsiElement statementsParent = PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {

@@ -135,7 +135,7 @@
     <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.HandlebarsCommenter"/>
     <lang.braceMatcher language="Handlebars" implementationClass="com.dmarcotte.handlebars.HbBraceMatcher"/>
     <lang.foldingBuilder language="Handlebars"
-                         implementationClass="com.dmarcotte.handlebars.HbFoldingBuilder" />
+                         implementationClass="com.dmarcotte.handlebars.editor.folding.HbFoldingBuilder" />
     <typedHandler implementation="com.dmarcotte.handlebars.editor.actions.HbTypedHandler"/>
     <enterHandlerDelegate implementation="com.dmarcotte.handlebars.editor.actions.HbEnterHandler"/>
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>

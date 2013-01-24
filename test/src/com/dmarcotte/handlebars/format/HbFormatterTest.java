@@ -25,6 +25,7 @@ import java.io.File;
  * Base class for Handlebars formatter tests.  Based on com.intellij.psi.formatter.java.AbstractJavaFormatterTest.
  */
 public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFormattingModelBuilderTest {
+    private static final String TEST_DATA_PATH = new File(HbTestUtils.BASE_TEST_DATA_PATH, "formatter").getAbsolutePath();
 
     private final FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
 
@@ -43,8 +44,6 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
 
         super.tearDown();
     }
-
-    private static final String TEST_DATA_PATH = HbTestUtils.BASE_TEST_DATA_PATH + "/formatter";
 
     /**
      * Call this to run the formatter on a test file in the {@link #TEST_DATA_PATH} directory.
@@ -96,6 +95,11 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
             final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
             final Document document = manager.getDocument(file);
 
+            if (document == null) {
+                fail("Don't expect the document to be null");
+                return;
+            }
+
             TemplateDataLanguageMappings.getInstance(getProject()).setMapping(file.getVirtualFile(), templateDataLanguageType.getLanguage());
 
             CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
@@ -121,12 +125,6 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                     });
                 }
             }, "", "");
-
-
-            if (document == null) {
-                fail("Don't expect the document to be null");
-                return;
-            }
 
             assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(document.getText()));
             manager.commitDocument(document);
@@ -209,7 +207,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
     }
 
     private static String loadFile(String name) throws Exception {
-        String fullName = TEST_DATA_PATH + File.separatorChar + name;
+        String fullName = new File(TEST_DATA_PATH, name).getAbsolutePath();
         String text = FileUtil.loadFile(new File(fullName));
         text = StringUtil.convertLineSeparators(text);
         return text;
