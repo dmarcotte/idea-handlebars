@@ -46,6 +46,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
         return HbBundle.message("hb.pages.options.title");
     }
 
+    @SuppressWarnings ({"UnusedDeclaration", "SameReturnValue"}) // this  can probably be deleted eventually; IDEA 11 expects it to be here
     public Icon getIcon() {
         return null;
     }
