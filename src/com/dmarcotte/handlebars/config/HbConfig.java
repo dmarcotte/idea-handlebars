@@ -1,52 +1,73 @@
 package com.dmarcotte.handlebars.config;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.lang.Language;
 
-import static com.dmarcotte.handlebars.config.Property.*;
-import static com.dmarcotte.handlebars.config.PropertyValue.DISABLED;
-import static com.dmarcotte.handlebars.config.PropertyValue.ENABLED;
+import static com.dmarcotte.handlebars.config.Property.AUTO_COLLAPSE_BLOCKS;
+import static com.dmarcotte.handlebars.config.Property.AUTO_GENERATE_CLOSE_TAG;
+import static com.dmarcotte.handlebars.config.Property.COMMENTER_LANGUAGE_ID;
+import static com.dmarcotte.handlebars.config.Property.CUSTOM_OPEN_BLOCK;
+import static com.dmarcotte.handlebars.config.Property.DISABLED;
+import static com.dmarcotte.handlebars.config.Property.ENABLED;
+import static com.dmarcotte.handlebars.config.Property.FORMATTER;
 
 public class HbConfig {
 
     public static boolean isAutoGenerateCloseTagEnabled() {
-        return getPropertyValue(AUTO_GENERATE_CLOSE_TAG) == ENABLED;
+        return getBooleanPropertyValue(AUTO_GENERATE_CLOSE_TAG);
     }
 
     public static void setAutoGenerateCloseTagEnabled(boolean enabled) {
-        setPropertyValue(AUTO_GENERATE_CLOSE_TAG, enabled ? ENABLED : DISABLED);
+        setBooleanPropertyValue(AUTO_GENERATE_CLOSE_TAG, enabled);
     }
 
     public static boolean isFormattingEnabled() {
-        return getPropertyValue(FORMATTER) == ENABLED;
+        return getBooleanPropertyValue(FORMATTER);
     }
 
     public static void setFormattingEnabled(boolean enabled) {
-        setPropertyValue(FORMATTER, enabled ? ENABLED : DISABLED);
+        setBooleanPropertyValue(FORMATTER, enabled);
     }
 
     public static boolean isCustomBlockEnabled() {
-        return getPropertyValue(CUSTOM_OPEN_BLOCK) == ENABLED;
+        return getBooleanPropertyValue(CUSTOM_OPEN_BLOCK);
     }
 
     public static void setCustomBlockEnabled(boolean enabled) {
-        setPropertyValue(CUSTOM_OPEN_BLOCK, enabled ? ENABLED : DISABLED);
+        setBooleanPropertyValue(CUSTOM_OPEN_BLOCK, enabled);
     }
 
     public static boolean isAutoCollapseBlocksEnabled() {
-        return getPropertyValue(AUTO_COLLAPSE_BLOCKS) == ENABLED;
+        return getBooleanPropertyValue(AUTO_COLLAPSE_BLOCKS);
     }
 
     public static void setAutoCollapseBlocks(boolean enabled) {
-        setPropertyValue(AUTO_COLLAPSE_BLOCKS, enabled ? ENABLED : DISABLED);
+        setBooleanPropertyValue(AUTO_COLLAPSE_BLOCKS, enabled);
     }
 
-    private static PropertyValue getPropertyValue(Property property) {
+    public static Language getCommenterLanguage() {
+        return Language.findLanguageByID(getStringPropertyValue(COMMENTER_LANGUAGE_ID));
+    }
+
+    public static void setCommenterLanguage(Language language) {
+        setStringPropertyValue(COMMENTER_LANGUAGE_ID, language.getID());
+    }
+
+    private static String getStringPropertyValue(Property property) {
         return new PropertyAccessor(PropertiesComponent.getInstance())
                 .getPropertyValue(property);
     }
 
-    private static void setPropertyValue(Property property, PropertyValue value) {
+    private static void setStringPropertyValue(Property property, String value) {
         new PropertyAccessor(PropertiesComponent.getInstance())
                 .setPropertyValue(property, value);
+    }
+
+    private static boolean getBooleanPropertyValue(Property property) {
+        return ENABLED.equals(getStringPropertyValue(property));
+    }
+
+    private static void setBooleanPropertyValue(Property property, boolean enabled) {
+        setStringPropertyValue(property, enabled ? ENABLED : DISABLED);
     }
 }

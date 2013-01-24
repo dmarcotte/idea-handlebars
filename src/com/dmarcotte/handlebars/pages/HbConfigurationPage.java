@@ -2,18 +2,32 @@ package com.dmarcotte.handlebars.pages;
 
 import com.dmarcotte.handlebars.HbBundle;
 import com.dmarcotte.handlebars.config.HbConfig;
+import com.intellij.ide.ui.ListCellRendererWrapper;
+import com.intellij.lang.Language;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class HbConfigurationPage implements SearchableConfigurable {
     private JCheckBox myAutoGenerateClosingTagCheckBox;
     private JPanel myWholePanel;
     private JCheckBox myFormattingCheckBox;
     private JCheckBox myCustomOpenBlock;
+    private JComboBox myCommenterLanguage;
 
     @NotNull
     @Override
@@ -50,7 +64,8 @@ public class HbConfigurationPage implements SearchableConfigurable {
     public boolean isModified() {
         return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled()
                 || myFormattingCheckBox.isSelected() != HbConfig.isFormattingEnabled()
-                || myCustomOpenBlock.isSelected() != HbConfig.isCustomBlockEnabled();
+                || myCustomOpenBlock.isSelected() != HbConfig.isCustomBlockEnabled()
+                || !((Language) myCommenterLanguage.getSelectedItem()).getID().equals(HbConfig.getCommenterLanguage().getID());
 
     }
 
@@ -59,6 +74,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
         HbConfig.setAutoGenerateCloseTagEnabled(myAutoGenerateClosingTagCheckBox.isSelected());
         HbConfig.setFormattingEnabled(myFormattingCheckBox.isSelected());
         HbConfig.setCustomBlockEnabled(myCustomOpenBlock.isSelected());
+        HbConfig.setCommenterLanguage((Language) myCommenterLanguage.getSelectedItem());
     }
 
     @Override
@@ -66,6 +82,37 @@ public class HbConfigurationPage implements SearchableConfigurable {
         myAutoGenerateClosingTagCheckBox.setSelected(HbConfig.isAutoGenerateCloseTagEnabled());
         myFormattingCheckBox.setSelected(HbConfig.isFormattingEnabled());
         myCustomOpenBlock.setSelected(HbConfig.isCustomBlockEnabled());
+        resetCommentLanguageCombo(HbConfig.getCommenterLanguage());
+    }
+
+    private void resetCommentLanguageCombo(Language commentLanguage) {
+        final DefaultComboBoxModel model = (DefaultComboBoxModel) myCommenterLanguage.getModel();
+        final List<Language> languages = TemplateDataLanguageMappings.getTemplateableLanguages();
+        Collections.sort(languages, new Comparator<Language>() {
+            @Override
+            public int compare(final Language o1, final Language o2) {
+                return o1.getID().compareTo(o2.getID());
+            }
+        });
+        for (Language language : languages) {
+            model.addElement(language);
+        }
+
+        // When com.intellij.openapi.fileTypes.impl.FileTypePatternDialog#FileTypePatternDialog updates to fix this warning, we make the same update here
+        //noinspection GtkPreferredJComboBoxRenderer
+        myCommenterLanguage.setRenderer(new ListCellRendererWrapper(myCommenterLanguage.getRenderer()) {
+            @Override
+            public void customize(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+                setText(value == null ? "" : ((Language) value).getDisplayName());
+                if (value != null) {
+                    final FileType type = ((Language) value).getAssociatedFileType();
+                    if (type != null) {
+                        setIcon(type.getIcon());
+                    }
+                }
+            }
+        });
+        myCommenterLanguage.setSelectedItem(commentLanguage);
     }
 
     @Override
