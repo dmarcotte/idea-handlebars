@@ -30,13 +30,13 @@ public class HbCommentActionTest extends HbActionHandlerTest {
     public void testInsertLineComment2() {
         doLineCommentTest(
 
-                "{{#foo}}" +
-                "    {{ba<caret>r}}" +
-                "{{/foo}",
+                "{{#foo}}\n" +
+                "<caret>    {{bar}}\n" +
+                "{{/foo}}",
 
-                "{{#foo}}" +
-                "    <!--{{ba<caret>r}}-->" +
-                "{{/foo}"
+                "{{#foo}}\n" +
+                "    <!--{{bar}}-->\n" +
+                "<caret>{{/foo}}"
         );
     }
 
@@ -50,14 +50,14 @@ public class HbCommentActionTest extends HbActionHandlerTest {
     }
 
     public void testInsertBlockComment2() {
-        doLineCommentTest(
+        doBlockCommentTest(
 
-                "{{#foo}}" +
-                "    <caret>{{bar}}" +
+                "{{#foo}}\n" +
+                "    <caret>{{bar}}\n" +
                 "{{/foo}",
 
-                "{{#foo}}" +
-                "    <!--caret-->{{bar}}" +
+                "{{#foo}}\n" +
+                "    <!--<caret>-->{{bar}}\n" +
                 "{{/foo}"
         );
     }
