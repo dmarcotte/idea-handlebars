@@ -13,6 +13,35 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.5</b>
+      <br>
+      <ul>
+        <li>
+          Makes Handlebars/Mustache a full-fledged template language, supporting templating of any language (default is still HTML)
+          <ul>
+            <li>
+              "Settings->File Types" now allows configuration of which language is being templated by choosing a "Registered Pattern", clicking edit, and choosing a language from the dropdown
+            </li>
+            <li>
+              "Settings->Template Data Language" settings will now be respected, allowing configuration of template data languages by project and folder
+            </li>
+            <li>
+               "Settings->Handlebars/Mustache" can now configure which language's comment syntax is used by the "Comment with Line Comment" and "Comment by Block Comment" actions.  Note that the inability to dynamically choose a commenter is  a <a href="https://github.com/dmarcotte/idea-handlebars/issues/39">known issue</a>.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Adds code folding for mustache blocks
+          <ul>
+              <li>
+                  The folding behavior is modelled after the native HTML/XML code folding
+              </li>
+              <li>
+                  Blocks can be set to collapse by default in "Settings->Editor->Code Folding"
+              </li>
+          </ul>
+        </li>
+      </ul>
       <b>Version 0.4</b>
       <br>
       <ul>
@@ -108,7 +137,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.4</version>
+  <version>0.5</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   

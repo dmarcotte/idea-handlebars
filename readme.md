@@ -2,12 +2,10 @@
 
 IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mustache](http://mustache.github.com/) templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
-## _NEW:_ Template formatting
-The latest release now includes [a full template formatter](https://github.com/dmarcotte/idea-handlebars/pull/9).  Full release notes on the [plugin repository page](http://plugins.jetbrains.com/plugin?pr=idea&pluginId=6884).
+[Jetbrains plugin repository page](http://plugins.intellij.net/plugin/?idea&pluginId=6884)
 
-* If you were running the beta, you can switch back to the released version as follows:
-  * Right-click the beta in the "Settings->Plugins" list and choose "Uninstall"
-  * Re-enable the released version, Right-click and choose "Reload List of Plugins" to find the latest version
+## _NEW:_ Template any language, Code folding
+The latest release adds the ability to template any language and support for code folding for mustache blocks
 
 ## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
@@ -17,10 +15,11 @@ The latest release now includes [a full template formatter](https://github.com/d
 * Syntax error inspections
 * Configurable syntax highlighting
 * Template formatter
+* Code folding for mustache blocks
 * Auto-insert of closing tags
 * Matched mustache pair highlighting
-* Full HTML highlighting, code completion, inspections, formatting and commenting for the HTML content in your templates
-* By default, files with the ".handlebars", ".hbs" or ".mustache" extensions are handled by this plugin
+* Full highlighting, code completion, inspections, formatting and commenting for the content in your templates (by default HTML, configurable in `Settings->Template Data Languages` and `Settings->File Types`)
+* By default, files matching `*.handlebars`, `*.hbs` or `*.mustache` are handled by this plugin.  Configure other file patterns in `Settings->File Types`
 
 ## Future directions
 * See [the pulls](https://github.com/dmarcotte/idea-handlebars/pulls) and [issues](https://github.com/dmarcotte/idea-handlebars/issues) for a preview of in-progress and planned features
