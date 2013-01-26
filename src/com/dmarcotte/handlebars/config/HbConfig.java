@@ -6,7 +6,6 @@ import com.intellij.lang.Language;
 import static com.dmarcotte.handlebars.config.Property.AUTO_COLLAPSE_BLOCKS;
 import static com.dmarcotte.handlebars.config.Property.AUTO_GENERATE_CLOSE_TAG;
 import static com.dmarcotte.handlebars.config.Property.COMMENTER_LANGUAGE_ID;
-import static com.dmarcotte.handlebars.config.Property.CUSTOM_OPEN_BLOCK;
 import static com.dmarcotte.handlebars.config.Property.DISABLED;
 import static com.dmarcotte.handlebars.config.Property.ENABLED;
 import static com.dmarcotte.handlebars.config.Property.FORMATTER;
@@ -27,14 +26,6 @@ public class HbConfig {
 
     public static void setFormattingEnabled(boolean enabled) {
         setBooleanPropertyValue(FORMATTER, enabled);
-    }
-
-    public static boolean isCustomBlockEnabled() {
-        return getBooleanPropertyValue(CUSTOM_OPEN_BLOCK);
-    }
-
-    public static void setCustomBlockEnabled(boolean enabled) {
-        setBooleanPropertyValue(CUSTOM_OPEN_BLOCK, enabled);
     }
 
     public static boolean isAutoCollapseBlocksEnabled() {

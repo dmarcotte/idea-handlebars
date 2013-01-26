@@ -26,7 +26,6 @@ public class HbConfigurationPage implements SearchableConfigurable {
     private JCheckBox myAutoGenerateClosingTagCheckBox;
     private JPanel myWholePanel;
     private JCheckBox myFormattingCheckBox;
-    private JCheckBox myCustomOpenBlock;
     private JComboBox myCommenterLanguage;
 
     @NotNull
@@ -65,7 +64,6 @@ public class HbConfigurationPage implements SearchableConfigurable {
     public boolean isModified() {
         return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled()
                 || myFormattingCheckBox.isSelected() != HbConfig.isFormattingEnabled()
-                || myCustomOpenBlock.isSelected() != HbConfig.isCustomBlockEnabled()
                 || !((Language) myCommenterLanguage.getSelectedItem()).getID().equals(HbConfig.getCommenterLanguage().getID());
 
     }
@@ -74,7 +72,6 @@ public class HbConfigurationPage implements SearchableConfigurable {
     public void apply() throws ConfigurationException {
         HbConfig.setAutoGenerateCloseTagEnabled(myAutoGenerateClosingTagCheckBox.isSelected());
         HbConfig.setFormattingEnabled(myFormattingCheckBox.isSelected());
-        HbConfig.setCustomBlockEnabled(myCustomOpenBlock.isSelected());
         HbConfig.setCommenterLanguage((Language) myCommenterLanguage.getSelectedItem());
     }
 
@@ -82,7 +79,6 @@ public class HbConfigurationPage implements SearchableConfigurable {
     public void reset() {
         myAutoGenerateClosingTagCheckBox.setSelected(HbConfig.isAutoGenerateCloseTagEnabled());
         myFormattingCheckBox.setSelected(HbConfig.isFormattingEnabled());
-        myCustomOpenBlock.setSelected(HbConfig.isCustomBlockEnabled());
         resetCommentLanguageCombo(HbConfig.getCommenterLanguage());
     }
 

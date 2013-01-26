@@ -22,7 +22,7 @@ public class PropertyTest1 {
     @Test
     public void testPropertiesChange() {
         // expectedNumberOfPropertyFields represents the number of enum entries plus that static members, plus one for the $VALUES that every enum gets
-        int expectedNumberOfPropertyFields = 8;
+        int expectedNumberOfPropertyFields = 7;
 
         Assert.assertEquals("Declared properties in enum \"" + Property.class.getSimpleName() + "\" have changed!  Ensure that changes are backwards compatible " +
                                     "and com.dmarcotte.handlebars.config.PropertyTest2 has been updated appropriately.\n",

@@ -112,12 +112,6 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
   "{{>" { return HbTokenTypes.OPEN_PARTIAL; }
   "{{#" { return HbTokenTypes.OPEN_BLOCK; }
-  "{{_" {
-    if ( ! HbConfig.isCustomBlockEnabled() ) {
-      yypushback(1);
-    }
-    return HbTokenTypes.OPEN_BLOCK;
-  }
   "{{/" { return HbTokenTypes.OPEN_ENDBLOCK; }
   "{{^" { return HbTokenTypes.OPEN_INVERSE; }
   // NOTE: a standard Handlebars lexer would check for "{{else" here.  We instead want to lex it as two tokens to highlight the "{{" and the "else" differently.  See where we make an HbTokens.ELSE below.

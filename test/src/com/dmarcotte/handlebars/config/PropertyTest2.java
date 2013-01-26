@@ -21,9 +21,6 @@ public class PropertyTest2 {
         PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.FORMATTER,
                                                                  "HbFormatter"));
 
-        PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.CUSTOM_OPEN_BLOCK,
-                                                                 "HbCustomOpenBlock"));
-
         PROPERTY_TEST_DEFINITIONS.add(new PropertyTestDefinition(Property.AUTO_COLLAPSE_BLOCKS,
                                                                  "HbAutoCollapseBlocks"));
 

@@ -40,20 +40,6 @@ enum Property {
         }
     },
 
-    CUSTOM_OPEN_BLOCK {
-        @NotNull
-        @Override
-        public String getStringName() {
-            return "HbCustomOpenBlock";
-        }
-
-        @NotNull
-        @Override
-        public String getDefault() {
-            return DISABLED;
-        }
-    },
-
     AUTO_COLLAPSE_BLOCKS {
         @NotNull
         @Override
