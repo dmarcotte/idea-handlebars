@@ -2,9 +2,11 @@
 
 IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mustache](http://mustache.github.com/) templates to IDEs based on the Intellij IDEA platform (IntelliJ IDEA, IDEA Community Edition, RubyMine, PhpStorm, WebStorm, PyCharm, AppCode).
 
+![Handlebars/Mustache editing screenshot](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/editor.png "Handlebars/Mustache editing")
+
 [Jetbrains plugin repository page](http://plugins.intellij.net/plugin/?idea&pluginId=6884)
 
-## _NEW:_ Template any language, Code folding
+## _NEW:_ Template any language, code folding
 The latest release adds the ability to template any language and support for code folding for mustache blocks
 
 ## Installing
@@ -13,12 +15,12 @@ The latest release adds the ability to template any language and support for cod
 
 ## Features
 * Syntax error inspections
-* Configurable syntax highlighting
+* [Configurable syntax highlighting](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/highlight_config.png)
 * Template formatter
 * Code folding for mustache blocks
 * Auto-insert of closing tags
 * Matched mustache pair highlighting
-* Full highlighting, code completion, inspections, formatting and commenting for the content in your templates (by default HTML, configurable in `Settings->Template Data Languages` and `Settings->File Types`)
+* Full highlighting, code completion, inspections, formatting and commenting for the content in your templates (by default HTML, configurable in ["Settings->Template Data Languages"](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/custom_langs_by_project.png) and ["Settings->File Types"](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/custom_langs_by_filename_pattern.png))
 * By default, files matching `*.handlebars`, `*.hbs` or `*.mustache` are handled by this plugin.  Configure other file patterns in `Settings->File Types`
 
 ## Future directions
