@@ -13,6 +13,13 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.5.1</b>
+      <br>
+      <ul>
+        <li>
+            Fixes <a href="https://github.com/dmarcotte/idea-handlebars/issues/40">"refused to parse text" issue</a> when loading up files which have had their language overriden to a language which is not templateable.
+        </li>
+      </ul>
       <b>Version 0.5</b>
       <br>
       <ul>
@@ -137,7 +144,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.5</version>
+  <version>0.5.1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   

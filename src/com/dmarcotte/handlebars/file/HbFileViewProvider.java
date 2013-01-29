@@ -41,7 +41,12 @@ public class HbFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvi
             dataLang = HbLanguage.getDefaultTemplateLang().getLanguage();
         }
 
-        dataLang = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
+        Language substituteLang = LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
+
+        // only use a substituted language if it's templateable
+        if (TemplateDataLanguageMappings.getTemplateableLanguages().contains(substituteLang)) {
+            dataLang = substituteLang;
+        }
 
         return dataLang;
     }
