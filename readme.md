@@ -14,9 +14,9 @@ The latest release adds the ability to template any language and support for cod
   * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars/Mustache" on the list, right-click, and select "Download and Install"
 
 ## Features
-* Syntax error inspections
+* [Syntax error inspections](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/editor.png)
 * [Configurable syntax highlighting](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/highlight_config.png)
-* Template formatter
+* [Template formatter](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/formatter.png)
 * Code folding for mustache blocks
 * Auto-insert of closing tags
 * Matched mustache pair highlighting
