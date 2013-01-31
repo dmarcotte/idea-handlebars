@@ -15,12 +15,12 @@ The latest release adds the ability to template any language and support for cod
 
 ## Features
 * Syntax error inspections
-* [Configurable syntax highlighting](markdown_images/highlight_config.png)
+* [Configurable syntax highlighting](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/highlight_config.png)
 * Template formatter
 * Code folding for mustache blocks
 * Auto-insert of closing tags
 * Matched mustache pair highlighting
-* Full highlighting, code completion, inspections, formatting and commenting for the content in your templates (by default HTML, configurable in ["Settings->Template Data Languages"](markdown_images/custom_langs_by_project.png) and ["Settings->File Types"](markdown_images/custom_langs_by_filename_pattern.png))
+* Full highlighting, code completion, inspections, formatting and commenting for the content in your templates (by default HTML, configurable in ["Settings->Template Data Languages"](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/custom_langs_by_project.png) and ["Settings->File Types"](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/custom_langs_by_filename_pattern.png))
 * By default, files matching `*.handlebars`, `*.hbs` or `*.mustache` are handled by this plugin.  Configure other file patterns in `Settings->File Types`
 
 ## Future directions
@@ -35,6 +35,6 @@ There's a variety of ways you can help this project out:
     * [File issues](https://github.com/dmarcotte/idea-handlebars/issues/new) for bugs, suggestions and requests.  This is a great and easy way to help out
     * Fluent in multiple languages?  [Provide a translation!](https://github.com/dmarcotte/idea-handlebars/issues/21)
 * Contributing code
-    * Have a gander at the [contributor guidelines](contributing.md)
-    * The [developer setup instructions](developer_environment.md) should get you up and running in no time
+    * Have a gander at the [contributor guidelines](https://github.com/dmarcotte/idea-handlebars/blob/master/contributing.md)
+    * The [developer setup instructions](https://github.com/dmarcotte/idea-handlebars/blob/master/developer_environment.md) should get you up and running in no time
     * Look at [contrib-welcome issues](https://github.com/dmarcotte/idea-handlebars/issues?direction=desc&labels=contrib-welcome&page=1&sort=created&state=open) for ideas, or [submit an idea of your own](https://github.com/dmarcotte/idea-handlebars/issues/new)
