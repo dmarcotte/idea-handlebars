@@ -7,9 +7,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * todo lots of dupe between the Property tests and the PropertyValue tests (since they need the same guardrails).  Refactor?
- */
 public class PropertyTest1 {
 
     /**

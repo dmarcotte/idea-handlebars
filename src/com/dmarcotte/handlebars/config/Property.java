@@ -1,13 +1,10 @@
 package com.dmarcotte.handlebars.config;
 
 import com.intellij.lang.html.HTMLLanguage;
-import groovy.lang.PropertyValue;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Formalizes the properties which we will persist using {@link com.intellij.ide.util.PropertiesComponent}
- *
- * See also {@link PropertyValue}
  */
 enum Property {
     AUTO_GENERATE_CLOSE_TAG {
