@@ -96,7 +96,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
         }
 
         // When com.intellij.openapi.fileTypes.impl.FileTypePatternDialog#FileTypePatternDialog updates to fix this warning, we make the same update here
-        //noinspection GtkPreferredJComboBoxRenderer
+        //noinspection GtkPreferredJComboBoxRenderer,deprecation
         myCommenterLanguage.setRenderer(new ListCellRendererWrapper(myCommenterLanguage.getRenderer()) {
             @Override
             public void customize(JList list, Object value, int index, boolean selected, boolean hasFocus) {

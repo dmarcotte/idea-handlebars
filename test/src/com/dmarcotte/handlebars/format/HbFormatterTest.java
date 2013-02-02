@@ -75,9 +75,11 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
         doTextTest(text, textAfter, HbLanguage.getDefaultTemplateLang());
     }
 
+    private abstract static class FormatRunnableFactory {
+        abstract Runnable createFormatRunnable(PsiFile file);
+    }
+
     /**
-     * NOTE: the line-by-line check in this test is currently disabled.  See TODO below.
-     *
      * This method runs both a full-file reformat on beforeText, and a line-by-line reformat.  Though the tests
      * would output slightly better errors if these were separate tests, enforcing that they are always both run
      * for any test defined is the easiest way to ensure that the line-by-line is not messed up by formatter changes
@@ -88,97 +90,100 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
      * @throws IncorrectOperationException
      */
     void doTextTest(final String beforeText, String textAfter, LanguageFileType templateDataLanguageType) throws IncorrectOperationException {
-        // run "Reformat Code" on the whole "file" defined by beforeText
-        {
-            final PsiFile file = createFile("A.hbs", beforeText);
-
-            final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
-            final Document document = manager.getDocument(file);
-
-            if (document == null) {
-                fail("Don't expect the document to be null");
-                return;
-            }
-
-            TemplateDataLanguageMappings.getInstance(getProject()).setMapping(file.getVirtualFile(), templateDataLanguageType.getLanguage());
-
-            CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-                @Override
-                public void run() {
-                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            document.replaceString(0, document.getTextLength(), beforeText);
-                            manager.commitDocument(document);
-
-                            try {
-                                TextRange rangeToUse = file.getTextRange();
-                                CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
-                                styleManager.reformatText(file, rangeToUse.getStartOffset(), rangeToUse.getEndOffset());
-                            }
-                            catch (IncorrectOperationException e) {
-                                assertTrue(e.getLocalizedMessage(), false);
-                            }
-
-                            TemplateDataLanguageMappings.getInstance(getProject()).cleanupForNextTest();
+        // define action to run "Reformat Code" on the whole "file" defined by beforeText
+        FormatRunnableFactory fullFormatRunnableFactory = new FormatRunnableFactory() {
+            @Override
+            Runnable createFormatRunnable(final PsiFile file) {
+                return new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            TextRange rangeToUse = file.getTextRange();
+                            CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
+                            styleManager.reformatText(file, rangeToUse.getStartOffset(), rangeToUse.getEndOffset());
+                        } catch (IncorrectOperationException e) {
+                            assertTrue(e.getLocalizedMessage(), false);
                         }
-                    });
-                }
-            }, "", "");
+                    }
+                };
+            }
+        };
 
-            assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(document.getText()));
-            manager.commitDocument(document);
-            assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(file.getText()));
-        }
+        // define action to run "Adjust line indent" on every line in the "file" defined by beforeText
+        FormatRunnableFactory lineFormatRunnableFactory = new FormatRunnableFactory() {
+            @Override
+            Runnable createFormatRunnable(final PsiFile file) {
+                return new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
+                            final Document document = manager.getDocument(file);
 
-        // TODO Re-enable this check.  This test went flaky and gave a false negative on the SampleFile test, so disabling it.  It should be possible to figure out what went wrong and fix it.
-//        // run "Adjust line indent" on every line in the "file" defined by beforeText
-//        {
-//            final PsiFile file = createFile("B.hbs", beforeText);
-//
-//            final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
-//            final Document document = manager.getDocument(file);
-//
-//            // write our beforeText into our document
-//            CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-//                @Override
-//                public void run() {
-//                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            document.replaceString(0, document.getTextLength(), beforeText);
-//                            manager.commitDocument(document);
-//                        }
-//                    });
-//                }
-//            }, "", "");
-//
-//            // now run the line formatter on each line in turn
-//            for (int i = 0; i < document.getLineCount(); i++) {
-//                final int lineNum = i;
-//                CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ApplicationManager.getApplication().runWriteAction(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                try {
-//                                    CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
-//                                    styleManager.adjustLineIndent(file, document.getLineStartOffset(lineNum));
-//                                }
-//                                catch (IncorrectOperationException e) {
-//                                    assertTrue(e.getLocalizedMessage(), false);
-//                                }
-//                            }
-//                        });
-//                    }
-//                }, "", "");
-//            }
-//
-//            assertEquals("Line-by-line formatting failed", prepareText(textAfter), prepareText(document.getText()));
-//            manager.commitDocument(document);
-//            assertEquals("Line-by-line formatting failed", prepareText(textAfter), prepareText(file.getText()));
-//        }
+                            assert document != null;
+
+                            for (int lineNum = 0; lineNum < document.getLineCount(); lineNum++) {
+                                CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(getProject());
+                                int offset = document.getLineStartOffset(lineNum);
+                                @SuppressWarnings ("deprecation") // if this breaks at some point, we should
+                                        // refactor to invoke AutoIndentLinesAction
+                                        // instead of doing the indent directly
+                                        boolean lineToBeIndented = codeStyleManager.isLineToBeIndented(file, offset);
+                                if (lineToBeIndented) {
+                                    codeStyleManager.adjustLineIndent(file, offset);
+                                }
+                            }
+                        } catch (IncorrectOperationException e) {
+                            assertTrue(e.getLocalizedMessage(), false);
+                        }
+                    }
+                };
+            }
+        };
+
+        doFormatterActionTest(fullFormatRunnableFactory, beforeText, textAfter, templateDataLanguageType);
+        doFormatterActionTest(lineFormatRunnableFactory, beforeText, textAfter, templateDataLanguageType);
+    }
+
+    private void doFormatterActionTest(final FormatRunnableFactory formatAction,
+                                          final String beforeText,
+                                          String textAfter,
+                                          LanguageFileType templateDataLanguageType) {
+        final PsiFile file = createFile("A.hbs", beforeText);
+
+        final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
+        final Document document = manager.getDocument(file);
+
+        assert document != null;
+
+        TemplateDataLanguageMappings.getInstance(getProject()).setMapping(file.getVirtualFile(), templateDataLanguageType.getLanguage());
+
+        // write our beforeText into our document
+        CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
+            @Override
+            public void run() {
+                ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        document.replaceString(0, document.getTextLength(), beforeText);
+                        manager.commitDocument(document);
+                    }
+                });
+            }
+        }, "", "");
+
+        CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
+            @Override
+            public void run() {
+                ApplicationManager.getApplication().runWriteAction(formatAction.createFormatRunnable(file));
+            }
+        }, "", "");
+
+        TemplateDataLanguageMappings.getInstance(getProject()).cleanupForNextTest();
+
+        assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(document.getText()));
+        manager.commitDocument(document);
+        assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(file.getText()));
     }
 
     private static String prepareText(String actual) {

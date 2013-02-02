@@ -24,8 +24,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Handler for custom plugin actions on chars typed by the user.  See {@link HbEnterHandler} for custom actions
  * on Enter.
- *
- * TODO add a test for this class
  */
 public class HbTypedHandler extends TypedHandlerDelegate {
     @Override
