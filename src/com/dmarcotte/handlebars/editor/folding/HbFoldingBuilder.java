@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,11 +99,6 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     @Nullable
     @Override
     public String getPlaceholderText(@NotNull ASTNode node) {
-        IElementType type = node.getElementType();
-        if (type != HbTokenTypes.BLOCK_WRAPPER) {
-            return null;
-        }
-
         return "...";
     }
 

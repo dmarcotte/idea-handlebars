@@ -96,6 +96,31 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
     }
 
+    /**
+     * Our typed handler relies on looking a couple of characters back
+     * make sure we're well bahaved when there are none
+     */
+    public void testFirstCharTyped() {
+        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        doCharTest('}', "<caret>", "}<caret>");
+
+        HbConfig.setAutoGenerateCloseTagEnabled(false);
+        doCharTest('}', "<caret>", "}<caret>");
+    }
+
+    /**
+     * Ensure that IDEA does not provide any automatic "}" insertion
+     */
+    public void testSuppressNativeBracketInsert() {
+        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        doCharTest('{', "<caret>", "{<caret>");
+        doCharTest('{', "{<caret>", "{{<caret>");
+
+        HbConfig.setAutoGenerateCloseTagEnabled(false);
+        doCharTest('{', "<caret>", "{<caret>");
+        doCharTest('{', "{<caret>", "{{<caret>");
+    }
+
     public void testFormatOnCloseBlockCompleted1() {
         doCharTest('}',
 
@@ -231,5 +256,15 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         );
 
         HbConfig.setFormattingEnabled(previousFormatSetting);
+    }
+
+    public void testEnterNotBetweenBlockTags() {
+        doEnterTest(
+
+                "{{foo}}<caret>{{foo}}",
+
+                "{{foo}}\n" +
+                "<caret>{{foo}}"
+        );
     }
 }
