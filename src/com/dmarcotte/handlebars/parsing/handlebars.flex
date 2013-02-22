@@ -1,7 +1,8 @@
-// This is the official Handlebars lexer definition:
-// (taken from the following revision: https://github.com/wycats/handlebars.js/commit/c79c761460f7d08e3862c0c9992f65a799771851#src/handlebars.l,
-//      plus the fix in https://github.com/wycats/handlebars.js/commit/5a6e4f1ddde219d4043648816256342a447536c5#src/handlebars.l)
-// We base our lexer directly on that, making some modifications to account for Jison/JFlex syntax and functionality differences
+// We base our lexer directly on the official handlebars.l lexer definition,
+// making some modifications to account for Jison/JFlex syntax and functionality differences
+//
+// Revision ported: https://github.com/wycats/handlebars.js/commit/0b97fea56faaf48de1b6aa1a67b3796c15a45d01#src/handlebars.l,
+//      plus the fix in https://github.com/wycats/handlebars.js/commit/5a6e4f1ddde219d4043648816256342a447536c5#src/handlebars.l
 
 package com.dmarcotte.handlebars.parsing;
 
@@ -136,7 +137,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
-  \[[^\]]*\] { return HbTokenTypes.ID; }
+  "["[^\]]*"]" { return HbTokenTypes.ID; }
 }
 
 {WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }
