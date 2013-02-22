@@ -115,4 +115,19 @@ public class HbLexerFreeFormTest extends HbLexerTest {
         result.shouldMatchTokenTypes(COMMENT, CONTENT);
         result.shouldMatchTokenContent("{{! ZOMG! A comment!!! }}", "}}");
     }
+
+    public void testEscapedMustacheAtEOF() {
+        TokenizerResult result = tokenize("\\{{escaped}}");
+
+        result.shouldMatchTokenTypes(CONTENT, CONTENT);
+        result.shouldMatchTokenContent("\\", "{{escaped}}");
+    }
+
+
+    public void testEscapedMustacheWithNoFollowingStache() {
+        TokenizerResult result = tokenize("\\{{escaped}} <div/>");
+
+        result.shouldMatchTokenTypes(CONTENT, CONTENT);
+        result.shouldMatchTokenContent("\\", "{{escaped}} <div/>");
+    }
 }

@@ -22,6 +22,39 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     }
 
     /**
+     * supports escaping delimiters
+     */
+    public void testEscapingDelimiters() {
+        TokenizerResult result = tokenize("{{foo}} \\{{bar}} {{baz}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, CONTENT, OPEN, ID, CLOSE);
+
+        result.shouldBeToken(4, CONTENT, "{{bar}} ");
+    }
+
+    /**
+     * supports escaping multiple delimiters
+     */
+    public void testEscapingMultipleDelimiters() {
+        TokenizerResult result = tokenize("{{foo}} \\{{bar}} \\{{baz}}");
+
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, CONTENT, CONTENT);
+
+        result.shouldBeToken(3, CONTENT, " \\");
+        result.shouldBeToken(4, CONTENT, "{{bar}} ");
+        result.shouldBeToken(5, CONTENT, "{{baz}}");
+    }
+
+    /**
+     * supports escaping a triple stash
+     */
+    public void testEscapingTripleStash() {
+        TokenizerResult result = tokenize("{{foo}} \\{{{bar}}} {{baz}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, CONTENT, OPEN, ID, CLOSE);
+
+        result.shouldBeToken(4, CONTENT, "{{{bar}}} ");
+    }
+
+    /**
      * tokenizes a simple path
      */
     public void testSimplePath() {
