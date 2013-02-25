@@ -26,22 +26,23 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testEscapingDelimiters() {
         TokenizerResult result = tokenize("{{foo}} \\{{bar}} {{baz}}");
-        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, CONTENT, OPEN, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, OPEN, ID, CLOSE);
 
-        result.shouldBeToken(4, CONTENT, "{{bar}} ");
+        result.shouldBeToken(5, CONTENT, "{{bar}} ");
     }
 
     /**
      * supports escaping multiple delimiters
      */
     public void testEscapingMultipleDelimiters() {
-        TokenizerResult result = tokenize("{{foo}} \\{{bar}} \\{{baz}}");
+        TokenizerResult result = tokenize("{{foo}}    \\{{bar}} \\{{baz}}");
 
-        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, CONTENT, CONTENT);
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, ESCAPE_CHAR, CONTENT);
 
-        result.shouldBeToken(3, CONTENT, " \\");
-        result.shouldBeToken(4, CONTENT, "{{bar}} ");
-        result.shouldBeToken(5, CONTENT, "{{baz}}");
+        result.shouldBeToken(4, ESCAPE_CHAR, "\\");
+        result.shouldBeToken(5, CONTENT, "{{bar}} ");
+        result.shouldBeToken(6, ESCAPE_CHAR, "\\");
+        result.shouldBeToken(7, CONTENT, "{{baz}}");
     }
 
     /**
@@ -49,9 +50,9 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testEscapingTripleStash() {
         TokenizerResult result = tokenize("{{foo}} \\{{{bar}}} {{baz}}");
-        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, CONTENT, OPEN, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, OPEN, ID, CLOSE);
 
-        result.shouldBeToken(4, CONTENT, "{{{bar}}} ");
+        result.shouldBeToken(5, CONTENT, "{{{bar}}} ");
     }
 
     /**

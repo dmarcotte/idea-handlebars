@@ -5,6 +5,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ESCAPE_CHAR;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
@@ -121,7 +122,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     public void testEscapedMustacheAtEOF() {
         TokenizerResult result = tokenize("\\{{escaped}}");
 
-        result.shouldMatchTokenTypes(CONTENT, CONTENT);
+        result.shouldMatchTokenTypes(ESCAPE_CHAR, CONTENT);
         result.shouldMatchTokenContent("\\", "{{escaped}}");
     }
 
@@ -129,7 +130,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     public void testEscapedMustacheWithNoFollowingStache() {
         TokenizerResult result = tokenize("\\{{escaped}} <div/>");
 
-        result.shouldMatchTokenTypes(CONTENT, CONTENT);
+        result.shouldMatchTokenTypes(ESCAPE_CHAR, CONTENT);
         result.shouldMatchTokenContent("\\", "{{escaped}} <div/>");
     }
 

@@ -18,6 +18,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ELSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.EQUALS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ESCAPE_CHAR;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INTEGER;
@@ -148,6 +149,8 @@ class HbParsing {
      * | openBlock program closeBlock
      * | mustache
      * | partial
+     * | ESCAPE_CHAR CONTENT  (HB_CUSTOMIZATION the official Handlebars lexer just throws out the escape char;
+     *                          it's convenient for us to keep it so that we can highlight it)
      * | CONTENT
      * | COMMENT
      * ;
@@ -200,6 +203,11 @@ class HbParsing {
 
         if (tokenType == OPEN_PARTIAL) {
             parsePartial(builder);
+            return true;
+        }
+
+        if (tokenType == ESCAPE_CHAR) {
+            builder.advanceLexer(); // ignore the escape character
             return true;
         }
 

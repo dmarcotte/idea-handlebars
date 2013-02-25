@@ -62,6 +62,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
           }
 
           if (yylength() > 0 && yytext().toString().substring(yylength() - 1, yylength()).equals("\\")) {
+            yypushback(1); // put the escape char back
             yypushState(emu);
           } else {
             yypushState(mu);
@@ -83,7 +84,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 }
 
 <emu> {
-    "\\" { /* ignore */ }
+    "\\" { return HbTokenTypes.ESCAPE_CHAR; }
     "{{"~"{{" { // grab everything up to the next open stache
           // backtrack over any stache characters at the end of this string
           while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {

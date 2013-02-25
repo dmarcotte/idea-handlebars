@@ -47,6 +47,7 @@ public class HbTokenTypes {
     public static final IElementType BOOLEAN = new HbElementType("BOOLEAN", "hb.parsing.element.expected.boolean");
     public static final IElementType INTEGER = new HbElementType("INTEGER", "hb.parsing.element.expected.integer");
     public static final IElementType STRING = new HbElementType("STRING", "hb.parsing.element.expected.string");
+    public static final IElementType ESCAPE_CHAR = new HbElementType("ESCAPE_CHAR", "");
     public static final IElementType INVALID = new HbElementType("INVALID", "hb.parsing.element.expected.invalid");
 
     public static final IFileElementType FILE = new IFileElementType("FILE", HbLanguage.INSTANCE);
