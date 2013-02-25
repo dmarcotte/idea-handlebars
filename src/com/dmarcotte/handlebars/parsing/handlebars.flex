@@ -44,6 +44,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 %state mu
 %state emu
+%state data
 
 %%
 
@@ -131,6 +132,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
   \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
+  "@" { yypushState(data); return HbTokenTypes.DATA_PREFIX; }
   "else"/["}"\t \n\x0B\f\r] { return HbTokenTypes.ELSE; } // create a custom token for "else" so that we can highlight it independently of the "{{" but still parse it as an inverse operator
   "true"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
@@ -138,6 +140,11 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
   "["[^\]]*"]" { return HbTokenTypes.ID; }
+}
+
+<data> {
+  [a-zA-Z]+ { yypopState(); return HbTokenTypes.DATA; }
+  "}}" { yypushback(2); yypopState(); } // stop looking for data id when we hit a close stache
 }
 
 {WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }

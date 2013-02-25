@@ -39,6 +39,8 @@ public class HbTokenTypes {
     public static final IElementType OPEN_UNESCAPED = new HbElementType("OPEN_UNESCAPED", "hb.parsing.element.expected.open_unescaped");
     public static final IElementType EQUALS = new HbElementType("EQUALS", "hb.parsing.element.expected.equals");
     public static final IElementType ID = new HbElementType("ID", "hb.parsing.element.expected.id");
+    public static final IElementType DATA_PREFIX = new HbElementType("DATA_PREFIX", "hb.parsing.element.expected.data");
+    public static final IElementType DATA = new HbElementType("DATA", "hb.parsing.element.expected.data");
     public static final IElementType SEP = new HbElementType("SEP", "hb.parsing.element.expected.separator");
     public static final IElementType CLOSE = new HbElementType("CLOSE", "hb.parsing.element.expected.close");
     public static final IElementType ELSE = new HbElementType("ELSE", "");

@@ -321,6 +321,23 @@ public class HbTokenizerSpecTest extends HbLexerTest {
         result = tokenize("{{ foo omg bar=\"baz\" bat=\"bam\" }}");
         result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, STRING, WHITE_SPACE, ID, EQUALS, STRING, WHITE_SPACE, CLOSE);
         result.shouldBeToken(4, ID, "omg");
-        
     }
+
+    /**
+     * tokenizes special @ identifiers
+     */
+    public void testSpecialDataIdentifiers() {
+        TokenizerResult result = tokenize("{{ @foo }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, DATA_PREFIX, DATA, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(3, DATA, "foo");
+
+        result = tokenize("{{ foo @bar }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, DATA_PREFIX, DATA, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(5, DATA, "bar");
+
+        result = tokenize("{{ foo bar=@baz }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, DATA_PREFIX, DATA, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(7, DATA, "baz");
+    }
+
 }

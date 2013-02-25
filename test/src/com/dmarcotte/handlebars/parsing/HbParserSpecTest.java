@@ -1,7 +1,5 @@
 package com.dmarcotte.handlebars.parsing;
 
-import com.dmarcotte.handlebars.config.HbConfig;
-
 /**
  * Java representations of the validations in Handlebars parser_spec.rb
  * (Precise revision: https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/spec/parser_spec.rb)
@@ -22,6 +20,8 @@ public class HbParserSpecTest extends HbParserTest {
     public void testMustachesWithStringParameters() { doTest(true); }
     public void testMustachesWithIntegerParameters() { doTest(true); }
     public void testMustachesWithBooleanParameters() { doTest(true); }
+    public void testSimpleMustachesWithData() { doTest(true); }
+    public void testMustachesWithDataParameters() { doTest(true); }
     public void testContentsFollowedByMustache() { doTest(true); }
     public void testPartial() { doTest(true); }
     public void testPartialWithContext() { doTest(true); }

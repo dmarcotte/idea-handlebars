@@ -3,6 +3,8 @@ package com.dmarcotte.handlebars.parsing;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
@@ -129,5 +131,15 @@ public class HbLexerFreeFormTest extends HbLexerTest {
 
         result.shouldMatchTokenTypes(CONTENT, CONTENT);
         result.shouldMatchTokenContent("\\", "{{escaped}} <div/>");
+    }
+
+    public void testDataWithInvalidIdentifier() {
+        TokenizerResult result = tokenize("{{ @  }}");
+
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, DATA_PREFIX, WHITE_SPACE, CLOSE);
+
+        result = tokenize("{{ @%foo  }}");
+
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, DATA_PREFIX, INVALID, DATA, WHITE_SPACE, CLOSE);
     }
 }

@@ -14,6 +14,8 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE_BLOCK_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ELSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.EQUALS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
@@ -426,6 +428,7 @@ class HbParsing {
      * | path params { $$ = [[$1].concat($2), null]; }
      * | path hash { $$ = [[$1], $2]; }
      * | path { $$ = [[$1], null]; }
+     * | DATA { $$ = [[new yy.DataNode($1)], null]; }
      * ;
      *
      * @param hasOpenTag is used to tell this method that the first ID in this 'stache is the open
@@ -440,9 +443,21 @@ class HbParsing {
             openTagNamesStack.push(builder.getTokenText());
         }
 
+        PsiBuilder.Marker pathMarker = builder.mark();
         if (!parsePath(builder)) {
-            inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path"));
-            return false;
+            pathMarker.rollbackTo();
+            // not a path, try to parse DATA
+            if (builder.getTokenType() == DATA_PREFIX
+                    && parseLeafToken(builder, DATA_PREFIX)
+                    && parseLeafToken(builder, HbTokenTypes.DATA)) {
+                inMustacheMarker.done(IN_MUSTACHE);
+                return true;
+            } else {
+                inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path.or.data"));
+                return false;
+            }
+        } else {
+            pathMarker.drop();
         }
 
         // try to extend the 'path' we found to 'path hash'
@@ -513,6 +528,7 @@ class HbParsing {
      * | STRING
      * | INTEGER
      * | BOOLEAN
+     * | DATA
      * ;
      */
     private boolean parseParam(PsiBuilder builder) {
@@ -552,6 +568,15 @@ class HbParsing {
             return true;
         } else {
             booleanMarker.rollbackTo();
+        }
+
+        PsiBuilder.Marker dataMarker = builder.mark();
+        if (parseLeafToken(builder, DATA_PREFIX) && parseLeafToken(builder, DATA)) {
+            dataMarker.drop();
+            paramMarker.done(PARAM);
+            return true;
+        } else {
+            dataMarker.rollbackTo();
         }
 
         paramMarker.error(HbBundle.message("hb.parsing.expected.parameter"));
@@ -707,6 +732,9 @@ class HbParsing {
         return isHashUpcoming;
     }
 
+    /**
+     * Tries to parse the given token, marking an error if any other token is found
+     */
     private boolean parseLeafToken(PsiBuilder builder, IElementType leafTokenType) {
         PsiBuilder.Marker leafTokenMark = builder.mark();
         if (builder.getTokenType() == leafTokenType) {
@@ -717,7 +745,7 @@ class HbParsing {
             while (!builder.eof() && builder.getTokenType() == INVALID) {
                 builder.advanceLexer();
             }
-            recordLeafTokenError(leafTokenType, leafTokenMark);
+            recordLeafTokenError(INVALID, leafTokenMark);
             return false;
         } else {
             recordLeafTokenError(leafTokenType, leafTokenMark);
