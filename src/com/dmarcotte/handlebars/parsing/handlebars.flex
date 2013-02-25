@@ -1,8 +1,7 @@
 // We base our lexer directly on the official handlebars.l lexer definition,
 // making some modifications to account for Jison/JFlex syntax and functionality differences
 //
-// Revision ported: https://github.com/wycats/handlebars.js/commit/0b97fea56faaf48de1b6aa1a67b3796c15a45d01#src/handlebars.l,
-//      plus the fix in https://github.com/wycats/handlebars.js/commit/5a6e4f1ddde219d4043648816256342a447536c5#src/handlebars.l
+// Revision ported: https://github.com/wycats/handlebars.js/commit/a1c9acb8b13d769ac3ae88ba9962f544a377c83f#src/handlebars.l
 
 package com.dmarcotte.handlebars.parsing;
 
@@ -133,6 +132,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
   \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
+  '([^'\\]|\\.)*' { return HbTokenTypes.STRING; }
   "@" { yypushState(data); return HbTokenTypes.DATA_PREFIX; }
   "else"/["}"\t \n\x0B\f\r] { return HbTokenTypes.ELSE; } // create a custom token for "else" so that we can highlight it independently of the "{{" but still parse it as an inverse operator
   "true"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }

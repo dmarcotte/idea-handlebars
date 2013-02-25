@@ -251,12 +251,30 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     }
 
     /**
+     * tokenizes mustaches with String params using single quotes as 'OPEN ID ID STRING CLOSE'
+     */
+    public void testTokenizeMustachesWithStringParamsUsingSingleQuotes() {
+        TokenizerResult result = tokenize("{{ foo bar 'baz' }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, STRING, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(6, STRING, "'baz'");
+    }
+
+    /**
      * tokenizes String params with spaces inside as 'STRING'
      */
     public void testTokenizeMustacheWithStringParamsWithSpaces() {
         TokenizerResult result = tokenize("{{ foo bar \"baz bat\" }}");
         result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, STRING, WHITE_SPACE, CLOSE);
         result.shouldBeToken(6, STRING, "\"baz bat\"");
+    }
+
+    /**
+     * tokenizes String params using single quotes with escapes quotes as 'STRING'
+     */
+    public void testTokenizeStringParamsUsingSingleQuotesWithEscapedQuotes() {
+        TokenizerResult result = tokenize("{{ foo 'bar\\'baz' }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, STRING, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(4, STRING, "'bar\\'baz'");
     }
 
     /**
