@@ -25,6 +25,7 @@ public class HbParserSpecTest extends HbParserTest {
     public void testContentsFollowedByMustache() { doTest(true); }
     public void testPartial() { doTest(true); }
     public void testPartialWithContext() { doTest(true); }
+    public void testPartialWithComplexName() { doTest(true); }
     public void testComment() { doTest(true); }
     public void testMultiLineComment() { doTest(true); }
     public void testInverseSection() { doTest(true); }

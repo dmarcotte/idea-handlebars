@@ -11,6 +11,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_NAME;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.WHITE_SPACE;
@@ -71,7 +72,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
 
     public void testSimplePartial() {
         TokenizerResult result = tokenize("{{>partialId}}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, PARTIAL_NAME, CLOSE);
         result.shouldMatchTokenContent("{{>", "partialId", "}}");
     }
 

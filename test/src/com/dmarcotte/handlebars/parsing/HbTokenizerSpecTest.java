@@ -156,7 +156,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartial() {
         TokenizerResult result = tokenize("{{> foo}}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, PARTIAL_NAME, CLOSE);
     }
 
     /**
@@ -164,7 +164,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartialWithMultipleIds() {
         TokenizerResult result = tokenize("{{> foo bar }}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, PARTIAL_NAME, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
     }
 
     /**
@@ -172,7 +172,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartialWithoutSpaces() {
         TokenizerResult result = tokenize("{{>foo}}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, PARTIAL_NAME, CLOSE);
     }
 
     /**
@@ -180,7 +180,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartialWithTrailingSpaces() {
         TokenizerResult result = tokenize("{{>foo  }}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, WHITE_SPACE, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, PARTIAL_NAME, WHITE_SPACE, CLOSE);
     }
 
     /**

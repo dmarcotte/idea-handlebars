@@ -43,6 +43,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 %state mu
 %state emu
+%state par
 %state comment
 %state data
 
@@ -108,7 +109,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 <mu> {
 
-  "{{>" { return HbTokenTypes.OPEN_PARTIAL; }
+  "{{>" { yypushState(par); return HbTokenTypes.OPEN_PARTIAL; }
   "{{#" { return HbTokenTypes.OPEN_BLOCK; }
   "{{/" { return HbTokenTypes.OPEN_ENDBLOCK; }
   "{{^" { return HbTokenTypes.OPEN_INVERSE; }
@@ -134,6 +135,10 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
   "["[^\]]*"]" { return HbTokenTypes.ID; }
+}
+
+<par> {
+    [a-zA-Z0-9_$-/]+ { yypopState(); return HbTokenTypes.PARTIAL_NAME; }
 }
 
 <comment> {

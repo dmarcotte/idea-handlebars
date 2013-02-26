@@ -13,6 +13,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE_BLOCK_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_NAME;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
@@ -373,8 +374,8 @@ class HbParsing {
 
     /**
      * partial
-     * : OPEN_PARTIAL path CLOSE { $$ = new yy.PartialNode($2); }
-     * | OPEN_PARTIAL path path CLOSE { $$ = new yy.PartialNode($2, $3); }
+     * : OPEN_PARTIAL PARTIAL_NAME CLOSE { $$ = new yy.PartialNode($2); }
+     * | OPEN_PARTIAL PARTIAL_NAME path CLOSE { $$ = new yy.PartialNode($2, $3); }
      * ;
      */
     private void parsePartial(PsiBuilder builder) {
@@ -382,9 +383,9 @@ class HbParsing {
 
         parseLeafToken(builder, OPEN_PARTIAL);
 
-        parsePath(builder);
+        parseLeafToken(builder, PARTIAL_NAME);
 
-        // parse the optional second path
+        // parse the optional path
         PsiBuilder.Marker optionalPathMarker = builder.mark();
         if (parsePath(builder)) {
             optionalPathMarker.drop();
