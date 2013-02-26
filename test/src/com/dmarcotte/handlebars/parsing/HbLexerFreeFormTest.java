@@ -12,6 +12,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.WHITE_SPACE;
 
 /**
@@ -119,6 +120,19 @@ public class HbLexerFreeFormTest extends HbLexerTest {
         result.shouldMatchTokenContent("{{! ZOMG! A comment!!! }}", "}}");
     }
 
+    public void testUnclosedSimpleComment() {
+        TokenizerResult result = tokenize("{{! unclosed comment");
+
+        result.shouldMatchTokenTypes(UNCLOSED_COMMENT);
+        result.shouldBeToken(0, UNCLOSED_COMMENT, "{{! unclosed comment");
+    }
+
+    public void testUnclosedBlockComment() {
+        TokenizerResult result = tokenize("{{!-- unclosed comment {{foo}}");
+
+        result.shouldMatchTokenTypes(UNCLOSED_COMMENT);
+        result.shouldBeToken(0, UNCLOSED_COMMENT, "{{!-- unclosed comment {{foo}}");
+    }
     public void testEscapedMustacheAtEOF() {
         TokenizerResult result = tokenize("\\{{escaped}}");
 

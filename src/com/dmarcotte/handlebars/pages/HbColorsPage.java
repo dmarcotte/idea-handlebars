@@ -56,9 +56,13 @@ public class HbColorsPage implements ColorSettingsPage {
     public String getDemoText() {
         return "{{identifier my-val=true my-other-val=42 my-string-val=\"a string\"}}\n" +
                "{{! this is a comment }}\n" +
-               "\\{{escaped}}\n" +
-               "{{@data}}\n"
-                ;
+               "{{!--\n" +
+               "    this is a Handlebars block comment,\n" +
+               "    which can comment out mustache expressions: {{ignored}}\n" +
+               "--}}\n" +
+               "{{@data}}\n" +
+               "\\{{escaped}}\n"
+               ;
     }
 
     public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {

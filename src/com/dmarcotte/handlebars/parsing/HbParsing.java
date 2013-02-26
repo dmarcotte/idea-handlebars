@@ -13,6 +13,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE_BLOCK_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
@@ -218,6 +219,14 @@ class HbParsing {
 
         if (tokenType == COMMENT) {
             parseLeafToken(builder, COMMENT);
+            return true;
+        }
+
+        // HB_CUSTOMIZATION: we lex UNCLOSED_COMMENT sections specially so that we can coherently mark them as errors
+        if (tokenType == UNCLOSED_COMMENT) {
+            PsiBuilder.Marker unclosedCommentMarker = builder.mark();
+            parseLeafToken(builder, UNCLOSED_COMMENT);
+            unclosedCommentMarker.error(HbBundle.message("hb.parsing.comment.unclosed"));
             return true;
         }
 

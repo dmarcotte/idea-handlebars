@@ -10,10 +10,11 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.tree.IElementType;
-import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -75,8 +76,8 @@ public class HbHighlighter extends SyntaxHighlighterBase {
     );
 
     static {
-        keys1 = new THashMap<IElementType, TextAttributesKey>();
-        keys2 = new THashMap<IElementType, TextAttributesKey>();
+        keys1 = new HashMap<IElementType, TextAttributesKey>();
+        keys2 = new HashMap<IElementType, TextAttributesKey>();
 
         keys1.put(HbTokenTypes.OPEN, MUSTACHES);
         keys1.put(HbTokenTypes.OPEN_BLOCK, MUSTACHES);
@@ -87,6 +88,7 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         keys1.put(HbTokenTypes.CLOSE, MUSTACHES);
         keys1.put(HbTokenTypes.ID, IDENTIFIERS);
         keys1.put(HbTokenTypes.COMMENT, COMMENTS);
+        keys1.put(HbTokenTypes.UNCLOSED_COMMENT, COMMENTS);
         keys1.put(HbTokenTypes.EQUALS, OPERATORS);
         keys1.put(HbTokenTypes.SEP, OPERATORS);
         keys1.put(HbTokenTypes.INTEGER, VALUES);
@@ -104,7 +106,8 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         return pack(keys1.get(tokenType), keys2.get(tokenType));
     }
 
-    public static final Map<TextAttributesKey, Pair<String, HighlightSeverity>> DISPLAY_NAMES = new THashMap<TextAttributesKey, Pair<String, HighlightSeverity>>(6);
+    public static final Map<TextAttributesKey, Pair<String, HighlightSeverity>> DISPLAY_NAMES
+            = new LinkedHashMap<TextAttributesKey, Pair<String, HighlightSeverity>>();
     static {
         DISPLAY_NAMES.put(MUSTACHES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.mustaches.key"),null));
         DISPLAY_NAMES.put(IDENTIFIERS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.identifiers.key"),null));

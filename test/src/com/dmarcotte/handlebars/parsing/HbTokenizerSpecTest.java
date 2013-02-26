@@ -194,6 +194,24 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     }
 
     /**
+     * tokenizes a block comment as 'COMMENT'
+     */
+    public void testTokenizeBlockComment() {
+        TokenizerResult result = tokenize("foo {{!-- this is a {{comment}} --}} bar {{ baz }}");
+        result.shouldMatchTokenTypes(CONTENT, COMMENT, CONTENT, OPEN, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(1, COMMENT, "{{!-- this is a {{comment}} --}}");
+    }
+
+    /**
+     * tokenizes a block comment with whitespace as 'COMMENT'
+     */
+    public void testTokenizeBlockCommentWithWhitespace() {
+        TokenizerResult result = tokenize("foo {{!-- this is a\n{{comment}}\n--}} bar {{ baz }}");
+        result.shouldMatchTokenTypes(CONTENT, COMMENT, CONTENT, OPEN, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(1, COMMENT, "{{!-- this is a\n{{comment}}\n--}}");
+    }
+
+    /**
      * tokenizes open and closing blocks as 'OPEN_BLOCK ID CLOSE ... OPEN_ENDBLOCK ID CLOSE'
      */
     public void testTokenizeOpenAndCloseBlock() {

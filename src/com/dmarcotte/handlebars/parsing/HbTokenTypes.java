@@ -30,6 +30,7 @@ public class HbTokenTypes {
 
     public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE", "hb.parsing.element.expected.white_space");
     public static final IElementType COMMENT = new HbElementType("COMMENT", "hb.parsing.element.expected.comment");
+    public static final IElementType UNCLOSED_COMMENT = new HbElementType("UNCLOSED_COMMENT", "");
 
     public static final IElementType OPEN = new HbElementType("OPEN", "hb.parsing.element.expected.open");
     public static final IElementType OPEN_BLOCK = new HbElementType("OPEN_BLOCK", "hb.parsing.element.expected.open_block");

@@ -1,7 +1,7 @@
 // We base our lexer directly on the official handlebars.l lexer definition,
 // making some modifications to account for Jison/JFlex syntax and functionality differences
 //
-// Revision ported: https://github.com/wycats/handlebars.js/commit/a1c9acb8b13d769ac3ae88ba9962f544a377c83f#src/handlebars.l
+// Revision ported: https://github.com/wycats/handlebars.js/commit/a927a9b0adc39660f0794b9b210c9db2f7ddecd9#src/handlebars.l
 
 package com.dmarcotte.handlebars.parsing;
 
@@ -43,6 +43,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 %state mu
 %state emu
+%state comment
 %state data
 
 %%
@@ -114,15 +115,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   // NOTE: a standard Handlebars lexer would check for "{{else" here.  We instead want to lex it as two tokens to highlight the "{{" and the "else" differently.  See where we make an HbTokens.ELSE below.
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
-  // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
-  "{{!"~"}}" {
-    // backtrack over any extra stache characters at the end of this string
-    while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).toString().equals("}}}")) {
-      yypushback(1);
-    }
-    yypopState();
-    return HbTokenTypes.COMMENT;
-  }
+  "{{!" { yypushback(3); yypopState(); yypushState(comment); }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
   "."/["}"\t \n\x0B\f\r] { return HbTokenTypes.ID; }
@@ -141,6 +134,21 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
   "["[^\]]*"]" { return HbTokenTypes.ID; }
+}
+
+<comment> {
+  "{{!--"~"--}}" { yypopState(); return HbTokenTypes.COMMENT; }
+  "{{!"[^"--"]~"}}" {
+      // backtrack over any extra stache characters at the end of this string
+      while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).toString().equals("}}}")) {
+        yypushback(1);
+      }
+      yypopState();
+      return HbTokenTypes.COMMENT;
+  }
+  // lex unclosed comments so that we can give better errors
+  "{{!--"!([^]*"--}}"[^]*) { yypopState(); return HbTokenTypes.UNCLOSED_COMMENT; }
+  "{{!"[^"--"]!([^]*"}}"[^]*) { yypopState(); return HbTokenTypes.UNCLOSED_COMMENT; }
 }
 
 <data> {
