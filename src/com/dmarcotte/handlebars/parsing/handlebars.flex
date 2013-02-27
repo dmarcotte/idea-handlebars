@@ -131,7 +131,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   "else"/["}"\t \n\x0B\f\r] { return HbTokenTypes.ELSE; } // create a custom token for "else" so that we can highlight it independently of the "{{" but still parse it as an inverse operator
   "true"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
-  [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
+  \-?[0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
   "["[^\]]*"]" { return HbTokenTypes.ID; }

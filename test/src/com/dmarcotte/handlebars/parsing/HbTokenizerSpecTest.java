@@ -312,6 +312,10 @@ public class HbTokenizerSpecTest extends HbLexerTest {
         TokenizerResult result = tokenize("{{ foo 1 }}");
         result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, INTEGER, WHITE_SPACE, CLOSE);
         result.shouldBeToken(4, INTEGER, "1");
+
+        result = tokenize("{{ foo -1 }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, INTEGER, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(4, INTEGER, "-1");
     }
 
     /**
