@@ -14,9 +14,6 @@ import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Layered highlighter - uses LatteSyntaxHighlighter as main one, and second for outer text (HTML)
- */
 public class HbTemplateHighlighter extends LayeredLexerEditorHighlighter {
     public HbTemplateHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile, @NotNull EditorColorsScheme colors) {
         // create main highlighter
