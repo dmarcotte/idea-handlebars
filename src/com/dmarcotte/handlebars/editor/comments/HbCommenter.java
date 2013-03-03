@@ -1,12 +1,16 @@
-package com.dmarcotte.handlebars;
+package com.dmarcotte.handlebars.editor.comments;
 
+import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.intellij.lang.Commenter;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageCommenters;
 import org.jetbrains.annotations.Nullable;
 
-public class HandlebarsCommenter implements Commenter {
+public class HbCommenter implements Commenter {
+
+    private static Commenter ourHandlebarsCommenter = new HandlebarsCommenter();
+
     @Nullable
     @Override
     public String getLineCommentPrefix() {
@@ -41,7 +45,10 @@ public class HandlebarsCommenter implements Commenter {
         Language commenterLanguage = HbConfig.getCommenterLanguage();
         if (commenterLanguage == null) {
             commenterLanguage = HbLanguage.getDefaultTemplateLang().getLanguage();
+        } else if (commenterLanguage.getID().equals(HbLanguage.INSTANCE.getID())) {
+            return ourHandlebarsCommenter;
         }
+
         return LanguageCommenters.INSTANCE.forLanguage(commenterLanguage);
     }
 }
