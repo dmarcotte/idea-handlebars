@@ -168,7 +168,7 @@
     <lang.formatter language="Handlebars" implementationClass="com.dmarcotte.handlebars.format.HbFormattingModelBuilder"/>
     <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage"/>
     <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory"/>
-    <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.HandlebarsCommenter"/>
+    <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.editor.comments.HbCommenter"/>
     <lang.braceMatcher language="Handlebars" implementationClass="com.dmarcotte.handlebars.HbBraceMatcher"/>
     <lang.foldingBuilder language="Handlebars"
                          implementationClass="com.dmarcotte.handlebars.editor.folding.HbFoldingBuilder" />
