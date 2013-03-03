@@ -3,12 +3,13 @@ FILE
     HbPsiElement(MUSTACHE)
       HbPsiElement([Hb] OPEN)
         PsiElement([Hb] OPEN)('{{')
-      PsiErrorElement:Expected a path
-        PsiErrorElement:Expected an ID
-          PsiElement([Hb] INVALID)('t')
-          PsiElement([Hb] INVALID)('e')
-          PsiElement([Hb] INVALID)('s')
-          PsiElement([Hb] INVALID)('t')
-          PsiElement([Hb] INVALID)('@')
+      PsiErrorElement:Expected a path or @data
+        <empty list>
+      PsiErrorElement:Expected Close "}}"
+        PsiElement([Hb] INVALID)('t')
+        PsiElement([Hb] INVALID)('e')
+        PsiElement([Hb] INVALID)('s')
+        PsiElement([Hb] INVALID)('t')
+        PsiElement([Hb] INVALID)('%')
       HbPsiElement([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')

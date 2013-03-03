@@ -1,42 +1,7 @@
-// This is the official Handlebars lexer definition:
-// (taken from the following revision: https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/src/handlebars.l)
-// We base our lexer directly on that, making some modifications to account for Jison/JFlex syntax and functionality differences
-// TODO there is a later commit which adds support for "escaped mustaches" here: https://github.com/wycats/handlebars.js/blob/c79c761460f7d08e3862c0c9992f65a799771851/src/handlebars.l
+// We base our lexer directly on the official handlebars.l lexer definition,
+// making some modifications to account for Jison/JFlex syntax and functionality differences
 //
-//
-//%x mu
-//
-//%%
-//
-//[^\x00]*?/("{{")                 { this.begin("mu"); if (yytext) return 'CONTENT'; }
-//[^\x00]+                         { return 'CONTENT'; }
-//
-//<mu>"{{>"                        { return 'OPEN_PARTIAL'; }
-//<mu>"{{#"                        { return 'OPEN_BLOCK'; }
-//<mu>"{{/"                        { return 'OPEN_ENDBLOCK'; }
-//<mu>"{{^"                        { return 'OPEN_INVERSE'; }
-//<mu>"{{"\s*"else"                { return 'OPEN_INVERSE'; }
-//<mu>"{{{"                        { return 'OPEN_UNESCAPED'; }
-//<mu>"{{&"                        { return 'OPEN_UNESCAPED'; }
-//<mu>"{{!"[\s\S]*?"}}"            { yytext = yytext.substr(3,yyleng-5); this.begin("INITIAL"); return 'COMMENT'; }
-//<mu>"{{"                         { return 'OPEN'; }
-//
-//<mu>"="                          { return 'EQUALS'; }
-//<mu>"."/[} ]                     { return 'ID'; }
-//<mu>".."                         { return 'ID'; }
-//<mu>[\/.]                        { return 'SEP'; }
-//<mu>\s+                          { /*ignore whitespace*/ }
-//<mu>"}}}"                        { this.begin("INITIAL"); return 'CLOSE'; }
-//<mu>"}}"                         { this.begin("INITIAL"); return 'CLOSE'; }
-//<mu>'"'("\\"["]|[^"])*'"'        { yytext = yytext.substr(1,yyleng-2).replace(/\\"/g,'"'); return 'STRING'; }
-//<mu>"true"/[}\s]                 { return 'BOOLEAN'; }
-//<mu>"false"/[}\s]                { return 'BOOLEAN'; }
-//<mu>[0-9]+/[}\s]                 { return 'INTEGER'; }
-//<mu>[a-zA-Z0-9_$-]+/[=}\s\/.]    { return 'ID'; }
-//<mu>\[[^\]]*\]                   { yytext = yytext.substr(1, yyleng-2); return 'ID'; }
-//<mu>.                            { return 'INVALID'; }
-//
-//<INITIAL,mu><<EOF>>              { return 'EOF'; }
+// Revision ported: https://github.com/wycats/handlebars.js/commit/a927a9b0adc39660f0794b9b210c9db2f7ddecd9#src/handlebars.l
 
 package com.dmarcotte.handlebars.parsing;
 
@@ -78,6 +43,9 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 %state mu
 %state emu
+%state par
+%state comment
+%state data
 
 %%
 
@@ -93,39 +61,62 @@ WhiteSpace = {LineTerminator} | [ \t\f]
           while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {
             yypushback(1);
           }
+
+          if (yylength() > 0 && yytext().toString().substring(yylength() - 1, yylength()).equals("\\")) {
+            yypushback(1); // put the escape char back
+            yypushState(emu);
+          } else {
+            yypushState(mu);
+          }
+
           // we stray from the Handlebars grammar a bit here since we need our WHITE_SPACE more clearly delineated
           //    and we need to avoid creating extra tokens for empty strings (makes the parser and formatter happier)
-          yypushState(mu); if (!yytext().toString().equals("")) {
-                                             if (yytext().toString().trim().length() == 0) {
-                                                 return HbTokenTypes.WHITE_SPACE;
-                                             } else {
-                                                 return HbTokenTypes.CONTENT;
-                                             }
-                                         }
+          if (!yytext().toString().equals("")) {
+              if (yytext().toString().trim().length() == 0) {
+                  return HbTokenTypes.WHITE_SPACE;
+              } else {
+                  return HbTokenTypes.CONTENT;
+              }
+          }
         }
 
   // Check for anything that is not a string containing "{{"; that's CONTENT
   !([^]*"{{"[^]*)                         { return HbTokenTypes.CONTENT; }
 }
 
+<emu> {
+    "\\" { return HbTokenTypes.ESCAPE_CHAR; }
+    "{{"~"{{" { // grab everything up to the next open stache
+          // backtrack over any stache characters at the end of this string
+          while (yylength() > 0 && yytext().subSequence(yylength() - 1, yylength()).toString().equals("{")) {
+            yypushback(1);
+          }
+
+          if (yylength() > 0 && yytext().toString().substring(yylength() - 1, yylength()).equals("\\")) {
+            // the next mustache is escaped, push back the escape char so that we can lex it as such
+            yypushback(1);
+          } else {
+            // the next mustache is not escaped, we're done in this state
+            yypopState();
+          }
+
+          return HbTokenTypes.CONTENT;
+    }
+    "{{"!([^]*"{{"[^]*) { // otherwise, if the remaining text just contains the one escaped mustache, then it's all CONTENT
+        return HbTokenTypes.CONTENT;
+    }
+}
+
 <mu> {
 
-  "{{>" { return HbTokenTypes.OPEN_PARTIAL; }
+  "{{>" { yypushState(par); return HbTokenTypes.OPEN_PARTIAL; }
   "{{#" { return HbTokenTypes.OPEN_BLOCK; }
   "{{/" { return HbTokenTypes.OPEN_ENDBLOCK; }
   "{{^" { return HbTokenTypes.OPEN_INVERSE; }
   // NOTE: a standard Handlebars lexer would check for "{{else" here.  We instead want to lex it as two tokens to highlight the "{{" and the "else" differently.  See where we make an HbTokens.ELSE below.
   "{{{" { return HbTokenTypes.OPEN_UNESCAPED; }
   "{{&" { return HbTokenTypes.OPEN_UNESCAPED; }
-  // TODO handlebars.l monkeys with the buffer and changes state to INITAL.  Why?  This seems to capture the comments...
-  "{{!"~"}}" {
-    // backtrack over any extra stache characters at the end of this string
-    while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).toString().equals("}}}")) {
-      yypushback(1);
-    }
-    yypopState();
-    return HbTokenTypes.COMMENT;
-  }
+  "{{!" { yypushback(3); yypopState(); yypushState(comment); }
   "{{" { return HbTokenTypes.OPEN; }
   "=" { return HbTokenTypes.EQUALS; }
   "."/["}"\t \n\x0B\f\r] { return HbTokenTypes.ID; }
@@ -135,13 +126,39 @@ WhiteSpace = {LineTerminator} | [ \t\f]
   "}}}" { yypopState(); return HbTokenTypes.CLOSE; }
   "}}" { yypopState(); return HbTokenTypes.CLOSE; }
   \"([^\"\\]|\\.)*\" { return HbTokenTypes.STRING; }
+  '([^'\\]|\\.)*' { return HbTokenTypes.STRING; }
+  "@" { yypushState(data); return HbTokenTypes.DATA_PREFIX; }
   "else"/["}"\t \n\x0B\f\r] { return HbTokenTypes.ELSE; } // create a custom token for "else" so that we can highlight it independently of the "{{" but still parse it as an inverse operator
   "true"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
   "false"/["}"\t \n\x0B\f\r] { return HbTokenTypes.BOOLEAN; }
-  [0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
+  \-?[0-9]+/[}\t \n\x0B\f\r]  { return HbTokenTypes.INTEGER; }
   [a-zA-Z0-9_$-]+/[=}\t \n\x0B\f\r\/.] { return HbTokenTypes.ID; }
   // TODO handlesbars.l extracts the id from within the square brackets.  Fix it to match handlebars.l?
-  \[[^\]]*\] { return HbTokenTypes.ID; }
+  "["[^\]]*"]" { return HbTokenTypes.ID; }
+}
+
+<par> {
+    [a-zA-Z0-9_$-/]+ { yypopState(); return HbTokenTypes.PARTIAL_NAME; }
+}
+
+<comment> {
+  "{{!--"~"--}}" { yypopState(); return HbTokenTypes.COMMENT; }
+  "{{!"[^"--"]~"}}" {
+      // backtrack over any extra stache characters at the end of this string
+      while (yylength() > 2 && yytext().subSequence(yylength() - 3, yylength()).toString().equals("}}}")) {
+        yypushback(1);
+      }
+      yypopState();
+      return HbTokenTypes.COMMENT;
+  }
+  // lex unclosed comments so that we can give better errors
+  "{{!--"!([^]*"--}}"[^]*) { yypopState(); return HbTokenTypes.UNCLOSED_COMMENT; }
+  "{{!"[^"--"]!([^]*"}}"[^]*) { yypopState(); return HbTokenTypes.UNCLOSED_COMMENT; }
+}
+
+<data> {
+  [a-zA-Z]+ { yypopState(); return HbTokenTypes.DATA; }
+  "}}" { yypushback(2); yypopState(); } // stop looking for data id when we hit a close stache
 }
 
 {WhiteSpace}+ { return HbTokenTypes.WHITE_SPACE; }

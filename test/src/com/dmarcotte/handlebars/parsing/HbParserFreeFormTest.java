@@ -22,4 +22,6 @@ public class HbParserFreeFormTest extends HbParserTest {
      * Empty blocks should not be errors.  (For a while, the parser was flagging {{#foo}}{{/foo}}-type blocks)
      */
     public void testEmptyBlocks() { doTest(true); }
+    public void testUnclosedSimpleComment() { doTest(true); }
+    public void testUnclosedBlockComment() { doTest(true); }
 }
