@@ -5,7 +5,6 @@ FILE
         PsiElement([Hb] OPEN_PARTIAL)('{{>')
       PsiWhiteSpace(' ')
       HbPsiElement([Hb] PARTIAL_NAME)
-        PsiElement([Hb] PARTIAL_NAME)('foo')
-      PsiWhiteSpace(' ')
+        PsiElement([Hb] PARTIAL_NAME)('shared/partial')
       HbPsiElement([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')

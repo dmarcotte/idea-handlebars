@@ -13,9 +13,14 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE_BLOCK_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_NAME;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ELSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.EQUALS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ESCAPE_CHAR;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INTEGER;
@@ -146,6 +151,8 @@ class HbParsing {
      * | openBlock program closeBlock
      * | mustache
      * | partial
+     * | ESCAPE_CHAR CONTENT  (HB_CUSTOMIZATION the official Handlebars lexer just throws out the escape char;
+     *                          it's convenient for us to keep it so that we can highlight it)
      * | CONTENT
      * | COMMENT
      * ;
@@ -201,6 +208,11 @@ class HbParsing {
             return true;
         }
 
+        if (tokenType == ESCAPE_CHAR) {
+            builder.advanceLexer(); // ignore the escape character
+            return true;
+        }
+
         if (tokenType == CONTENT) {
             builder.advanceLexer(); // eat non-HB content
             return true;
@@ -208,6 +220,14 @@ class HbParsing {
 
         if (tokenType == COMMENT) {
             parseLeafToken(builder, COMMENT);
+            return true;
+        }
+
+        // HB_CUSTOMIZATION: we lex UNCLOSED_COMMENT sections specially so that we can coherently mark them as errors
+        if (tokenType == UNCLOSED_COMMENT) {
+            PsiBuilder.Marker unclosedCommentMarker = builder.mark();
+            parseLeafToken(builder, UNCLOSED_COMMENT);
+            unclosedCommentMarker.error(HbBundle.message("hb.parsing.comment.unclosed"));
             return true;
         }
 
@@ -354,8 +374,8 @@ class HbParsing {
 
     /**
      * partial
-     * : OPEN_PARTIAL path CLOSE { $$ = new yy.PartialNode($2); }
-     * | OPEN_PARTIAL path path CLOSE { $$ = new yy.PartialNode($2, $3); }
+     * : OPEN_PARTIAL PARTIAL_NAME CLOSE { $$ = new yy.PartialNode($2); }
+     * | OPEN_PARTIAL PARTIAL_NAME path CLOSE { $$ = new yy.PartialNode($2, $3); }
      * ;
      */
     private void parsePartial(PsiBuilder builder) {
@@ -363,9 +383,9 @@ class HbParsing {
 
         parseLeafToken(builder, OPEN_PARTIAL);
 
-        parsePath(builder);
+        parseLeafToken(builder, PARTIAL_NAME);
 
-        // parse the optional second path
+        // parse the optional path
         PsiBuilder.Marker optionalPathMarker = builder.mark();
         if (parsePath(builder)) {
             optionalPathMarker.drop();
@@ -426,6 +446,7 @@ class HbParsing {
      * | path params { $$ = [[$1].concat($2), null]; }
      * | path hash { $$ = [[$1], $2]; }
      * | path { $$ = [[$1], null]; }
+     * | DATA { $$ = [[new yy.DataNode($1)], null]; }
      * ;
      *
      * @param hasOpenTag is used to tell this method that the first ID in this 'stache is the open
@@ -440,9 +461,21 @@ class HbParsing {
             openTagNamesStack.push(builder.getTokenText());
         }
 
+        PsiBuilder.Marker pathMarker = builder.mark();
         if (!parsePath(builder)) {
-            inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path"));
-            return false;
+            pathMarker.rollbackTo();
+            // not a path, try to parse DATA
+            if (builder.getTokenType() == DATA_PREFIX
+                    && parseLeafToken(builder, DATA_PREFIX)
+                    && parseLeafToken(builder, HbTokenTypes.DATA)) {
+                inMustacheMarker.done(IN_MUSTACHE);
+                return true;
+            } else {
+                inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path.or.data"));
+                return false;
+            }
+        } else {
+            pathMarker.drop();
         }
 
         // try to extend the 'path' we found to 'path hash'
@@ -513,6 +546,7 @@ class HbParsing {
      * | STRING
      * | INTEGER
      * | BOOLEAN
+     * | DATA
      * ;
      */
     private boolean parseParam(PsiBuilder builder) {
@@ -552,6 +586,15 @@ class HbParsing {
             return true;
         } else {
             booleanMarker.rollbackTo();
+        }
+
+        PsiBuilder.Marker dataMarker = builder.mark();
+        if (parseLeafToken(builder, DATA_PREFIX) && parseLeafToken(builder, DATA)) {
+            dataMarker.drop();
+            paramMarker.done(PARAM);
+            return true;
+        } else {
+            dataMarker.rollbackTo();
         }
 
         paramMarker.error(HbBundle.message("hb.parsing.expected.parameter"));
@@ -707,6 +750,9 @@ class HbParsing {
         return isHashUpcoming;
     }
 
+    /**
+     * Tries to parse the given token, marking an error if any other token is found
+     */
     private boolean parseLeafToken(PsiBuilder builder, IElementType leafTokenType) {
         PsiBuilder.Marker leafTokenMark = builder.mark();
         if (builder.getTokenType() == leafTokenType) {
@@ -717,7 +763,7 @@ class HbParsing {
             while (!builder.eof() && builder.getTokenType() == INVALID) {
                 builder.advanceLexer();
             }
-            recordLeafTokenError(leafTokenType, leafTokenMark);
+            recordLeafTokenError(INVALID, leafTokenMark);
             return false;
         } else {
             recordLeafTokenError(leafTokenType, leafTokenMark);

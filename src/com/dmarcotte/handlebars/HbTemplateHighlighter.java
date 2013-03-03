@@ -31,7 +31,7 @@ public class HbTemplateHighlighter extends LayeredLexerEditorHighlighter {
             if(language != null) type = language.getAssociatedFileType();
             if(type == null) type = HbLanguage.getDefaultTemplateLang();
         }
-        @SuppressWarnings ("deprecation") // deprecated in IDEA 12, still needed in IDEA 11
+        @SuppressWarnings ("deprecation") // deprecated in IDEA 12, still needed in IDEA 11 TODO remove when IDEA 11 support is dropped
         SyntaxHighlighter outerHighlighter = SyntaxHighlighter.PROVIDER.create(type, project, virtualFile);
 
         registerLayer(HbTokenTypes.CONTENT, new LayerDescriptor(outerHighlighter, ""));

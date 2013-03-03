@@ -22,6 +22,40 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     }
 
     /**
+     * supports escaping delimiters
+     */
+    public void testEscapingDelimiters() {
+        TokenizerResult result = tokenize("{{foo}} \\{{bar}} {{baz}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, OPEN, ID, CLOSE);
+
+        result.shouldBeToken(5, CONTENT, "{{bar}} ");
+    }
+
+    /**
+     * supports escaping multiple delimiters
+     */
+    public void testEscapingMultipleDelimiters() {
+        TokenizerResult result = tokenize("{{foo}}    \\{{bar}} \\{{baz}}");
+
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, ESCAPE_CHAR, CONTENT);
+
+        result.shouldBeToken(4, ESCAPE_CHAR, "\\");
+        result.shouldBeToken(5, CONTENT, "{{bar}} ");
+        result.shouldBeToken(6, ESCAPE_CHAR, "\\");
+        result.shouldBeToken(7, CONTENT, "{{baz}}");
+    }
+
+    /**
+     * supports escaping a triple stash
+     */
+    public void testEscapingTripleStash() {
+        TokenizerResult result = tokenize("{{foo}} \\{{{bar}}} {{baz}}");
+        result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, OPEN, ID, CLOSE);
+
+        result.shouldBeToken(5, CONTENT, "{{{bar}}} ");
+    }
+
+    /**
      * tokenizes a simple path
      */
     public void testSimplePath() {
@@ -122,7 +156,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartial() {
         TokenizerResult result = tokenize("{{> foo}}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, PARTIAL_NAME, CLOSE);
     }
 
     /**
@@ -130,7 +164,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartialWithMultipleIds() {
         TokenizerResult result = tokenize("{{> foo bar }}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, WHITE_SPACE, PARTIAL_NAME, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
     }
 
     /**
@@ -138,7 +172,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartialWithoutSpaces() {
         TokenizerResult result = tokenize("{{>foo}}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, PARTIAL_NAME, CLOSE);
     }
 
     /**
@@ -146,7 +180,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
      */
     public void testTokenizePartialWithTrailingSpaces() {
         TokenizerResult result = tokenize("{{>foo  }}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, WHITE_SPACE, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, PARTIAL_NAME, WHITE_SPACE, CLOSE);
     }
 
     /**
@@ -157,6 +191,24 @@ public class HbTokenizerSpecTest extends HbLexerTest {
         result.shouldMatchTokenTypes(CONTENT, COMMENT, CONTENT, OPEN, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
         // Note that we differ from tokenizer_spec.rb since it is convenient to include the comment mustaches into the comment token for the IDE
         result.shouldBeToken(1, COMMENT, "{{! this is a comment }}");
+    }
+
+    /**
+     * tokenizes a block comment as 'COMMENT'
+     */
+    public void testTokenizeBlockComment() {
+        TokenizerResult result = tokenize("foo {{!-- this is a {{comment}} --}} bar {{ baz }}");
+        result.shouldMatchTokenTypes(CONTENT, COMMENT, CONTENT, OPEN, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(1, COMMENT, "{{!-- this is a {{comment}} --}}");
+    }
+
+    /**
+     * tokenizes a block comment with whitespace as 'COMMENT'
+     */
+    public void testTokenizeBlockCommentWithWhitespace() {
+        TokenizerResult result = tokenize("foo {{!-- this is a\n{{comment}}\n--}} bar {{ baz }}");
+        result.shouldMatchTokenTypes(CONTENT, COMMENT, CONTENT, OPEN, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(1, COMMENT, "{{!-- this is a\n{{comment}}\n--}}");
     }
 
     /**
@@ -217,12 +269,30 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     }
 
     /**
+     * tokenizes mustaches with String params using single quotes as 'OPEN ID ID STRING CLOSE'
+     */
+    public void testTokenizeMustachesWithStringParamsUsingSingleQuotes() {
+        TokenizerResult result = tokenize("{{ foo bar 'baz' }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, STRING, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(6, STRING, "'baz'");
+    }
+
+    /**
      * tokenizes String params with spaces inside as 'STRING'
      */
     public void testTokenizeMustacheWithStringParamsWithSpaces() {
         TokenizerResult result = tokenize("{{ foo bar \"baz bat\" }}");
         result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, STRING, WHITE_SPACE, CLOSE);
         result.shouldBeToken(6, STRING, "\"baz bat\"");
+    }
+
+    /**
+     * tokenizes String params using single quotes with escapes quotes as 'STRING'
+     */
+    public void testTokenizeStringParamsUsingSingleQuotesWithEscapedQuotes() {
+        TokenizerResult result = tokenize("{{ foo 'bar\\'baz' }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, STRING, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(4, STRING, "'bar\\'baz'");
     }
 
     /**
@@ -242,6 +312,10 @@ public class HbTokenizerSpecTest extends HbLexerTest {
         TokenizerResult result = tokenize("{{ foo 1 }}");
         result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, INTEGER, WHITE_SPACE, CLOSE);
         result.shouldBeToken(4, INTEGER, "1");
+
+        result = tokenize("{{ foo -1 }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, INTEGER, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(4, INTEGER, "-1");
     }
 
     /**
@@ -288,6 +362,23 @@ public class HbTokenizerSpecTest extends HbLexerTest {
         result = tokenize("{{ foo omg bar=\"baz\" bat=\"bam\" }}");
         result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, STRING, WHITE_SPACE, ID, EQUALS, STRING, WHITE_SPACE, CLOSE);
         result.shouldBeToken(4, ID, "omg");
-        
     }
+
+    /**
+     * tokenizes special @ identifiers
+     */
+    public void testSpecialDataIdentifiers() {
+        TokenizerResult result = tokenize("{{ @foo }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, DATA_PREFIX, DATA, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(3, DATA, "foo");
+
+        result = tokenize("{{ foo @bar }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, DATA_PREFIX, DATA, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(5, DATA, "bar");
+
+        result = tokenize("{{ foo bar=@baz }}");
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, DATA_PREFIX, DATA, WHITE_SPACE, CLOSE);
+        result.shouldBeToken(7, DATA, "baz");
+    }
+
 }

@@ -3,12 +3,17 @@ package com.dmarcotte.handlebars.parsing;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ESCAPE_CHAR;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_NAME;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.WHITE_SPACE;
 
 /**
@@ -67,7 +72,7 @@ public class HbLexerFreeFormTest extends HbLexerTest {
 
     public void testSimplePartial() {
         TokenizerResult result = tokenize("{{>partialId}}");
-        result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, CLOSE);
+        result.shouldMatchTokenTypes(OPEN_PARTIAL, PARTIAL_NAME, CLOSE);
         result.shouldMatchTokenContent("{{>", "partialId", "}}");
     }
 
@@ -114,5 +119,43 @@ public class HbLexerFreeFormTest extends HbLexerTest {
         result = tokenize("{{! ZOMG! A comment!!! }}}}");
         result.shouldMatchTokenTypes(COMMENT, CONTENT);
         result.shouldMatchTokenContent("{{! ZOMG! A comment!!! }}", "}}");
+    }
+
+    public void testUnclosedSimpleComment() {
+        TokenizerResult result = tokenize("{{! unclosed comment");
+
+        result.shouldMatchTokenTypes(UNCLOSED_COMMENT);
+        result.shouldBeToken(0, UNCLOSED_COMMENT, "{{! unclosed comment");
+    }
+
+    public void testUnclosedBlockComment() {
+        TokenizerResult result = tokenize("{{!-- unclosed comment {{foo}}");
+
+        result.shouldMatchTokenTypes(UNCLOSED_COMMENT);
+        result.shouldBeToken(0, UNCLOSED_COMMENT, "{{!-- unclosed comment {{foo}}");
+    }
+    public void testEscapedMustacheAtEOF() {
+        TokenizerResult result = tokenize("\\{{escaped}}");
+
+        result.shouldMatchTokenTypes(ESCAPE_CHAR, CONTENT);
+        result.shouldMatchTokenContent("\\", "{{escaped}}");
+    }
+
+
+    public void testEscapedMustacheWithNoFollowingStache() {
+        TokenizerResult result = tokenize("\\{{escaped}} <div/>");
+
+        result.shouldMatchTokenTypes(ESCAPE_CHAR, CONTENT);
+        result.shouldMatchTokenContent("\\", "{{escaped}} <div/>");
+    }
+
+    public void testDataWithInvalidIdentifier() {
+        TokenizerResult result = tokenize("{{ @  }}");
+
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, DATA_PREFIX, WHITE_SPACE, CLOSE);
+
+        result = tokenize("{{ @%foo  }}");
+
+        result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, DATA_PREFIX, INVALID, DATA, WHITE_SPACE, CLOSE);
     }
 }
