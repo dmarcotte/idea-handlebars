@@ -1,6 +1,7 @@
 package com.dmarcotte.handlebars.pages;
 
 import com.dmarcotte.handlebars.HbBundle;
+import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.intellij.ide.ui.ListCellRendererWrapper;
 import com.intellij.lang.Language;
@@ -85,6 +86,10 @@ public class HbConfigurationPage implements SearchableConfigurable {
     private void resetCommentLanguageCombo(Language commentLanguage) {
         final DefaultComboBoxModel model = (DefaultComboBoxModel) myCommenterLanguage.getModel();
         final List<Language> languages = TemplateDataLanguageMappings.getTemplateableLanguages();
+
+        // add using the native Handlebars commenter as an option
+        languages.add(HbLanguage.INSTANCE);
+
         Collections.sort(languages, new Comparator<Language>() {
             @Override
             public int compare(final Language o1, final Language o2) {

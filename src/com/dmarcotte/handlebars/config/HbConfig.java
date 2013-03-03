@@ -41,7 +41,11 @@ public class HbConfig {
     }
 
     public static void setCommenterLanguage(Language language) {
-        setStringPropertyValue(COMMENTER_LANGUAGE_ID, language.getID());
+        if (language == null) {
+            setStringPropertyValue(COMMENTER_LANGUAGE_ID, null);
+        } else {
+            setStringPropertyValue(COMMENTER_LANGUAGE_ID, language.getID());
+        }
     }
 
     private static String getStringPropertyValue(Property property) {
