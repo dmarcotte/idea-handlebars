@@ -177,5 +177,6 @@
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>
     <codeFoldingOptionsProvider
         instance="com.dmarcotte.handlebars.config.HbFoldingOptionsProvider" />
+    <lang.syntaxHighlighterFactory key="Handlebars" implementationClass="com.dmarcotte.handlebars.HbHighlighterFactory"/>
   </extensions>
 </idea-plugin>
