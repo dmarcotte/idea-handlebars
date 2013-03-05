@@ -17,6 +17,14 @@
       <br>
       <ul>
         <li>
+            Updates color scheme for Darcula and other new custom editor themes
+            <ul>
+                <li>
+                    Also updates file icon to optimize for both the traditional and Darcular UI themes
+                </li>
+            </ul>
+        </li>
+        <li>
             Updates the plugin with the latest features/syntax in Handlebars
             <ul>
                 <li>
@@ -190,7 +198,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.5.1</version>
+  <version>0.6</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   
