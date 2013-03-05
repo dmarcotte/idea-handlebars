@@ -6,8 +6,13 @@ IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mus
 
 [Jetbrains plugin repository page](http://plugins.intellij.net/plugin/?idea&pluginId=6884)
 
-## _NEW:_ Template any language, code folding
-The latest release adds the ability to template any language and support for code folding for mustache blocks
+## _NEW:_ Updated parsing, improved comments, Darcula support
+The new release includes the following:
+* handles the [latest Handlebars features](https://github.com/dmarcotte/idea-handlebars/pull/46)
+* adds [comment folding](https://github.com/dmarcotte/idea-handlebars/pull/49)
+* enables a [consistent commenter when editing](https://github.com/dmarcotte/idea-handlebars/pull/47) Handlebars files
+* updates look and feel to integrate properly with alternate themes, including Darcula
+    * *NOTE:* requires your IDE's build number to be greater than `128.18` (for IDEA, this means version at least `12.1`.  Other IDEs should catch up soon)
 
 ## Installing
 * To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
@@ -17,7 +22,7 @@ The latest release adds the ability to template any language and support for cod
 * [Syntax error inspections](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/editor.png)
 * [Configurable syntax highlighting](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/highlight_config.png)
 * [Template formatter](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/formatter.png)
-* Code folding for mustache blocks
+* Code folding for mustache blocks and comments
 * Auto-insert of closing tags
 * Matched mustache pair highlighting
 * Full highlighting, code completion, inspections, formatting and commenting for the content in your templates (by default HTML, configurable in ["Settings->Template Data Languages"](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/custom_langs_by_project.png) and ["Settings->File Types"](https://raw.github.com/dmarcotte/idea-handlebars/master/markdown_images/custom_langs_by_filename_pattern.png))
