@@ -13,6 +13,52 @@
   <category>Custom Languages</category>
   <change-notes>
     <![CDATA[
+      <b>Version 0.6</b>
+      <br>
+      <ul>
+        <li>
+            Updates the plugin with the latest features/syntax in Handlebars
+            <ul>
+                <li>
+                    {{@data}} syntax is no longer marked as an error (and the highlighting of these data vars is configurable)
+                </li>
+                <li>
+                    Handlebars block comments are now supported:<br>
+                    {{!-- block comment which can contain {{mustaches}} --}}
+                </li>
+                <li>
+                    Escaped mustaches are now properly highlighted, so \{{escaped}} constructs do not render as regular mustaches
+                </li>
+                <li>
+                    Single quotes in mustache strings are no longer marked as errors. i.e. {{foo bar='baz'}} behaves as expected
+                </li>
+                <li>
+                    Partials names can now be paths: {{>path/to/partial}}
+                </li>
+                <li>
+                    Negative number literals no longer marked as errors: {{foo bar=-2}}
+                </li>
+            </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>
+            Adds the ability to have the "Comment with Line Comment" and "Comment with Block Comment" actions insert the new Handlebars block comment
+            <ul>
+                <li>
+                    To enable, select "Handlebars" for "Language for comments" in Settings->Handlebars/Mustache
+                </li>
+                <li>
+                    NOTE: this is Handlebars specific (not generic Mustache syntax) and should only be used with recent versions of Handlebars
+                </li>
+            </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>
+            Enables comment folding for multi-line comments (works with both standard and block comments)
+        </li>
+      </ul>
       <b>Version 0.5.1</b>
       <br>
       <ul>
@@ -144,7 +190,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.5.1</version>
+  <version>0.6</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   
