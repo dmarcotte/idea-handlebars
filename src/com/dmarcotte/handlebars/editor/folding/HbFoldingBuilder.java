@@ -31,6 +31,19 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
             return;
         }
 
+        if (HbTokenTypes.COMMENT == node.getElementType()) {
+            String commentText = node.getText();
+
+            // comment might be unclosed, so do a bit of sanity checking on its length and whether or not it's
+            // got the requisite open/close tags before we allow folding
+            if (commentText.length() > 5
+                    && commentText.substring(0,3).equals("{{!")
+                    && commentText.substring(commentText.length() - 2, commentText.length()).equals("}}")) {
+                TextRange range = new TextRange(node.getTextRange().getStartOffset() + 3, node.getTextRange().getEndOffset() -2);
+                descriptors.add(new FoldingDescriptor(node, range));
+            }
+        }
+
         if (HbTokenTypes.BLOCK_WRAPPER == node.getElementType()) {
 
             ASTNode endOpenBlockStache = getOpenBlockCloseStacheElement(node.getFirstChildNode());
