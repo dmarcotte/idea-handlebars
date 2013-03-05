@@ -190,7 +190,7 @@
       </ul>
     ]]>
   </change-notes>
-  <version>0.6</version>
+  <version>0.5.1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
   
