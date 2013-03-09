@@ -231,5 +231,6 @@
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>
     <codeFoldingOptionsProvider
         instance="com.dmarcotte.handlebars.config.HbFoldingOptionsProvider" />
+    <html.scriptContentProvider language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbHtmlScriptContentProvider"/>
   </extensions>
 </idea-plugin>
