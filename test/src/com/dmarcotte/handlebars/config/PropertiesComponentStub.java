@@ -29,8 +29,16 @@ public class PropertiesComponentStub extends PropertiesComponent {
         fakeStorage.put(name, value);
     }
 
-    @NotNull
     @Override
+    public String[] getValues(@NonNls String name) {
+        throw new UnsupportedOperationException("Implement if needed");
+    }
+
+    public void setValues(@NonNls String name, String[] values) {
+        throw new UnsupportedOperationException("Implement if needed");
+    }
+
+    @NotNull
     public String getValue(@NonNls String name, @NotNull String defaultValue) {
         throw new UnsupportedOperationException();
     }
