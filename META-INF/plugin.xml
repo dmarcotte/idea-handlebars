@@ -215,7 +215,7 @@
     <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage"/>
     <lang.fileViewProviderFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.file.HbFileViewProviderFactory"/>
     <lang.commenter language="Handlebars" implementationClass="com.dmarcotte.handlebars.editor.comments.HbCommenter"/>
-    <lang.braceMatcher language="Handlebars" implementationClass="com.dmarcotte.handlebars.HbBraceMatcher"/>
+    <braceMatcher filetype="Handlebars/Mustache" implementationClass="com.dmarcotte.handlebars.editor.braces.HbBraceMatcher"/>
     <lang.foldingBuilder language="Handlebars"
                          implementationClass="com.dmarcotte.handlebars.editor.folding.HbFoldingBuilder" />
     <typedHandler implementation="com.dmarcotte.handlebars.editor.actions.HbTypedHandler"/>
