@@ -7,6 +7,7 @@ package com.dmarcotte.handlebars.parsing;
  */
 public class HbParserFreeFormTest extends HbParserTest {
     public void testSampleFullFile1() { doTest(true); }
+    public void testSampleFullFile2() { doTest(true); }
     public void testManyIdsFollowedByParam() { doTest(true); }
     public void testUnclosedMustacheFollowedByMustache() { doTest(true); }
     public void testOpenInverseVsSimpleInverse() { doTest(true); }

@@ -1,14 +1,25 @@
-<div class="data">
-    <span class="stuff">
-        <a href="#">{{#helper "yesLabel"}}Yes{{/helper}}</a>
-        {{#if Thing.Stuff}}
-            {{#each Thing.Stuff.Values}}
-            <span>{{.}}</span>
-            {{/each}}
-        {{else}}
-            <span>{{#helper "Nothing"}}Nothing{{/helper}}</span>
-        {{/if}}
-    </span>
+{{! samples from http://handlebarsjs.com }}
+<body>
+    <h1>{{title}}</h1>
 
-    {{> partialId }}
-</div>
+    <div class="entry">
+        {{#if author}}
+            <h1>{{firstName}} {{lastName}}</h1>
+        {{else}}
+            <h1>Unknown Author</h1>
+        {{/if}}
+    </div>
+
+    <div class="body">
+        {{body}}
+    </div>
+
+    <h1>Comments</h1>
+
+    <div id="comments">
+        {{#each comments}}
+            <h2><a href="/posts/{{../permalink}}#{{id}}">{{title}}</a></h2>
+            <div>{{body}}</div>
+        {{/each}}
+    </div>
+</body>
