@@ -32,7 +32,15 @@ public class PropertiesComponentStub extends PropertiesComponent {
     @NotNull
     @Override
     public String getValue(@NonNls String name, @NotNull String defaultValue) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Implement me if needed");
+    }
+
+    public String[] getValues(@NonNls String name) {
+        throw new UnsupportedOperationException("Implement me if needed");
+    }
+
+    public void setValues(@NonNls String name, String[] values) {
+        throw new UnsupportedOperationException("Implement me if needed");
     }
 
     @SuppressWarnings ("EmptyMethod") // see comment in method for why this is cool
