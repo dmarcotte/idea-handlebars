@@ -74,12 +74,15 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     /**
-     * If the given node is a {@link HbTokenTypes#OPEN_BLOCK_STACHE}, returns the close 'stache node ("}}")<br/>
+     * If the given node is a {@link HbTokenTypes#OPEN_BLOCK_STACHE} or {@link HbTokenTypes#OPEN_INVERSE_BLOCK_STACHE},
+     * returns the close 'stache node ("}}")<br/>
      * <br/>
      * Otherwise, returns null.
      */
     private ASTNode getOpenBlockCloseStacheElement(ASTNode node) {
-        if (node == null || node.getElementType() != HbTokenTypes.OPEN_BLOCK_STACHE) {
+        if (node == null
+                || (node.getElementType() != HbTokenTypes.OPEN_BLOCK_STACHE
+                    && node.getElementType() != HbTokenTypes.OPEN_INVERSE_BLOCK_STACHE)) {
             return null;
         }
 
