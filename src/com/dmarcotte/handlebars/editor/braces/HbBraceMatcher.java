@@ -55,11 +55,28 @@ public class HbBraceMatcher implements BraceMatcher {
                 break;
             }
 
-            if (iterator.getTokenType() == HbTokenTypes.OPEN_BLOCK
-                    || iterator.getTokenType() == HbTokenTypes.OPEN_INVERSE) {
+            if (iterator.getTokenType() == HbTokenTypes.OPEN_BLOCK) {
                 // the first open type token we encountered is a block opener,
                 // so this is not a close brace (the paired close brace for these tokens
                 // is at the end of the corresponding block close 'stache)
+                break;
+            }
+
+            if (iterator.getTokenType() == HbTokenTypes.OPEN_INVERSE) {
+                // this might be a simple inverse, so backtrack until we either see
+                // and ID (which means we're in a situation like OPEN_BLOCK above)
+                // or a CLOSE (which means we're a simple inverse, and this is the RBrace)
+                while (iteratorRetreatCount-- > 0) {
+                    iterator.advance();
+                    if (iterator.getTokenType() == HbTokenTypes.ID) {
+                        break;
+                    }
+
+                    if (iterator.getTokenType() == HbTokenTypes.CLOSE) {
+                        isRBraceToken = true;
+                        break;
+                    }
+                }
                 break;
             }
 
