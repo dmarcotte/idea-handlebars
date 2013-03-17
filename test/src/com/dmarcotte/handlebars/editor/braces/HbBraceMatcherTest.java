@@ -84,8 +84,9 @@ public class HbBraceMatcherTest extends LightPlatformCodeInsightFixtureTestCase 
      *       by string replace functions.
      */
     private static String ourTestSource =
-            "{{# foo }}\n" +
+            "{{# foo1 }}\n" +
             "    {{ bar }}\n" +
+            "    {{^ }}\n" +
             "    {{# foo2 }}\n" +
             "        <div>\n" +
             "            {{^ foo3 }}\n" +
@@ -96,7 +97,12 @@ public class HbBraceMatcherTest extends LightPlatformCodeInsightFixtureTestCase 
             "        {{ bat }}\n" +
             "        {{> partial }}\n" +
             "    {{/ foo2 }}\n" +
-            "{{/ foo }}";
+            "{{/ foo1 }}\n" +
+            "\n" +
+            "{{^ foo4 }}\n" +
+            "    Content\n" +
+            "{{/ foo4 }}\n"
+            ;
 
     public void testSimpleMustache() {
         doBraceTest(
@@ -121,8 +127,22 @@ public class HbBraceMatcherTest extends LightPlatformCodeInsightFixtureTestCase 
 
     public void testBlockMustache() {
         doBraceTest(
-                ourTestSource.replace("{{# foo }}", "<brace_match>{{# foo }}")
-                        .replace("{{/ foo }}", "{{/ foo <brace_match>}}")
+                ourTestSource.replace("{{# foo1 }}", "<brace_match>{{# foo1 }}")
+                        .replace("{{/ foo1 }}", "{{/ foo1 <brace_match>}}")
+        );
+    }
+
+    public void testInverseBlockMustache() {
+        doBraceTest(
+                ourTestSource.replace("{{^ foo4 }}", "<brace_match>{{^ foo4 }}")
+                        .replace("{{/ foo4 }}", "{{/ foo4 <brace_match>}}")
+        );
+    }
+
+    public void testSimpleInverseMustache() {
+        doBraceTest(
+                ourTestSource.replace("{{^ }}", "<brace_match>{{^ }}")
+                        .replace("{{^ }}", "{{^ <brace_match>}}")
         );
     }
 
