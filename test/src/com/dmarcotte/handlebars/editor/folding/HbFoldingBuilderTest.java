@@ -19,6 +19,7 @@ public class HbFoldingBuilderTest extends LightPlatformCodeInsightFixtureTestCas
     public void testSloppyEndBlockFolds() { doTest(); }
     public void testUnclosedOpenStache() { doTest(); }
     public void testCommentFolds() { doTest(); }
+    public void testInverseBlockCodeFolds() { doTest(); }
 
     /**
      * Test folding based by validating against a the file in {@link #TEST_DATA_PATH} who
