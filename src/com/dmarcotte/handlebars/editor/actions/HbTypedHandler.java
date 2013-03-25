@@ -95,7 +95,7 @@ public class HbTypedHandler extends TypedHandlerDelegate {
 
         if (openTag != null && openTag.getChildren().length > 1) {
             // we've got an open block type stache... find its ID
-            HbPsiElement idElem = (HbPsiElement) openTag.getChildren()[1].getFirstChild();
+            HbPsiElement idElem = (HbPsiElement) openTag.getChildren()[1];
 
             if (idElem != null
                     && idElem.getNode().getElementType() == HbTokenTypes.ID) {
