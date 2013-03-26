@@ -2,6 +2,9 @@ package com.dmarcotte.handlebars.editor.folding;
 
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
+import com.dmarcotte.handlebars.psi.HbBlockWrapper;
+import com.dmarcotte.handlebars.psi.HbCloseBlock;
+import com.dmarcotte.handlebars.psi.HbOpenBlock;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilder;
 import com.intellij.lang.folding.FoldingDescriptor;
@@ -26,33 +29,33 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     private void appendDescriptors(PsiElement psi, List<FoldingDescriptor> descriptors, Document document) {
-        ASTNode node = psi.getNode();
-        if (node == null || isSingleLine(psi, document)) {
+        if (isSingleLine(psi, document)) {
             return;
         }
 
-        if (HbTokenTypes.COMMENT == node.getElementType()) {
-            String commentText = node.getText();
+        if (HbTokenTypes.COMMENT == psi.getNode().getElementType()) {
+            ASTNode commentNode = psi.getNode();
+            String commentText = commentNode.getText();
 
             // comment might be unclosed, so do a bit of sanity checking on its length and whether or not it's
             // got the requisite open/close tags before we allow folding
             if (commentText.length() > 5
                     && commentText.substring(0,3).equals("{{!")
                     && commentText.substring(commentText.length() - 2, commentText.length()).equals("}}")) {
-                TextRange range = new TextRange(node.getTextRange().getStartOffset() + 3, node.getTextRange().getEndOffset() -2);
-                descriptors.add(new FoldingDescriptor(node, range));
+                TextRange range = new TextRange(commentNode.getTextRange().getStartOffset() + 3, commentNode.getTextRange().getEndOffset() -2);
+                descriptors.add(new FoldingDescriptor(commentNode, range));
             }
         }
 
-        if (HbTokenTypes.BLOCK_WRAPPER == node.getElementType()) {
+        if (psi instanceof HbBlockWrapper) {
 
-            ASTNode endOpenBlockStache = getOpenBlockCloseStacheElement(node.getFirstChildNode());
-            ASTNode endCloseBlockStache = getCloseBlockCloseStacheElement(node.getLastChildNode());
+            PsiElement endOpenBlockStache = getOpenBlockCloseStacheElement(psi.getFirstChild());
+            PsiElement endCloseBlockStache = getCloseBlockCloseStacheElement(psi.getLastChild());
 
             // if we've got a well formed block with the open and close elems we need, define a region to fold
             if (endOpenBlockStache != null && endCloseBlockStache != null) {
                 int endOfFirstOpenStacheLine
-                        = document.getLineEndOffset(document.getLineNumber(node.getTextRange().getStartOffset()));
+                        = document.getLineEndOffset(document.getLineNumber(psi.getTextRange().getStartOffset()));
 
                 // we set the start of the text we'll fold to be just before the close braces of the open stache,
                 //     or, if the open stache spans multiple lines, to the end of the first line
@@ -62,7 +65,7 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
 
                 TextRange range = new TextRange(foldingRangeStartOffset, foldingRangeEndOffset);
 
-                descriptors.add(new FoldingDescriptor(node, range));
+                descriptors.add(new FoldingDescriptor(psi, range));
             }
         }
 
@@ -74,20 +77,19 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     /**
-     * If the given node is a {@link HbTokenTypes#OPEN_BLOCK_STACHE} or {@link HbTokenTypes#OPEN_INVERSE_BLOCK_STACHE},
-     * returns the close 'stache node ("}}")<br/>
-     * <br/>
+     * If the given element is a {@link HbOpenBlock} returns the close 'stache node ("}}")
+     * <p>
      * Otherwise, returns null.
      */
-    private ASTNode getOpenBlockCloseStacheElement(ASTNode node) {
-        if (node == null
-                || (node.getElementType() != HbTokenTypes.OPEN_BLOCK_STACHE
-                    && node.getElementType() != HbTokenTypes.OPEN_INVERSE_BLOCK_STACHE)) {
+    private PsiElement getOpenBlockCloseStacheElement(PsiElement psiElement) {
+        if (psiElement == null
+                || !(psiElement instanceof HbOpenBlock)) {
             return null;
         }
 
-        ASTNode endOpenStache = node.getLastChildNode();
-        if (endOpenStache == null || endOpenStache.getElementType() != HbTokenTypes.CLOSE) {
+        PsiElement endOpenStache = psiElement.getLastChild();
+
+        if (endOpenStache == null || endOpenStache.getNode().getElementType() != HbTokenTypes.CLOSE) {
             return null;
         }
 
@@ -95,17 +97,17 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     /**
-     * If the given node is {@link HbTokenTypes#CLOSE_BLOCK_STACHE}, returns the close 'stache node ("}}")<br/>
-     * <br/>
+     * If the given element is a {@link HbCloseBlock}, returns the close 'stache node ("}}")
+     * <p>
      * Otherwise, returns null
      */
-    private ASTNode getCloseBlockCloseStacheElement(ASTNode node) {
-        if (node == null || node.getElementType() != HbTokenTypes.CLOSE_BLOCK_STACHE) {
+    private PsiElement getCloseBlockCloseStacheElement(PsiElement psiElement) {
+        if (psiElement == null || !(psiElement instanceof HbCloseBlock)) {
             return null;
         }
 
-        ASTNode endCloseStache = node.getLastChildNode();
-        if (endCloseStache == null || endCloseStache.getElementType() != HbTokenTypes.CLOSE) {
+        PsiElement endCloseStache = psiElement.getLastChild();
+        if (endCloseStache == null || endCloseStache.getNode().getElementType() != HbTokenTypes.CLOSE) {
             return null;
         }
 

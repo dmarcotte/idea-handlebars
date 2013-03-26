@@ -4,8 +4,10 @@ import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.file.HbFileViewProvider;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
+import com.dmarcotte.handlebars.psi.HbCloseBlock;
 import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiUtil;
+import com.dmarcotte.handlebars.psi.HbSimpleInverse;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
@@ -120,9 +122,8 @@ public class HbTypedHandler extends TypedHandlerDelegate {
             @Override
             public boolean value(PsiElement element) {
                 return element != null
-                        && element.getNode() != null
-                        && (element.getNode().getElementType() == HbTokenTypes.SIMPLE_INVERSE
-                        || element.getNode().getElementType() == HbTokenTypes.CLOSE_BLOCK_STACHE);
+                        && (element instanceof HbSimpleInverse
+                        || element instanceof HbCloseBlock);
             }
         });
 
