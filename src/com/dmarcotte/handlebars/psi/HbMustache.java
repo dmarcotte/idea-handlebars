@@ -1,4 +1,7 @@
 package com.dmarcotte.handlebars.psi;
 
-public interface HbMustache {
+/**
+ * Base element for non-block Mustaches
+ */
+public interface HbMustache extends HbPsiElement {
 }

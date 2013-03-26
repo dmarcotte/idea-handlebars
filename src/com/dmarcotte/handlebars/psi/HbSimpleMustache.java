@@ -1,4 +1,4 @@
 package com.dmarcotte.handlebars.psi;
 
-public interface HbSimpleMustache {
+public interface HbSimpleMustache extends HbMustache {
 }

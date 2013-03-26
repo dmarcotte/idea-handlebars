@@ -4,7 +4,7 @@ import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.file.HbFileViewProvider;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
-import com.dmarcotte.handlebars.psi.HbCloseBlock;
+import com.dmarcotte.handlebars.psi.HbCloseBlockMustache;
 import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiUtil;
 import com.dmarcotte.handlebars.psi.HbSimpleInverse;
@@ -123,7 +123,7 @@ public class HbTypedHandler extends TypedHandlerDelegate {
             public boolean value(PsiElement element) {
                 return element != null
                         && (element instanceof HbSimpleInverse
-                        || element instanceof HbCloseBlock);
+                        || element instanceof HbCloseBlockMustache);
             }
         });
 

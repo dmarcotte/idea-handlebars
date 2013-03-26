@@ -1,7 +1,7 @@
 FILE
   HbStatementsImpl(STATEMENTS)
     HbBlockWrapperImpl(BLOCK_WRAPPER)
-      HbOpenInverseBlockImpl(OPEN_INVERSE_BLOCK_STACHE)
+      HbOpenInverseBlockMustacheImpl(OPEN_INVERSE_BLOCK_STACHE)
         HbPsiElementImpl([Hb] OPEN_INVERSE)
           PsiElement([Hb] OPEN_INVERSE)('{{^')
         HbPsiElementImpl([Hb] ID)

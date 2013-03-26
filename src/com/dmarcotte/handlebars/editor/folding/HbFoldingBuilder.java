@@ -3,8 +3,8 @@ package com.dmarcotte.handlebars.editor.folding;
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.dmarcotte.handlebars.psi.HbBlockWrapper;
-import com.dmarcotte.handlebars.psi.HbCloseBlock;
-import com.dmarcotte.handlebars.psi.HbOpenBlock;
+import com.dmarcotte.handlebars.psi.HbCloseBlockMustache;
+import com.dmarcotte.handlebars.psi.HbOpenBlockMustache;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilder;
 import com.intellij.lang.folding.FoldingDescriptor;
@@ -77,13 +77,13 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     /**
-     * If the given element is a {@link HbOpenBlock} returns the close 'stache node ("}}")
+     * If the given element is a {@link com.dmarcotte.handlebars.psi.HbOpenBlockMustache} returns the close 'stache node ("}}")
      * <p>
      * Otherwise, returns null.
      */
     private PsiElement getOpenBlockCloseStacheElement(PsiElement psiElement) {
         if (psiElement == null
-                || !(psiElement instanceof HbOpenBlock)) {
+                || !(psiElement instanceof HbOpenBlockMustache)) {
             return null;
         }
 
@@ -97,12 +97,12 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     /**
-     * If the given element is a {@link HbCloseBlock}, returns the close 'stache node ("}}")
+     * If the given element is a {@link com.dmarcotte.handlebars.psi.HbCloseBlockMustache}, returns the close 'stache node ("}}")
      * <p>
      * Otherwise, returns null
      */
     private PsiElement getCloseBlockCloseStacheElement(PsiElement psiElement) {
-        if (psiElement == null || !(psiElement instanceof HbCloseBlock)) {
+        if (psiElement == null || !(psiElement instanceof HbCloseBlockMustache)) {
             return null;
         }
 

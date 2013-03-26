@@ -9,20 +9,20 @@ public class HbPsiUtil {
     /**
      * Used to determine if an element is part of an "open tag" (i.e. "{{#open}}" or "{{^openInverse}}")
      * <p>
-     * If the given element is the descendant of an {@link HbOpenBlock}, this method returns
+     * If the given element is the descendant of an {@link HbOpenBlockMustache}, this method returns
      * that parent.
      * <p>
      * Otherwise, returns null.
      *
      * @param element The element whose ancestors will be searched
-     * @return An ancestor of type {@link HbOpenBlock} or null if none exists
+     * @return An ancestor of type {@link HbOpenBlockMustache} or null if none exists
      */
-    public static HbOpenBlock findParentOpenTagElement(PsiElement element) {
-        return (HbOpenBlock) PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
+    public static HbOpenBlockMustache findParentOpenTagElement(PsiElement element) {
+        return (HbOpenBlockMustache) PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
             @Override
             public boolean value(PsiElement element) {
                 return element != null
-                        && element instanceof HbOpenBlock;
+                        && element instanceof HbOpenBlockMustache;
             }
         });
     }
@@ -30,19 +30,19 @@ public class HbPsiUtil {
     /**
      * Used to determine if an element is part of a "close tag" (i.e. "{{/closer}}")
      * <p>
-     * If the given element is the descendant of an {@link HbCloseBlock}, this method returns that parent.
+     * If the given element is the descendant of an {@link HbCloseBlockMustache}, this method returns that parent.
      * <p>
      * Otherwise, returns null.
      * <p>
      * @param element The element whose ancestors will be searched
-     * @return An ancestor of type {@link HbCloseBlock} or null if none exists
+     * @return An ancestor of type {@link HbCloseBlockMustache} or null if none exists
      */
-    public static HbCloseBlock findParentCloseTagElement(PsiElement element) {
-        return (HbCloseBlock) PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
+    public static HbCloseBlockMustache findParentCloseTagElement(PsiElement element) {
+        return (HbCloseBlockMustache) PsiTreeUtil.findFirstParent(element, true, new Condition<PsiElement>() {
             @Override
             public boolean value(PsiElement element) {
                 return element != null
-                        && element instanceof HbCloseBlock;
+                        && element instanceof HbCloseBlockMustache;
             }
         });
     }

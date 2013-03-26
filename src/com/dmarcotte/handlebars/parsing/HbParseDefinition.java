@@ -2,10 +2,10 @@ package com.dmarcotte.handlebars.parsing;
 
 import com.dmarcotte.handlebars.psi.HbPsiFile;
 import com.dmarcotte.handlebars.psi.impl.HbBlockWrapperImpl;
-import com.dmarcotte.handlebars.psi.impl.HbCloseBlockImpl;
+import com.dmarcotte.handlebars.psi.impl.HbCloseBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbCommentImpl;
-import com.dmarcotte.handlebars.psi.impl.HbOpenBlockImpl;
-import com.dmarcotte.handlebars.psi.impl.HbOpenInverseBlockImpl;
+import com.dmarcotte.handlebars.psi.impl.HbOpenBlockMustacheImpl;
+import com.dmarcotte.handlebars.psi.impl.HbOpenInverseBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbParamImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPartialImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPsiElementImpl;
@@ -60,15 +60,15 @@ public class HbParseDefinition implements ParserDefinition {
         }
 
         if (node.getElementType() == HbTokenTypes.OPEN_BLOCK_STACHE) {
-            return new HbOpenBlockImpl(node);
+            return new HbOpenBlockMustacheImpl(node);
         }
 
         if (node.getElementType() == HbTokenTypes.OPEN_INVERSE_BLOCK_STACHE) {
-            return new HbOpenInverseBlockImpl(node);
+            return new HbOpenInverseBlockMustacheImpl(node);
         }
 
         if (node.getElementType() == HbTokenTypes.CLOSE_BLOCK_STACHE) {
-            return new HbCloseBlockImpl(node);
+            return new HbCloseBlockMustacheImpl(node);
         }
 
         if (node.getElementType() == HbTokenTypes.MUSTACHE) {

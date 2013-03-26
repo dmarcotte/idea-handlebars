@@ -2,7 +2,7 @@ FILE
   HbStatementsImpl(STATEMENTS)
     HbBlockWrapperImpl(BLOCK_WRAPPER)
       PsiErrorElement:"foo" block not closed
-        HbOpenBlockImpl(OPEN_BLOCK_STACHE)
+        HbOpenBlockMustacheImpl(OPEN_BLOCK_STACHE)
           HbPsiElementImpl([Hb] OPEN_BLOCK)
             PsiElement([Hb] OPEN_BLOCK)('{{#')
           HbPsiElementImpl([Hb] ID)
@@ -12,7 +12,7 @@ FILE
       PsiWhiteSpace('\n    ')
       HbStatementsImpl(STATEMENTS)
         HbBlockWrapperImpl(BLOCK_WRAPPER)
-          HbOpenBlockImpl(OPEN_BLOCK_STACHE)
+          HbOpenBlockMustacheImpl(OPEN_BLOCK_STACHE)
             HbPsiElementImpl([Hb] OPEN_BLOCK)
               PsiElement([Hb] OPEN_BLOCK)('{{#')
             HbPsiElementImpl([Hb] ID)
