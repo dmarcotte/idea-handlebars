@@ -1,16 +1,10 @@
 package com.dmarcotte.handlebars.psi;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.lang.ASTNode;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.psi.PsiElement;
 
 /**
- * Base of all PsiElements
+ * Base for all Handlebars/Mustache elements
  */
-public class HbPsiElement extends ASTWrapperPsiElement {
-    public HbPsiElement(@NotNull ASTNode astNode) {
-        super(astNode);
-    }
+public interface HbPsiElement extends PsiElement {
 
-    // some common logic should come here
 }
