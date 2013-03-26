@@ -1,7 +1,7 @@
 FILE
-  HbPsiElement(STATEMENTS)
-    HbPsiElement(MUSTACHE)
-      HbPsiElement([Hb] OPEN)
+  HbStatementsImpl(STATEMENTS)
+    HbSimpleMustacheImpl(MUSTACHE)
+      HbPsiElementImpl([Hb] OPEN)
         PsiElement([Hb] OPEN)('{{')
       PsiErrorElement:Expected a path or @data
         <empty list>
@@ -9,5 +9,5 @@ FILE
         PsiElement([Hb] ID)('test')
         PsiElement([Hb] EQUALS)('=')
         PsiElement([Hb] ID)('test')
-      HbPsiElement([Hb] CLOSE)
+      HbPsiElementImpl([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')

@@ -13,19 +13,15 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.BOOLEAN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CLOSE_BLOCK_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.COMMENT;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_NAME;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.CONTENT;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.DATA_PREFIX;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ELSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.EQUALS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ESCAPE_CHAR;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.HASH_SEGMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.ID;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INTEGER;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.INVALID;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.IN_MUSTACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.MUSTACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_BLOCK;
@@ -36,12 +32,13 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_INVERSE_BLOCK_S
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_PARTIAL;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.OPEN_UNESCAPED;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARAM;
-import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARAMS;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_NAME;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PARTIAL_STACHE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SEP;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SIMPLE_INVERSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STATEMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STRING;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
 
 /**
  * The parser is based directly on Handlebars.yy
@@ -468,7 +465,7 @@ class HbParsing {
             if (builder.getTokenType() == DATA_PREFIX
                     && parseLeafToken(builder, DATA_PREFIX)
                     && parseLeafToken(builder, HbTokenTypes.DATA)) {
-                inMustacheMarker.done(IN_MUSTACHE);
+                inMustacheMarker.drop();
                 return true;
             } else {
                 inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path.or.data"));
@@ -507,7 +504,7 @@ class HbParsing {
             }
         }
 
-        inMustacheMarker.done(IN_MUSTACHE);
+        inMustacheMarker.drop();
         return true;
     }
 
@@ -536,7 +533,7 @@ class HbParsing {
             }
         }
 
-        paramsMarker.done(PARAMS);
+        paramsMarker.drop();
         return true;
     }
 
@@ -634,7 +631,7 @@ class HbParsing {
                 if (hashStartPos < builder.getCurrentOffset()) {
                     // HB_CUSTOMIZATION managed to partially parse this hash; don't roll back the errors
                     optionalHashMarker.drop();
-                    hashSegmentsMarker.done(HASH_SEGMENTS);
+                    hashSegmentsMarker.drop();
                     return false;
                 } else {
                     optionalHashMarker.rollbackTo();
@@ -643,7 +640,7 @@ class HbParsing {
             }
         }
 
-        hashSegmentsMarker.done(HASH_SEGMENTS);
+        hashSegmentsMarker.drop();
         return true;
     }
 

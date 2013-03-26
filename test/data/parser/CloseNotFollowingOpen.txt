@@ -1,11 +1,11 @@
 FILE
-  HbPsiElement(STATEMENTS)
+  HbStatementsImpl(STATEMENTS)
     <empty list>
   PsiErrorElement:No corresponding open mustache
-    HbPsiElement(CLOSE_BLOCK_STACHE)
-      HbPsiElement([Hb] OPEN_ENDBLOCK)
+    HbCloseBlockImpl(CLOSE_BLOCK_STACHE)
+      HbPsiElementImpl([Hb] OPEN_ENDBLOCK)
         PsiElement([Hb] OPEN_ENDBLOCK)('{{/')
-      HbPsiElement([Hb] ID)
+      HbPsiElementImpl([Hb] ID)
         PsiElement([Hb] ID)('unopened')
-      HbPsiElement([Hb] CLOSE)
+      HbPsiElementImpl([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')
