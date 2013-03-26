@@ -1,7 +1,17 @@
 package com.dmarcotte.handlebars.parsing;
 
-import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbPsiFile;
+import com.dmarcotte.handlebars.psi.impl.HbBlockWrapperImpl;
+import com.dmarcotte.handlebars.psi.impl.HbCloseBlockImpl;
+import com.dmarcotte.handlebars.psi.impl.HbCommentImpl;
+import com.dmarcotte.handlebars.psi.impl.HbOpenBlockImpl;
+import com.dmarcotte.handlebars.psi.impl.HbOpenInverseBlockImpl;
+import com.dmarcotte.handlebars.psi.impl.HbParamImpl;
+import com.dmarcotte.handlebars.psi.impl.HbPartialImpl;
+import com.dmarcotte.handlebars.psi.impl.HbPsiElementImpl;
+import com.dmarcotte.handlebars.psi.impl.HbSimpleInverseImpl;
+import com.dmarcotte.handlebars.psi.impl.HbSimpleMustacheImpl;
+import com.dmarcotte.handlebars.psi.impl.HbStatementsImpl;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -45,7 +55,47 @@ public class HbParseDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return new HbPsiElement(node);
+        if (node.getElementType() == HbTokenTypes.BLOCK_WRAPPER) {
+            return new HbBlockWrapperImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.OPEN_BLOCK_STACHE) {
+            return new HbOpenBlockImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.OPEN_INVERSE_BLOCK_STACHE) {
+            return new HbOpenInverseBlockImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.CLOSE_BLOCK_STACHE) {
+            return new HbCloseBlockImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.MUSTACHE) {
+            return new HbSimpleMustacheImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.PARAM) {
+            return new HbParamImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.PARTIAL_STACHE) {
+            return new HbPartialImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.SIMPLE_INVERSE) {
+            return new HbSimpleInverseImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.STATEMENTS) {
+            return new HbStatementsImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.COMMENT) {
+            return new HbCommentImpl(node);
+        }
+
+        return new HbPsiElementImpl(node);
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {

@@ -95,7 +95,7 @@ public class HbFoldingBuilder implements FoldingBuilder, DumbAware {
     }
 
     /**
-     * If the given node is {@link HbTokenTypes#CLOSE_BLOCK_STACHE}, returns the close 'stache node ("{{")<br/>
+     * If the given node is {@link HbTokenTypes#CLOSE_BLOCK_STACHE}, returns the close 'stache node ("}}")<br/>
      * <br/>
      * Otherwise, returns null
      */
