@@ -223,5 +223,6 @@
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>
     <codeFoldingOptionsProvider
         instance="com.dmarcotte.handlebars.config.HbFoldingOptionsProvider" />
+    <lang.psiStructureViewFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.structure.HbStructureViewFactory"/>
   </extensions>
 </idea-plugin>
