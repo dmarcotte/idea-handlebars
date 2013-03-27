@@ -8,6 +8,7 @@ import com.dmarcotte.handlebars.psi.impl.HbOpenBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbOpenInverseBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbParamImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPartialImpl;
+import com.dmarcotte.handlebars.psi.impl.HbPathImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPsiElementImpl;
 import com.dmarcotte.handlebars.psi.impl.HbSimpleInverseImpl;
 import com.dmarcotte.handlebars.psi.impl.HbSimpleMustacheImpl;
@@ -73,6 +74,10 @@ public class HbParseDefinition implements ParserDefinition {
 
         if (node.getElementType() == HbTokenTypes.MUSTACHE) {
             return new HbSimpleMustacheImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.PATH) {
+            return new HbPathImpl(node);
         }
 
         if (node.getElementType() == HbTokenTypes.PARAM) {
