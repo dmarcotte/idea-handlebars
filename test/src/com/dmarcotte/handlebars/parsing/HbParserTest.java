@@ -1,10 +1,12 @@
 package com.dmarcotte.handlebars.parsing;
 
+import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.PropertiesComponentStub;
 import com.dmarcotte.handlebars.util.HbTestUtils;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.lang.LanguageParserDefinitions;
+import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
+import com.intellij.psi.templateLanguages.TemplateDataLanguagePatterns;
 import com.intellij.testFramework.ParsingTestCase;
 import org.picocontainer.MutablePicoContainer;
 
@@ -25,9 +27,6 @@ import org.picocontainer.MutablePicoContainer;
  */
 public abstract class HbParserTest extends ParsingTestCase {
 
-    @SuppressWarnings("UnusedDeclaration") // TODO odd... StdFileTypes is not initialized on time if it's not forward declared.  Figure out what's up and remove this hack.
-    private static LanguageFileType html = StdFileTypes.HTML;
-
     public HbParserTest() {
         super("parser", "hbs", new HbParseDefinition());
     }
@@ -37,6 +36,10 @@ public abstract class HbParserTest extends ParsingTestCase {
         return HbTestUtils.BASE_TEST_DATA_PATH;
     }
 
+    protected boolean checkAllPsiRoots() {
+        return false;
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -44,5 +47,10 @@ public abstract class HbParserTest extends ParsingTestCase {
         final MutablePicoContainer appContainer = getApplication().getPicoContainer();
         appContainer.registerComponentInstance(PropertiesComponent.class.getName(),
                 new PropertiesComponentStub());
+        appContainer.registerComponentInstance(TemplateDataLanguageMappings.class.getName(),
+                                               new TemplateDataLanguageMappings(getProject()));
+        appContainer.registerComponentInstance(TemplateDataLanguagePatterns.class.getName(),
+                                               new TemplateDataLanguagePatterns());
+        addExplicitExtension(LanguageParserDefinitions.INSTANCE, HbLanguage.INSTANCE, new HbParseDefinition());
     }
 }
