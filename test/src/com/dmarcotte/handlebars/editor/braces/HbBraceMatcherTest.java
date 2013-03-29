@@ -83,7 +83,7 @@ public class HbBraceMatcherTest extends LightPlatformCodeInsightFixtureTestCase 
      *    - All mustache ids (foo, foo2, bar, etc) are unique so that they can be easily targeted
      *       by string replace functions.
      */
-    private static String ourTestSource =
+    private static final String ourTestSource =
             "{{# foo1 }}\n" +
             "    {{ bar }}\n" +
             "    {{^ }}\n" +

@@ -35,10 +35,12 @@ public class PropertiesComponentStub extends PropertiesComponent {
         throw new UnsupportedOperationException("Implement me if needed");
     }
 
+    @SuppressWarnings ("UnusedDeclaration") // required by IDEA 12, but unused when building against IDEA 11
     public String[] getValues(@NonNls String name) {
         throw new UnsupportedOperationException("Implement me if needed");
     }
 
+    @SuppressWarnings ("UnusedDeclaration") // required by IDEA 12, but unused when building against IDEA 11
     public void setValues(@NonNls String name, String[] values) {
         throw new UnsupportedOperationException("Implement me if needed");
     }

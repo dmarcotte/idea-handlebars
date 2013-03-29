@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Commenter for native Handlebars comments: <pre>{{!-- comment --}}</pre>
  */
-public class HandlebarsCommenter implements Commenter {
+class HandlebarsCommenter implements Commenter {
     @Nullable
     @Override
     public String getLineCommentPrefix() {

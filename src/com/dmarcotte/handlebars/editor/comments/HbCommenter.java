@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HbCommenter implements Commenter {
 
-    private static Commenter ourHandlebarsCommenter = new HandlebarsCommenter();
+    private static final Commenter ourHandlebarsCommenter = new HandlebarsCommenter();
 
     @Nullable
     @Override
