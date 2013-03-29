@@ -17,7 +17,7 @@ FILE
           PsiElement([Hb] CLOSE)('}}')
       HbStatementsImpl(STATEMENTS)
         PsiElement([Hb] CONTENT)(' baz ')
-      HbCloseBlockImpl(CLOSE_BLOCK_STACHE)
+      HbCloseBlockMustacheImpl(CLOSE_BLOCK_STACHE)
         HbPsiElementImpl([Hb] OPEN_ENDBLOCK)
           PsiElement([Hb] OPEN_ENDBLOCK)('{{/')
         HbPsiElementImpl([Hb] ID)
