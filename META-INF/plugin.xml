@@ -223,5 +223,6 @@
     <applicationConfigurable instance="com.dmarcotte.handlebars.pages.HbConfigurationPage"/>
     <codeFoldingOptionsProvider
         instance="com.dmarcotte.handlebars.config.HbFoldingOptionsProvider" />
+      <codeInsight.lineMarkerProvider language="Handlebars" implementationClass="com.dmarcotte.handlebars.editor.lines.HbLineMarkerProvider"/>
   </extensions>
 </idea-plugin>
