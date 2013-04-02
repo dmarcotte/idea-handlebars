@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class HbTreeElementFile extends PsiTreeElementBase<HbPsiFile> {
+class HbTreeElementFile extends PsiTreeElementBase<HbPsiFile> {
 
-    private HbPsiFile myFile;
+    private final HbPsiFile myFile;
 
     public HbTreeElementFile(@NotNull HbPsiFile psiFile) {
         super(psiFile);

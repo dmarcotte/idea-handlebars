@@ -697,7 +697,7 @@ class HbParsing {
     private boolean parsePathSegments(PsiBuilder builder) {
         PsiBuilder.Marker pathSegmentsMarker = builder.mark();
 
-        /* HB_CUSTOMIZATION: see ishashNextLookAhead docs for details */
+        /* HB_CUSTOMIZATION: see isHashNextLookAhead docs for details */
         if (isHashNextLookAhead(builder)) {
             pathSegmentsMarker.rollbackTo();
             return false;

@@ -4,10 +4,12 @@ import com.dmarcotte.handlebars.psi.HbPsiFile;
 import com.dmarcotte.handlebars.psi.impl.HbBlockWrapperImpl;
 import com.dmarcotte.handlebars.psi.impl.HbCloseBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbCommentImpl;
+import com.dmarcotte.handlebars.psi.impl.HbDataImpl;
 import com.dmarcotte.handlebars.psi.impl.HbOpenBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbOpenInverseBlockMustacheImpl;
 import com.dmarcotte.handlebars.psi.impl.HbParamImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPartialImpl;
+import com.dmarcotte.handlebars.psi.impl.HbPartialNameImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPathImpl;
 import com.dmarcotte.handlebars.psi.impl.HbPsiElementImpl;
 import com.dmarcotte.handlebars.psi.impl.HbSimpleInverseImpl;
@@ -80,12 +82,20 @@ public class HbParseDefinition implements ParserDefinition {
             return new HbPathImpl(node);
         }
 
+        if (node.getElementType() == HbTokenTypes.DATA) {
+            return new HbDataImpl(node);
+        }
+
         if (node.getElementType() == HbTokenTypes.PARAM) {
             return new HbParamImpl(node);
         }
 
         if (node.getElementType() == HbTokenTypes.PARTIAL_STACHE) {
             return new HbPartialImpl(node);
+        }
+
+        if (node.getElementType() == HbTokenTypes.PARTIAL_NAME) {
+            return new HbPartialNameImpl(node);
         }
 
         if (node.getElementType() == HbTokenTypes.SIMPLE_INVERSE) {

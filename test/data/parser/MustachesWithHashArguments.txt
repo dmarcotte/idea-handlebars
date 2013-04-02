@@ -83,7 +83,7 @@ FILE
       HbParamImpl(PARAM)
         HbPsiElementImpl([Hb] DATA_PREFIX)
           PsiElement([Hb] DATA_PREFIX)('@')
-        HbPsiElementImpl([Hb] DATA)
+        HbDataImpl([Hb] DATA)
           PsiElement([Hb] DATA)('baz')
       HbPsiElementImpl([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')

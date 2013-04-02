@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class HbTreeElement extends PsiTreeElementBase<HbPsiElement> {
+class HbTreeElement extends PsiTreeElementBase<HbPsiElement> {
 
-    private HbPsiElement myElement;
+    private final HbPsiElement myElement;
 
-    public HbTreeElement(HbPsiElement psiElement) {
+    private HbTreeElement(HbPsiElement psiElement) {
         super(psiElement);
         myElement = psiElement;
     }
@@ -53,11 +53,11 @@ public class HbTreeElement extends PsiTreeElementBase<HbPsiElement> {
     @Nullable
     @Override
     public String getPresentableText() {
-        return myElement.getText();
+        return myElement.getName();
     }
 
     @Override
     public Icon getIcon(boolean open) {
-        return super.getIcon(open);
+        return myElement.getIcon(0);
     }
 }

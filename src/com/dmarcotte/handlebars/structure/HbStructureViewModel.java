@@ -5,9 +5,9 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.structureView.TextEditorBasedStructureViewModel;
 import org.jetbrains.annotations.NotNull;
 
-public class HbStructureViewModel extends TextEditorBasedStructureViewModel {
+class HbStructureViewModel extends TextEditorBasedStructureViewModel {
 
-    private HbPsiFile myFile;
+    private final HbPsiFile myFile;
 
     public HbStructureViewModel(@NotNull HbPsiFile psiFile) {
         super(psiFile);
