@@ -11,8 +11,10 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import com.intellij.testFramework.LightIdeaTestCase;
@@ -149,14 +151,21 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
                                           final String beforeText,
                                           String textAfter,
                                           LanguageFileType templateDataLanguageType) {
-        final PsiFile file = createFile("A.hbs", beforeText);
+        PsiFile baseFile = createFile("A.hbs", beforeText);
+
+        VirtualFile virtualFile = baseFile.getVirtualFile();
+        assert virtualFile != null;
+        TemplateDataLanguageMappings.getInstance(getProject()).setMapping(virtualFile, templateDataLanguageType.getLanguage());
+
+        // fetch a fresh instance of the file -- the template data mapping creates a new instance,
+        // which was causing problems in PsiFileImpl.isValid()
+        final PsiFile file = PsiManager.getInstance(getProject()).findFile(virtualFile);
+        assert file != null;
 
         final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
         final Document document = manager.getDocument(file);
 
         assert document != null;
-
-        TemplateDataLanguageMappings.getInstance(getProject()).setMapping(file.getVirtualFile(), templateDataLanguageType.getLanguage());
 
         // write our beforeText into our document
         CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
