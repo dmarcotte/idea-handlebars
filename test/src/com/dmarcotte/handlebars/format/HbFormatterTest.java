@@ -162,25 +162,6 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
         final PsiFile file = PsiManager.getInstance(getProject()).findFile(virtualFile);
         assert file != null;
 
-        final PsiDocumentManager manager = PsiDocumentManager.getInstance(getProject());
-        final Document document = manager.getDocument(file);
-
-        assert document != null;
-
-        // write our beforeText into our document
-        CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-            @Override
-            public void run() {
-                ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        document.replaceString(0, document.getTextLength(), beforeText);
-                        manager.commitDocument(document);
-                    }
-                });
-            }
-        }, "", "");
-
         CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
             @Override
             public void run() {
@@ -190,8 +171,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
 
         TemplateDataLanguageMappings.getInstance(getProject()).cleanupForNextTest();
 
-        assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(document.getText()));
-        manager.commitDocument(document);
+        assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(file.getText()));
         assertEquals("Reformat Code failed", prepareText(textAfter), prepareText(file.getText()));
     }
 
