@@ -1,12 +1,11 @@
 package com.dmarcotte.handlebars.structure;
 
-import com.dmarcotte.handlebars.psi.HbBlockWrapper;
-import com.dmarcotte.handlebars.psi.HbMustache;
 import com.dmarcotte.handlebars.psi.HbPsiElement;
 import com.dmarcotte.handlebars.psi.HbStatements;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.ReflectionCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +42,11 @@ class HbTreeElement extends PsiTreeElementBase<HbPsiElement> {
                 children.addAll(new HbTreeElement((HbPsiElement) childElement).getChildrenBase());
             }
 
-            if(childElement instanceof HbBlockWrapper || childElement instanceof HbMustache) {
-                children.add(new HbTreeElement((HbPsiElement) childElement));
+            for (Class suitableClass : HbStructureViewModel.ourSuitableClasses) {
+                if (ReflectionCache.isAssignable(suitableClass, childElement.getClass())) {
+                    children.add(new HbTreeElement((HbPsiElement) childElement));
+                    break;
+                }
             }
         }
         return children;
