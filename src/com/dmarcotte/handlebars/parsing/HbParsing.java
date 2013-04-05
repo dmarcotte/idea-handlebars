@@ -39,6 +39,7 @@ import static com.dmarcotte.handlebars.parsing.HbTokenTypes.SIMPLE_INVERSE;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STATEMENTS;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.STRING;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.UNCLOSED_COMMENT;
+import static com.dmarcotte.handlebars.parsing.HbTokenTypes.PATH;
 
 /**
  * The parser is based directly on Handlebars.yy
@@ -669,7 +670,13 @@ class HbParsing {
      * ;
      */
     private boolean parsePath(PsiBuilder builder) {
-        return parsePathSegments(builder);
+        PsiBuilder.Marker pathMarker = builder.mark();
+        if (parsePathSegments(builder)) {
+            pathMarker.done(PATH);
+            return true;
+        }
+        pathMarker.drop();
+        return false;
     }
 
     /**
@@ -690,7 +697,7 @@ class HbParsing {
     private boolean parsePathSegments(PsiBuilder builder) {
         PsiBuilder.Marker pathSegmentsMarker = builder.mark();
 
-        /* HB_CUSTOMIZATION: see ishashNextLookAhead docs for details */
+        /* HB_CUSTOMIZATION: see isHashNextLookAhead docs for details */
         if (isHashNextLookAhead(builder)) {
             pathSegmentsMarker.rollbackTo();
             return false;
