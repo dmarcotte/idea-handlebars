@@ -65,22 +65,23 @@ public class HbStructureViewTest extends LightCodeInsightFixtureTestCase {
 
                 "{{#block}}\n" +
                 "{{/block}}\n" +
-                "{{#inverse}}\n" +
+                "{{^inverse}}\n" +
+                "    {{else}}\n" +
                 "{{/inverse}}\n" +
                 "{{mustache}}\n" +
                 "{{>partial}}\n" +
                 "{{@data}}\n" +
                 "{{^}}\n" +
-                "{{else}}\n" +
                 "{{{unescaped}}\n",
 
                 "-"+ ourTestFileName + "\n" +
                 " block\n" +
-                " inverse\n" +
+                " -inverse\n" +
+                "  else\n" +
                 " mustache\n" +
                 " partial\n" +
                 " data\n" +
-                " else\n" +
+                " \n" +
                 " unescaped"
         );
     }
