@@ -45,7 +45,7 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
     }
 
-    public void testOpenBlockStache() {
+    public void testInsertCloseTagForOpenBlockStache() {
         HbConfig.setAutoGenerateCloseTagEnabled(true);
         doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>{{/foo}}");
         doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>{{/foo}}");
@@ -62,7 +62,7 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>");
     }
 
-    public void testOpenInverseStache(){
+    public void testInsertCloseTagForOpenInverseStache(){
         HbConfig.setAutoGenerateCloseTagEnabled(true);
         doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>{{/foo}}");
         doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>{{/foo}}");
@@ -77,6 +77,18 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>");
         doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>");
         doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>");
+    }
+
+    public void testInsertCloseTagWithWhitespace() {
+        // ensure that we properly identify the "foo" even if there's whitespace between it and the open tag
+        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        doCharTest('}', "{{#   foo   }<caret>", "{{#   foo   }}<caret>{{/foo}}");
+    }
+
+    public void testInsertCloseTagForComplexIds() {
+        HbConfig.setAutoGenerateCloseTagEnabled(true);
+        doCharTest('}', "{{#foo.bar}<caret>", "{{#foo.bar}}<caret>{{/foo.bar}}");
+        doCharTest('}', "{{#foo.bar.[baz bat]}<caret>", "{{#foo.bar.[baz bat]}}<caret>{{/foo.bar.[baz bat]}}");
     }
 
     public void testRegularStache() {
@@ -166,12 +178,12 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}',
 
                    "{{#foo}}\n" +
-                           "    stuff\n" +
-                           "    {{/foo}<caret>",
+                   "    stuff\n" +
+                   "    {{/foo}<caret>",
 
                    "{{#foo}}\n" +
-                           "    stuff\n" +
-                           "    {{/foo}}<caret>");
+                   "    stuff\n" +
+                   "    {{/foo}}<caret>");
 
         HbConfig.setFormattingEnabled(previousFormatSetting);
     }
@@ -221,12 +233,12 @@ public class HbTypedHandlerTest extends HbActionHandlerTest {
         doCharTest('}',
 
                    "{{#if}}\n" +
-                           "    if stuff\n" +
-                           "    {{else}<caret>",
+                   "    if stuff\n" +
+                   "    {{else}<caret>",
 
                    "{{#if}}\n" +
-                           "    if stuff\n" +
-                           "    {{else}}<caret>");
+                   "    if stuff\n" +
+                   "    {{else}}<caret>");
 
         HbConfig.setFormattingEnabled(previousFormatSetting);
     }
