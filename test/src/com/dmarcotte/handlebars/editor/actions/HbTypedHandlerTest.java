@@ -7,8 +7,6 @@ import com.dmarcotte.handlebars.format.FormatterTestSettings;
 /**
  * These tests are based on other children of {@link com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase},
  * in particular {@code com.intellij.application.options.codeInsight.editor.quotes.SelectionQuotingTypedHandlerTest}
- *
- * TODO this test cannot be run with our others due to some interdependency in the IDEA base tests.  Fix this or organize the code in such a way that it is clear these cannot be run together
  */
 public class HbTypedHandlerTest extends HbActionHandlerTest {
 
