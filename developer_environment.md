@@ -11,7 +11,7 @@ git checkout idea/123.169
 ```
 * To get the latest tags in your clone, issue the following command:
 ```
-git pull --tags
+git fetch --tags
 ```
 
 ## Create an IDEA-Handlebars project
