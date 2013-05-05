@@ -15,6 +15,8 @@ IDEA-Handlebars adds support for [Handlebars](http://handlebarsjs.com/) and [Mus
 To install the latest release (and get automatic updates), install this plugin using your IDE's plugin manager:
   * In Settings->Plugins, choose "Browse repositories".  Find "Handlebars/Mustache" on the list, right-click, and select "Download and Install"
 
+By default, the plugin handles `*.handlebars`, `*.hbs` and `*.mustache` files.  Configure other file patterns in _Settings->File Types_
+
 ## Building
 * To build the latest version, follow the instructions at the new project home in [Jetbrains/intellij-plugins](https://github.com/JetBrains/intellij-plugins/tree/master/handlebars)
 * To build the legacy project in this repo, the [developer setup instructions](https://github.com/dmarcotte/idea-handlebars/blob/master/developer_environment.md) should get you up and running in no time
