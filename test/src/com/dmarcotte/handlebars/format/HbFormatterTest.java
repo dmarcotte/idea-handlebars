@@ -16,6 +16,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import com.intellij.testFramework.LightIdeaTestCase;
 import com.intellij.util.IncorrectOperationException;
@@ -29,13 +30,14 @@ import java.io.File;
 public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFormattingModelBuilderTest {
     private static final String TEST_DATA_PATH = new File(HbTestUtils.BASE_TEST_DATA_PATH, "formatter").getAbsolutePath();
 
-  private final FormatterTestSettings formatterTestSettings = new FormatterTestSettings(getProject());
+  private FormatterTestSettings formatterTestSettings;
 
   @Override
   protected void setUp()
     throws Exception {
     super.setUp();
 
+    formatterTestSettings = new FormatterTestSettings(CodeStyleSettingsManager.getSettings(getProject()));
     formatterTestSettings.setUp();
   }
 
