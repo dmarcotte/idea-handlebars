@@ -1,10 +1,16 @@
 package com.dmarcotte.handlebars.structure;
 
+import com.dmarcotte.handlebars.HbLanguage;
+import com.dmarcotte.handlebars.file.HbFileType;
 import com.dmarcotte.handlebars.psi.HbPsiFile;
+import com.intellij.ide.structureView.StructureView;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.TreeBasedStructureViewBuilder;
+import com.intellij.ide.structureView.impl.StructureViewComposite;
+import com.intellij.ide.structureView.impl.TemplateLanguageStructureViewBuilder;
 import com.intellij.lang.PsiStructureViewFactory;
+import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,11 +19,23 @@ public class HbStructureViewFactory implements PsiStructureViewFactory {
   @Nullable
   @Override
   public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
-    return new TreeBasedStructureViewBuilder() {
-      @NotNull
+    return new TemplateLanguageStructureViewBuilder(psiFile) {
       @Override
-      public StructureViewModel createStructureViewModel() {
-        return new HbStructureViewModel((HbPsiFile)psiFile);
+      protected StructureViewComposite.StructureViewDescriptor createMainView(FileEditor fileEditor, final PsiFile mainFile) {
+        if (!psiFile.isValid()) return null;
+
+        final StructureViewBuilder builder = new TreeBasedStructureViewBuilder() {
+          @NotNull
+          @Override
+          public StructureViewModel createStructureViewModel() {
+            return new HbStructureViewModel((HbPsiFile) mainFile);
+          }
+        };
+
+        StructureView structureView = builder.createStructureView(fileEditor, psiFile.getProject());
+
+        return new StructureViewComposite.StructureViewDescriptor(
+          HbLanguage.INSTANCE.getDisplayName(), structureView, HbFileType.INSTANCE.getIcon());
       }
     };
   }
