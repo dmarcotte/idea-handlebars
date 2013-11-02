@@ -1,11 +1,12 @@
-FILE
+HbFile:ManyIdsFollowedByParam.hbs
   HbStatementsImpl(STATEMENTS)
     HbSimpleMustacheImpl(MUSTACHE)
       HbPsiElementImpl([Hb] OPEN)
         PsiElement([Hb] OPEN)('{{')
-      HbPathImpl(PATH)
-        HbPsiElementImpl([Hb] ID)
-          PsiElement([Hb] ID)('test')
+      HbMustacheNameImpl(MUSTACHE_NAME)
+        HbPathImpl(PATH)
+          HbPsiElementImpl([Hb] ID)
+            PsiElement([Hb] ID)('test')
       PsiWhiteSpace(' ')
       HbParamImpl(PARAM)
         HbPathImpl(PATH)

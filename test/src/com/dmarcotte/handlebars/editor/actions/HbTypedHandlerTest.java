@@ -2,6 +2,7 @@ package com.dmarcotte.handlebars.editor.actions;
 
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.format.FormatterTestSettings;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 
 
 /**
@@ -10,271 +11,315 @@ import com.dmarcotte.handlebars.format.FormatterTestSettings;
  */
 public class HbTypedHandlerTest extends HbActionHandlerTest {
 
-    private boolean myPrevAutoCloseSetting;
-    private FormatterTestSettings formatterTestSettings;
+  private boolean myPrevAutoCloseSetting;
+  private FormatterTestSettings formatterTestSettings;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
 
-        myPrevAutoCloseSetting = HbConfig.isAutoGenerateCloseTagEnabled();
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
+    myPrevAutoCloseSetting = HbConfig.isAutoGenerateCloseTagEnabled();
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
 
-        formatterTestSettings = new FormatterTestSettings(getProject());
-        formatterTestSettings.setUp();
-    }
+    formatterTestSettings = new FormatterTestSettings(CodeStyleSettingsManager.getSettings(getProject()));
+    formatterTestSettings.setUp();
+  }
 
-    @Override
-    protected void tearDown() throws Exception {
-        HbConfig.setAutoGenerateCloseTagEnabled(myPrevAutoCloseSetting);
-        formatterTestSettings.tearDown();
+  @Override
+  protected void tearDown() throws Exception {
+    HbConfig.setAutoGenerateCloseTagEnabled(myPrevAutoCloseSetting);
+    formatterTestSettings.tearDown();
 
-        super.tearDown();
-    }
+    super.tearDown();
+  }
 
-    /**
-     * Sanity check that we do nothing when something other than "}" completes a stache
-     */
-    public void testNonStacheClosingCharacter() {
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
+  /**
+   * Sanity check that we do nothing when something other than "}" completes a stache
+   */
+  public void testNonStacheClosingCharacter() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
 
-        HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
-    }
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('X', "{{#foo}<caret>", "{{#foo}X<caret>");
+  }
 
-    public void testInsertCloseTagForOpenBlockStache() {
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>{{/foo}}");
-        doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>{{/foo}}");
-        doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>{{/foo}}");
+  public void testCloseDoubleBraces() {
+    HbConfig.setAutocompleteMustachesEnabled(false);
+    doCharTest('}', "foo {{bar<caret>", "foo {{bar}<caret>");
+    doCharTest('}', "foo {{&bar<caret>", "foo {{&bar}<caret>");
+    doCharTest('}', "foo {{/bar<caret>", "foo {{/bar}<caret>");
 
-        // test when caret is not at file boundary
-        doCharTest('}', "{{#foo}<caret>some\nother content", "{{#foo}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{#foo bar baz}<caret>some\nother content", "{{#foo bar baz}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>some\nother content", "{{#foo bar baz bat=\"bam\"}}<caret>{{/foo}}some\nother content");
+    HbConfig.setAutocompleteMustachesEnabled(true);
+    doCharTest('}', "foo {{bar<caret>", "foo {{bar}}<caret>");
+    doCharTest('}', "foo {{&bar<caret>", "foo {{&bar}}<caret>");
+    doCharTest('}', "foo {{/bar<caret>", "foo {{/bar}}<caret>");
 
-        HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>");
-        doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>");
-        doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>");
-    }
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "foo {{#bar<caret>", "foo {{#bar}}<caret>{{/bar}}");
+    doCharTest('}', "foo {{^bar<caret>", "foo {{^bar}}<caret>{{/bar}}");
+    doCharTest('}', "foo {{#bar}}{{#baz<caret>{{/bar}}", "foo {{#bar}}{{#baz}}<caret>{{/baz}}{{/bar}}");
 
-    public void testInsertCloseTagForOpenInverseStache(){
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>{{/foo}}");
-        doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>{{/foo}}");
-        doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>{{/foo}}");
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('}', "foo {{#bar<caret>", "foo {{#bar}}<caret>");
+    doCharTest('}', "foo {{^bar<caret>", "foo {{^bar}}<caret>");
+    doCharTest('}', "foo {{#bar}}{{#baz<caret>{{/bar}}", "foo {{#bar}}{{#baz}}<caret>{{/bar}}");
+  }
 
-        // test when caret is not at file boundary
-        doCharTest('}', "{{^foo}<caret>some\nother content", "{{^foo}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{^foo bar baz}<caret>some\nother content", "{{^foo bar baz}}<caret>{{/foo}}some\nother content");
-        doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>some\nother content", "{{^foo bar baz bat=\"bam\"}}<caret>{{/foo}}some\nother content");
+  public void testCloseTripleBraces() {
+    HbConfig.setAutocompleteMustachesEnabled(false);
+    doCharTest('}', "foo {{{bar<caret>", "foo {{{bar}<caret>");
 
-        HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>");
-        doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>");
-        doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>");
-    }
+    HbConfig.setAutocompleteMustachesEnabled(true);
+    doCharTest('}', "foo {{{bar<caret>", "foo {{{bar}}}<caret>");
+  }
 
-    public void testInsertCloseTagWithWhitespace() {
-        // ensure that we properly identify the "foo" even if there's whitespace between it and the open tag
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{#   foo   }<caret>", "{{#   foo   }}<caret>{{/foo}}");
-    }
+  public void testInsertCloseTagForOpenBlockStache() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>{{/foo}}");
+    doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>{{/foo}}");
+    doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>{{/foo}}");
 
-    public void testInsertCloseTagForComplexIds() {
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{#foo.bar}<caret>", "{{#foo.bar}}<caret>{{/foo.bar}}");
-        doCharTest('}', "{{#foo.bar.[baz bat]}<caret>", "{{#foo.bar.[baz bat]}}<caret>{{/foo.bar.[baz bat]}}");
-    }
+    // test when caret is not at file boundary
+    doCharTest('}', "{{#foo}<caret>some\nother content", "{{#foo}}<caret>{{/foo}}some\nother content");
+    doCharTest('}', "{{#foo bar baz}<caret>some\nother content", "{{#foo bar baz}}<caret>{{/foo}}some\nother content");
+    doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>some\nother content",
+               "{{#foo bar baz bat=\"bam\"}}<caret>{{/foo}}some\nother content");
 
-    public void testRegularStache() {
-        // ensure that nothing special happens for regular 'staches, whether autoGenerateCloseTag is enabled or not
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('}', "{{#foo}<caret>", "{{#foo}}<caret>");
+    doCharTest('}', "{{#foo bar baz}<caret>", "{{#foo bar baz}}<caret>");
+    doCharTest('}', "{{#foo bar baz bat=\"bam\"}<caret>", "{{#foo bar baz bat=\"bam\"}}<caret>");
+  }
 
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
-        doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
+  public void testInsertCloseTagForNestedBlocks() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{#foo}}{{#bar}<caret>{{/foo}}", "{{#foo}}{{#bar}}<caret>{{/bar}}{{/foo}}");
+  }
 
-        // test when caret is not at file boundary
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "{{foo}<caret>some\nother stuff", "{{foo}}<caret>some\nother stuff");
-        doCharTest('}', "{{foo bar baz}<caret>some\nother stuff", "{{foo bar baz}}<caret>some\nother stuff");
+  public void testInsertCloseTagForOpenInverseStache() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>{{/foo}}");
+    doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>{{/foo}}");
+    doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>{{/foo}}");
 
-        HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
-        doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
-    }
+    // test when caret is not at file boundary
+    doCharTest('}', "{{^foo}<caret>some\nother content", "{{^foo}}<caret>{{/foo}}some\nother content");
+    doCharTest('}', "{{^foo bar baz}<caret>some\nother content", "{{^foo bar baz}}<caret>{{/foo}}some\nother content");
+    doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>some\nother content",
+               "{{^foo bar baz bat=\"bam\"}}<caret>{{/foo}}some\nother content");
 
-    /**
-     * Our typed handler relies on looking a couple of characters back
-     * make sure we're well bahaved when there are none
-     */
-    public void testFirstCharTyped() {
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('}', "<caret>", "}<caret>");
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('}', "{{^foo}<caret>", "{{^foo}}<caret>");
+    doCharTest('}', "{{^foo bar baz}<caret>", "{{^foo bar baz}}<caret>");
+    doCharTest('}', "{{^foo bar baz bat=\"bam\"}<caret>", "{{^foo bar baz bat=\"bam\"}}<caret>");
+  }
 
-        HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('}', "<caret>", "}<caret>");
-    }
+  public void testInsertCloseTagWithWhitespace() {
+    // ensure that we properly identify the "foo" even if there's whitespace between it and the open tag
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{#   foo   }<caret>", "{{#   foo   }}<caret>{{/foo}}");
+  }
 
-    /**
-     * Ensure that IDEA does not provide any automatic "}" insertion
-     */
-    public void testSuppressNativeBracketInsert() {
-        HbConfig.setAutoGenerateCloseTagEnabled(true);
-        doCharTest('{', "<caret>", "{<caret>");
-        doCharTest('{', "{<caret>", "{{<caret>");
+  public void testInsertCloseTagForComplexIds() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{#foo.bar}<caret>", "{{#foo.bar}}<caret>{{/foo.bar}}");
+    doCharTest('}', "{{#foo.bar.[baz bat]}<caret>", "{{#foo.bar.[baz bat]}}<caret>{{/foo.bar.[baz bat]}}");
+  }
 
-        HbConfig.setAutoGenerateCloseTagEnabled(false);
-        doCharTest('{', "<caret>", "{<caret>");
-        doCharTest('{', "{<caret>", "{{<caret>");
-    }
+  public void testNoInsertCloseTagForExtraStaches() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{#foo}}<caret>", "{{#foo}}}<caret>");
+  }
 
-    public void testFormatOnCloseBlockCompleted1() {
-        doCharTest('}',
+  public void testRegularStache() {
+    // ensure that nothing special happens for regular 'staches, whether autoGenerateCloseTag is enabled or not
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "    {{/foo}<caret>",
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
+    doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "{{/foo}}<caret>");
-    }
+    // test when caret is not at file boundary
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "{{foo}<caret>some\nother stuff", "{{foo}}<caret>some\nother stuff");
+    doCharTest('}', "{{foo bar baz}<caret>some\nother stuff", "{{foo bar baz}}<caret>some\nother stuff");
 
-    public void testFormatOnCloseBlockCompleted2() {
-        doCharTest('}',
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('}', "{{foo}<caret>", "{{foo}}<caret>");
+    doCharTest('}', "{{foo bar baz}<caret>", "{{foo bar baz}}<caret>");
+  }
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "    {{/foo}<caret> other stuff",
+  /**
+   * Our typed handler relies on looking a couple of characters back
+   * make sure we're well behaved when there are none.
+   */
+  public void testFirstCharTyped() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('}', "<caret>", "}<caret>");
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "{{/foo}}<caret> other stuff");
-    }
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('}', "<caret>", "}<caret>");
+  }
 
-    public void testFormatOnCloseBlockCompleted3() {
-        doCharTest('}',
+  /**
+   * Ensure that IDEA does not provide any automatic "}" insertion
+   */
+  public void testSuppressNativeBracketInsert() {
+    HbConfig.setAutoGenerateCloseTagEnabled(true);
+    doCharTest('{', "<caret>", "{<caret>");
+    doCharTest('{', "{<caret>", "{{<caret>");
+    doCharTest('{', "{{<caret>", "{{{<caret>");
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "    {{/foo}<caret>\n" +
-                "other stuff",
+    HbConfig.setAutoGenerateCloseTagEnabled(false);
+    doCharTest('{', "<caret>", "{<caret>");
+    doCharTest('{', "{<caret>", "{{<caret>");
+    doCharTest('{', "{{<caret>", "{{{<caret>");
+  }
 
-                "{{#foo}}\n" +
-                "    stuff\n" +
-                "{{/foo}}<caret>\n" +
-                "other stuff");
-    }
+  public void testFormatOnCloseBlockCompleted1() {
+    doCharTest('}',
 
-    public void testFormatDisabledCloseBlockCompleted() {
-        boolean previousFormatSetting = HbConfig.isFormattingEnabled();
-        HbConfig.setFormattingEnabled(false);
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "    {{/foo}<caret>",
 
-        doCharTest('}',
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "{{/foo}}<caret>");
+  }
 
-                   "{{#foo}}\n" +
-                   "    stuff\n" +
-                   "    {{/foo}<caret>",
+  public void testFormatOnCloseBlockCompleted2() {
+    doCharTest('}',
 
-                   "{{#foo}}\n" +
-                   "    stuff\n" +
-                   "    {{/foo}}<caret>");
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "    {{/foo}<caret> other stuff",
 
-        HbConfig.setFormattingEnabled(previousFormatSetting);
-    }
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "{{/foo}}<caret> other stuff");
+  }
 
-    public void testFormatOnSimpleInverseCompleted1() {
-        doCharTest('}',
+  public void testFormatOnCloseBlockCompleted3() {
+    doCharTest('}',
 
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "    {{else}<caret>",
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "    {{/foo}<caret>\n" +
+               "other stuff",
 
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "{{else}}<caret>");
-    }
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "{{/foo}}<caret>\n" +
+               "other stuff");
+  }
 
-    public void testFormatOnSimpleInverseCompleted2() {
-        doCharTest('}',
+  public void testFormatDisabledCloseBlockCompleted() {
+    boolean previousFormatSetting = HbConfig.isFormattingEnabled();
+    HbConfig.setFormattingEnabled(false);
 
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "    {{else}<caret> other stuff",
+    doCharTest('}',
 
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "{{else}}<caret> other stuff");
-    }
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "    {{/foo}<caret>",
 
-    public void testFormatOnSimpleInverseCompleted3() {
-        doCharTest('}',
+               "{{#foo}}\n" +
+               "    stuff\n" +
+               "    {{/foo}}<caret>");
 
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "    {{else}<caret>\n" +
-                "other stuff",
+    HbConfig.setFormattingEnabled(previousFormatSetting);
+  }
 
-                "{{#if}}\n" +
-                "    if stuff\n" +
-                "{{else}}<caret>\n" +
-                "other stuff");
-    }
+  public void testFormatOnSimpleInverseCompleted1() {
+    doCharTest('}',
 
-    public void testFormatDisabledSimpleInverseCompleted() {
-        boolean previousFormatSetting = HbConfig.isFormattingEnabled();
-        HbConfig.setFormattingEnabled(false);
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "    {{else}<caret>",
 
-        doCharTest('}',
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "{{else}}<caret>");
+  }
 
-                   "{{#if}}\n" +
-                   "    if stuff\n" +
-                   "    {{else}<caret>",
+  public void testFormatOnSimpleInverseCompleted2() {
+    doCharTest('}',
 
-                   "{{#if}}\n" +
-                   "    if stuff\n" +
-                   "    {{else}}<caret>");
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "    {{else}<caret> other stuff",
 
-        HbConfig.setFormattingEnabled(previousFormatSetting);
-    }
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "{{else}}<caret> other stuff");
+  }
 
-    public void testEnterBetweenBlockTags() {
-        doEnterTest(
+  public void testFormatOnSimpleInverseCompleted3() {
+    doCharTest('}',
 
-                "{{#foo}}<caret>{{/foo}}",
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "    {{else}<caret>\n" +
+               "other stuff",
 
-                "{{#foo}}\n" +
-                "    <caret>\n" +
-                "{{/foo}}"
-        );
-    }
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "{{else}}<caret>\n" +
+               "other stuff");
+  }
 
-    public void testFormatterDisabledEnterBetweenBlockTags() {
-        boolean previousFormatSetting = HbConfig.isFormattingEnabled();
-        HbConfig.setFormattingEnabled(false);
+  public void testFormatDisabledSimpleInverseCompleted() {
+    boolean previousFormatSetting = HbConfig.isFormattingEnabled();
+    HbConfig.setFormattingEnabled(false);
 
-        doEnterTest(
+    doCharTest('}',
 
-                "{{#foo}}<caret>{{/foo}}",
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "    {{else}<caret>",
 
-                "{{#foo}}\n" +
-                "<caret>\n" +
-                "{{/foo}}"
-        );
+               "{{#if}}\n" +
+               "    if stuff\n" +
+               "    {{else}}<caret>");
 
-        HbConfig.setFormattingEnabled(previousFormatSetting);
-    }
+    HbConfig.setFormattingEnabled(previousFormatSetting);
+  }
 
-    public void testEnterNotBetweenBlockTags() {
-        doEnterTest(
+  public void testEnterBetweenBlockTags() {
+    doEnterTest(
 
-                "{{foo}}<caret>{{foo}}",
+      "{{#foo}}<caret>{{/foo}}",
 
-                "{{foo}}\n" +
-                "<caret>{{foo}}"
-        );
-    }
+      "{{#foo}}\n" +
+      "    <caret>\n" +
+      "{{/foo}}"
+    );
+  }
+
+  public void testFormatterDisabledEnterBetweenBlockTags() {
+    boolean previousFormatSetting = HbConfig.isFormattingEnabled();
+    HbConfig.setFormattingEnabled(false);
+
+    doEnterTest(
+
+      "{{#foo}}<caret>{{/foo}}",
+
+      "{{#foo}}\n" +
+      "<caret>\n" +
+      "{{/foo}}"
+    );
+
+    HbConfig.setFormattingEnabled(previousFormatSetting);
+  }
+
+  public void testEnterNotBetweenBlockTags() {
+    doEnterTest(
+
+      "{{foo}}<caret>{{foo}}",
+
+      "{{foo}}\n" +
+      "<caret>{{foo}}"
+    );
+  }
 }

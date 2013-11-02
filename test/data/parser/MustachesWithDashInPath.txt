@@ -1,10 +1,11 @@
-FILE
+HbFile:MustachesWithDashInPath.hbs
   HbStatementsImpl(STATEMENTS)
     HbSimpleMustacheImpl(MUSTACHE)
       HbPsiElementImpl([Hb] OPEN)
         PsiElement([Hb] OPEN)('{{')
-      HbPathImpl(PATH)
-        HbPsiElementImpl([Hb] ID)
-          PsiElement([Hb] ID)('foo-bar')
+      HbMustacheNameImpl(MUSTACHE_NAME)
+        HbPathImpl(PATH)
+          HbPsiElementImpl([Hb] ID)
+            PsiElement([Hb] ID)('foo-bar')
       HbPsiElementImpl([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')

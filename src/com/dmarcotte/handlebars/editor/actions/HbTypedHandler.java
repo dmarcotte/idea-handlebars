@@ -3,12 +3,10 @@ package com.dmarcotte.handlebars.editor.actions;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
 import com.dmarcotte.handlebars.file.HbFileViewProvider;
-import com.dmarcotte.handlebars.psi.HbCloseBlockMustache;
-import com.dmarcotte.handlebars.psi.HbPath;
-import com.dmarcotte.handlebars.psi.HbPsiElement;
-import com.dmarcotte.handlebars.psi.HbPsiUtil;
-import com.dmarcotte.handlebars.psi.HbSimpleInverse;
+import com.dmarcotte.handlebars.parsing.HbTokenTypes;
+import com.dmarcotte.handlebars.psi.*;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
@@ -28,112 +26,149 @@ import org.jetbrains.annotations.NotNull;
  * on Enter.
  */
 public class HbTypedHandler extends TypedHandlerDelegate {
-    @Override
-    public Result beforeCharTyped(char c, Project project, Editor editor, PsiFile file, FileType fileType) {
-        int offset = editor.getCaretModel().getOffset();
 
-        if (offset == 0 || offset > editor.getDocument().getTextLength()) {
-            return Result.CONTINUE;
-        }
+  @Override
+  public Result beforeCharTyped(char c, Project project, Editor editor, PsiFile file, FileType fileType) {
+    int offset = editor.getCaretModel().getOffset();
 
-        String previousChar = editor.getDocument().getText(new TextRange(offset - 1, offset));
-
-        if (file.getViewProvider() instanceof HbFileViewProvider) {
-            PsiDocumentManager.getInstance(project).commitAllDocuments();
-
-            // we suppress the built-in "}" auto-complete when we see "{{"
-            if (c == '{' && previousChar.equals("{")) {
-                // since the "}" autocomplete is built in to IDEA, we need to hack around it a bit by
-                // intercepting it before it is inserted, doing the work of inserting for the user
-                // by inserting the '{' the user just typed...
-                editor.getDocument().insertString(offset, Character.toString(c));
-                // ... and position their caret after it as they'd expect...
-                editor.getCaretModel().moveToOffset(offset + 1);
-
-                // ... then finally telling subsequent responses to this charTyped to do nothing
-                return Result.STOP;
-            }
-        }
-
-        return Result.CONTINUE;
+    if (offset == 0 || offset > editor.getDocument().getTextLength()) {
+      return Result.CONTINUE;
     }
 
-    @Override
-    public Result charTyped(char c, Project project, Editor editor, @NotNull PsiFile file) {
-        int offset = editor.getCaretModel().getOffset();
-        FileViewProvider provider = file.getViewProvider();
+    String previousChar = editor.getDocument().getText(new TextRange(offset - 1, offset));
 
-        if (offset < 2 || offset > editor.getDocument().getTextLength()) {
-            return Result.CONTINUE;
-        }
+    if (file.getViewProvider() instanceof HbFileViewProvider) {
+      PsiDocumentManager.getInstance(project).commitAllDocuments();
 
-        String previousChar = editor.getDocument().getText(new TextRange(offset - 2, offset - 1));
+      // we suppress the built-in "}" auto-complete when we see "{{"
+      if (c == '{' && previousChar.equals("{")) {
+        // since the "}" autocomplete is built in to IDEA, we need to hack around it a bit by
+        // intercepting it before it is inserted, doing the work of inserting for the user
+        // by inserting the '{' the user just typed...
+        editor.getDocument().insertString(offset, Character.toString(c));
+        // ... and position their caret after it as they'd expect...
+        editor.getCaretModel().moveToOffset(offset + 1);
 
-        if (file.getViewProvider() instanceof HbFileViewProvider) {
-            // if we're looking at a close stache, we may have some business too attend to
-            if (c == '}' && previousChar.equals("}")) {
-                autoInsertCloseTag(project, offset, editor, provider);
-                adjustMustacheFormatting(project, offset, editor, file, provider);
-            }
-        }
-
-        return Result.CONTINUE;
+        // ... then finally telling subsequent responses to this charTyped to do nothing
+        return Result.STOP;
+      }
     }
 
-    /**
-     * When appropriate, auto-inserts Handlebars close tags.  i.e.  When "{{#tagId}}" or "{{^tagId}} is typed,
-     *      {{/tagId}} is automatically inserted
-     */
-    private void autoInsertCloseTag(Project project, int offset, Editor editor, FileViewProvider provider) {
-        if (!HbConfig.isAutoGenerateCloseTagEnabled()) {
-            return;
-        }
+    return Result.CONTINUE;
+  }
 
-        PsiDocumentManager.getInstance(project).commitAllDocuments();
+  @Override
+  public Result charTyped(char c, Project project, Editor editor, @NotNull PsiFile file) {
+    int offset = editor.getCaretModel().getOffset();
+    FileViewProvider provider = file.getViewProvider();
 
-        PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
-
-        PsiElement openTag = HbPsiUtil.findParentOpenTagElement(elementAtCaret);
-
-        if (openTag != null && openTag.getChildren().length > 1) {
-            // we've got an open block type stache... find its "name" (its first path element)
-            HbPsiElement pathElem = (HbPsiElement) openTag.getChildren()[1];
-
-            if (pathElem != null
-                    && pathElem instanceof HbPath) {
-                // insert the corresponding close tag
-                editor.getDocument().insertString(offset, "{{/" + pathElem.getText() + "}}");
-            }
-        }
+    if (offset < 2 || offset > editor.getDocument().getTextLength()) {
+      return Result.CONTINUE;
     }
 
-    /**
-     * When appropriate, adjusts the formatting for some 'staches, particularily close 'staches
-     *  and simple inverses ("{{^}}" and "{{else}}")
-     */
-    private void adjustMustacheFormatting(Project project, int offset, Editor editor, PsiFile file, FileViewProvider provider) {
-        if (!HbConfig.isFormattingEnabled()) {
-            // formatting disabled; nothing to do
-            return;
-        }
+    String previousChar = editor.getDocument().getText(new TextRange(offset - 2, offset - 1));
+    boolean closeBraceCompleted = false;
 
-        PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
-        PsiElement closeOrSimpleInverseParent = PsiTreeUtil.findFirstParent(elementAtCaret, true, new Condition<PsiElement>() {
+    if (provider instanceof HbFileViewProvider) {
+      if (HbConfig.isAutocompleteMustachesEnabled() && c == '}' && !previousChar.equals("}")) {
+        // we may be able to complete the second brace
+        PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+        PsiElement elementAt = provider.findElementAt(offset - 1, HbLanguage.class);
+        ASTNode node = elementAt != null ? elementAt.getNode() : null;
+        if (node != null && node.getElementType() == HbTokenTypes.INVALID) {
+          // we should be looking at the beginning of a close brace.  Find its matching open brace and auto-complete based on its type
+          PsiElement mustache = PsiTreeUtil.findFirstParent(elementAt, new Condition<PsiElement>() {
             @Override
-            public boolean value(PsiElement element) {
-                return element != null
-                        && (element instanceof HbSimpleInverse
-                        || element instanceof HbCloseBlockMustache);
+            public boolean value(PsiElement psiElement) {
+              return psiElement instanceof HbMustache;
             }
-        });
+          });
 
-        // run the formatter if the user just completed typing a SIMPLE_INVERSE or a CLOSE_BLOCK_STACHE
-        if (closeOrSimpleInverseParent != null) {
-            // grab the current caret position (AutoIndentLinesHandler is about to mess with it)
-            PsiDocumentManager.getInstance(project).commitAllDocuments();
-            CaretModel caretModel = editor.getCaretModel();
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
-            codeStyleManager.adjustLineIndent(file, editor.getDocument().getLineStartOffset(caretModel.getLogicalPosition().line));
+          if (mustache != null) {
+            String braceCompleter;
+
+            if (mustache.getFirstChild().getNode().getElementType() == HbTokenTypes.OPEN_UNESCAPED) {
+              // add "}}" to complete the CLOSE_UNESCAPED
+              braceCompleter = "}}";
+            } else {
+              // add "}" to complete the CLOSE
+              braceCompleter = "}";
+            }
+
+            editor.getDocument().insertString(offset, braceCompleter);
+            offset = offset + braceCompleter.length();
+            editor.getCaretModel().moveToOffset(offset);
+            closeBraceCompleted = true;
+          }
         }
+      }
     }
+
+    // if we just completed a close brace or the user just typed one, we may have some business to attend to
+    if (closeBraceCompleted || (c == '}' && previousChar.equals("}"))) {
+      autoInsertCloseTag(project, offset, editor, provider);
+      adjustMustacheFormatting(project, offset, editor, file, provider);
+    }
+
+    return Result.CONTINUE;
+  }
+
+  /**
+   * When appropriate, auto-inserts Handlebars close tags.  i.e.  When "{{#tagId}}" or "{{^tagId}} is typed,
+   * {{/tagId}} is automatically inserted
+   */
+  private static void autoInsertCloseTag(Project project, int offset, Editor editor, FileViewProvider provider) {
+    if (!HbConfig.isAutoGenerateCloseTagEnabled()) {
+      return;
+    }
+
+    PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+
+    PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
+
+    if (elementAtCaret == null || elementAtCaret.getNode().getElementType() != HbTokenTypes.CLOSE) {
+      return;
+    }
+
+    HbOpenBlockMustache openTag = HbPsiUtil.findParentOpenTagElement(elementAtCaret);
+
+    if (openTag != null && openTag.getChildren().length > 1) {
+      HbMustacheName mustacheName = PsiTreeUtil.findChildOfType(openTag, HbMustacheName.class);
+
+      if (mustacheName != null) {
+        // insert the corresponding close tag
+        editor.getDocument().insertString(offset, "{{/" + mustacheName.getText() + "}}");
+      }
+    }
+  }
+
+  /**
+   * When appropriate, adjusts the formatting for some 'staches, particularily close 'staches
+   * and simple inverses ("{{^}}" and "{{else}}")
+   */
+  private static void adjustMustacheFormatting(Project project, int offset, Editor editor, PsiFile file, FileViewProvider provider) {
+    if (!HbConfig.isFormattingEnabled()) {
+      // formatting disabled; nothing to do
+      return;
+    }
+
+    PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
+    PsiElement closeOrSimpleInverseParent = PsiTreeUtil.findFirstParent(elementAtCaret, true, new Condition<PsiElement>() {
+      @Override
+      public boolean value(PsiElement element) {
+        return element != null
+               && (element instanceof HbSimpleInverse
+                   || element instanceof HbCloseBlockMustache);
+      }
+    });
+
+    // run the formatter if the user just completed typing a SIMPLE_INVERSE or a CLOSE_BLOCK_STACHE
+    if (closeOrSimpleInverseParent != null) {
+      // grab the current caret position (AutoIndentLinesHandler is about to mess with it)
+      PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+      CaretModel caretModel = editor.getCaretModel();
+      CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
+      codeStyleManager.adjustLineIndent(file, editor.getDocument().getLineStartOffset(caretModel.getLogicalPosition().line));
+    }
+  }
 }

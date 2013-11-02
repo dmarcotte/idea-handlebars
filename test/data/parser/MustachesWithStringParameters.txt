@@ -1,11 +1,12 @@
-FILE
+HbFile:MustachesWithStringParameters.hbs
   HbStatementsImpl(STATEMENTS)
     HbSimpleMustacheImpl(MUSTACHE)
       HbPsiElementImpl([Hb] OPEN)
         PsiElement([Hb] OPEN)('{{')
-      HbPathImpl(PATH)
-        HbPsiElementImpl([Hb] ID)
-          PsiElement([Hb] ID)('foo')
+      HbMustacheNameImpl(MUSTACHE_NAME)
+        HbPathImpl(PATH)
+          HbPsiElementImpl([Hb] ID)
+            PsiElement([Hb] ID)('foo')
       PsiWhiteSpace(' ')
       HbParamImpl(PARAM)
         HbPathImpl(PATH)
