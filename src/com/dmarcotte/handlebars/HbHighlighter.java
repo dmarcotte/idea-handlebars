@@ -62,11 +62,6 @@ public class HbHighlighter extends SyntaxHighlighterBase {
             DefaultLanguageHighlighterColors.KEYWORD
     );
 
-    private static final TextAttributesKey DATA = TextAttributesKey.createTextAttributesKey(
-            "HANDLEBARS.DATA",
-            DefaultLanguageHighlighterColors.INSTANCE_FIELD
-    );
-
     private static final TextAttributesKey ESCAPE = TextAttributesKey.createTextAttributesKey(
             "HANDLEBARS.ESCAPE",
             DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
@@ -95,7 +90,6 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         keys1.put(HbTokenTypes.BOOLEAN, VALUES);
         keys1.put(HbTokenTypes.STRING, STRINGS);
         keys1.put(HbTokenTypes.DATA_PREFIX, DATA_PREFIX);
-        keys1.put(HbTokenTypes.DATA, DATA);
         keys1.put(HbTokenTypes.ESCAPE_CHAR, ESCAPE);
 
     }
@@ -115,7 +109,6 @@ public class HbHighlighter extends SyntaxHighlighterBase {
         DISPLAY_NAMES.put(VALUES, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.values.key"),null));
         DISPLAY_NAMES.put(STRINGS, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.strings.key"),null));
         DISPLAY_NAMES.put(DATA_PREFIX, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.data.prefix.key"),null));
-        DISPLAY_NAMES.put(DATA, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.data.key"),null));
         DISPLAY_NAMES.put(ESCAPE, new Pair<String, HighlightSeverity>(HbBundle.message("hb.page.colors.descriptor.escape.key"),null));
     }
 }
