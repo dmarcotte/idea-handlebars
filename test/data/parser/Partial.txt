@@ -1,11 +1,13 @@
-FILE
+HbFile:Partial.hbs
   HbStatementsImpl(STATEMENTS)
     HbPartialImpl(PARTIAL_STACHE)
       HbPsiElementImpl([Hb] OPEN_PARTIAL)
         PsiElement([Hb] OPEN_PARTIAL)('{{>')
       PsiWhiteSpace(' ')
-      HbPartialNameImpl([Hb] PARTIAL_NAME)
-        PsiElement([Hb] PARTIAL_NAME)('foo')
+      HbPartialNameImpl(PARTIAL_NAME)
+        HbPathImpl(PATH)
+          HbPsiElementImpl([Hb] ID)
+            PsiElement([Hb] ID)('foo')
       PsiWhiteSpace(' ')
       HbPsiElementImpl([Hb] CLOSE)
         PsiElement([Hb] CLOSE)('}}')

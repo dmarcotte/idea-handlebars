@@ -1,21 +1,39 @@
 package com.dmarcotte.handlebars.inspections;
 
 import com.dmarcotte.handlebars.util.HbTestUtils;
-import com.intellij.codeInsight.daemon.quickFix.LightQuickFixTestCase;
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
 
-public class HbBlockMismatchFixTest extends LightQuickFixTestCase {
+public class HbBlockMismatchFixTest extends LightPlatformCodeInsightFixtureTestCase {
+  public void testWrongCloseBlock1() {
+    doTest();
+  }
 
-    public void test() throws Exception { doAllTests(); }
+  public void testWrongCloseBlock2() {
+    doTest();
+  }
 
-    @Override
-    protected String getBasePath() {
-        return "/inspections";
-    }
+  public void testWrongOpenBlock1() {
+    doTest();
+  }
 
-    @NotNull
-    @Override
-    protected String getTestDataPath() {
-        return HbTestUtils.BASE_TEST_DATA_PATH;
-    }
+  public void testWrongOpenBlock2() {
+    doTest();
+  }
+
+  private void doTest() {
+    myFixture.configureByFile("inspections/before" + getTestName(false) + ".hbs");
+    // TODO
+  }
+
+  @Override
+  protected String getBasePath() {
+    return "/inspections";
+  }
+
+  @NotNull
+  @Override
+  protected String getTestDataPath() {
+    return HbTestUtils.BASE_TEST_DATA_PATH;
+  }
 }
