@@ -57,7 +57,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
 
   @Override
   public String getHelpTopic() {
-    return null;
+    return "reference.settings.ide.settings.handlebars.mustache";
   }
 
   @Override
