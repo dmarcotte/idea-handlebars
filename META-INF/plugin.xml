@@ -14,7 +14,7 @@
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
 
-  <idea-version since-build="110.000" until-build="128.18"/>
+  <idea-version since-build="128.18" until-build="130.00"/>
 
   <application-components>
     <!-- Add your application components here -->
