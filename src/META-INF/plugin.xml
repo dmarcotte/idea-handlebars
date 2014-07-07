@@ -34,6 +34,8 @@
         instance="com.dmarcotte.handlebars.config.HbFoldingOptionsProvider"/>
     <lang.psiStructureViewFactory language="Handlebars" implementationClass="com.dmarcotte.handlebars.structure.HbStructureViewFactory"/>
     <annotator language="Handlebars" implementationClass="com.dmarcotte.handlebars.inspections.HbBlockMismatchInspection"/>
+    <xml.zenCodingGenerator implementation="com.dmarcotte.handlebars.editor.templates.HbEmmetGenerator"/>
+
     <iconProvider implementation="com.dmarcotte.handlebars.file.HbIconProvider"/>
     <lang.substitutor language="HTML" implementationClass="com.dmarcotte.handlebars.file.HbLanguageSubstitutor"/>
 
