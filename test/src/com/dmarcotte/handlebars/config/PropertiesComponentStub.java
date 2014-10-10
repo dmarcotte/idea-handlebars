@@ -30,6 +30,11 @@ public class PropertiesComponentStub extends PropertiesComponent {
     fakeStorage.put(name, value);
   }
 
+  @Override
+  public void setValue(@NotNull String s, @NotNull String s1, @NotNull String s2) {
+
+  }
+
   @NotNull
   @Override
   public String getValue(@NonNls String name, @NotNull String defaultValue) {
