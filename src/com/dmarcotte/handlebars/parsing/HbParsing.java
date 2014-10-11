@@ -214,7 +214,7 @@ class HbParsing {
 
   /**
    * openBlock
-   * : OPEN_BLOCK inMustache CLOSE { $$ = new yy.MustacheNode($2[0], $2[1]); }
+   * : OPEN_BLOCK sexpr CLOSE { $$ = new yy.MustacheNode($2[0], $2[1]); }
    * ;
    */
   private boolean parseOpenBlock(PsiBuilder builder) {
@@ -224,7 +224,7 @@ class HbParsing {
       return false;
     }
 
-    if (parseInMustache(builder)) {
+    if (parseSexpr(builder)) {
       parseLeafTokenGreedy(builder, CLOSE);
     }
 
@@ -234,7 +234,7 @@ class HbParsing {
 
   /**
    * openInverse
-   * : OPEN_INVERSE inMustache CLOSE
+   * : OPEN_INVERSE sexpr CLOSE
    * ;
    */
   private boolean parseOpenInverse(PsiBuilder builder) {
@@ -255,7 +255,7 @@ class HbParsing {
       regularInverseMarker.drop();
     }
 
-    if (parseInMustache(builder)) {
+    if (parseSexpr(builder)) {
       parseLeafTokenGreedy(builder, CLOSE);
     }
 
@@ -286,20 +286,20 @@ class HbParsing {
 
   /**
    * mustache
-   * : OPEN inMustache CLOSE
-   * | OPEN_UNESCAPED inMustache CLOSE_UNESCAPED
+   * : OPEN sexpr CLOSE
+   * | OPEN_UNESCAPED sexpr CLOSE_UNESCAPED
    * ;
    */
   private void parseMustache(PsiBuilder builder) {
     PsiBuilder.Marker mustacheMarker = builder.mark();
     if (builder.getTokenType() == OPEN) {
       parseLeafToken(builder, OPEN);
-      parseInMustache(builder);
+      parseSexpr(builder);
       parseLeafTokenGreedy(builder, CLOSE);
     }
     else if (builder.getTokenType() == OPEN_UNESCAPED) {
       parseLeafToken(builder, OPEN_UNESCAPED);
-      parseInMustache(builder);
+      parseSexpr(builder);
       parseLeafTokenGreedy(builder, CLOSE_UNESCAPED);
     }
     else {
@@ -382,7 +382,7 @@ class HbParsing {
   }
 
   /**
-   * inMustache
+   * sexpr
    * : path params hash
    * | path params
    * | path hash
@@ -390,20 +390,20 @@ class HbParsing {
    * | dataName
    * ;
    */
-  private boolean parseInMustache(PsiBuilder builder) {
-    PsiBuilder.Marker inMustacheMarker = builder.mark();
+  protected boolean parseSexpr(PsiBuilder builder) {
+    PsiBuilder.Marker sexprMarker = builder.mark();
     PsiBuilder.Marker mustacheNameMarker = builder.mark();
 
     if (!parsePath(builder)) {
       // not a path, try to parse dataName
       if (parseDataName(builder)) {
         mustacheNameMarker.done(HbTokenTypes.MUSTACHE_NAME);
-        inMustacheMarker.drop();
+        sexprMarker.drop();
         return true;
       }
       else {
         mustacheNameMarker.drop();
-        inMustacheMarker.error(HbBundle.message("hb.parsing.expected.path.or.data"));
+        sexprMarker.error(HbBundle.message("hb.parsing.expected.path.or.data"));
         return false;
       }
     }
@@ -443,7 +443,7 @@ class HbParsing {
       }
     }
 
-    inMustacheMarker.drop();
+    sexprMarker.drop();
     return true;
   }
 
@@ -484,6 +484,7 @@ class HbParsing {
    * | NUMBER
    * | BOOLEAN
    * | dataName
+   * | OPEN_SEXPR sexpr CLOSE_SEXPR
    * ;
    */
   protected boolean parseParam(PsiBuilder builder) {
@@ -532,6 +533,18 @@ class HbParsing {
     }
     else {
       dataMarker.rollbackTo();
+    }
+
+    PsiBuilder.Marker sexprMarker = builder.mark();
+    if (parseLeafToken(builder, OPEN_SEXPR)) {
+      parseSexpr(builder);
+      parseLeafTokenGreedy(builder, CLOSE_SEXPR);
+      sexprMarker.drop();
+      paramMarker.done(PARAM);
+      return true;
+    }
+    else {
+      sexprMarker.rollbackTo();
     }
 
     paramMarker.error(HbBundle.message("hb.parsing.expected.parameter"));
