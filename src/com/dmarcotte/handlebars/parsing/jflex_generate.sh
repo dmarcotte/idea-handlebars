@@ -24,4 +24,6 @@ ${IDEA_SRC_ROOT}/tools/lexer/jflex-1.4/bin/jflex --charat --nobak --skel \
   ${IDEA_SRC_ROOT}/tools/lexer/idea-flex.skeleton -d . --verbose handlebars.flex \
   || echo '\nERROR: Lexer generation failed.  Check errors above\n  and ensure you provided the correct IDEA source root'
 
+mv _HbLexer.java ../../../../../gen/com/dmarcotte/handlebars/parsing/_HbLexer.java
+
 popd

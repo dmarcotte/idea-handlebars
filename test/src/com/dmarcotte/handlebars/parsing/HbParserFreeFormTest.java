@@ -72,4 +72,12 @@ public class HbParserFreeFormTest extends HbParserTest {
   public void testUnclosedBlockComment() {
     doTest(true);
   }
+
+  public void testParamWithDecimal() {
+    doTest(true);
+  }
+
+  public void testSubexpressions() {
+    doTest(true);
+  }
 }

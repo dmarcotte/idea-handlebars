@@ -40,6 +40,8 @@ public class HbTokenTypes {
   public static final IElementType OPEN_ENDBLOCK = new HbElementType("OPEN_ENDBLOCK", "hb.parsing.element.expected.open_end_block");
   public static final IElementType OPEN_INVERSE = new HbElementType("OPEN_INVERSE", "hb.parsing.element.expected.open_inverse");
   public static final IElementType OPEN_UNESCAPED = new HbElementType("OPEN_UNESCAPED", "hb.parsing.element.expected.open_unescaped");
+  public static final IElementType OPEN_SEXPR = new HbElementType("OPEN_SEXPR", "hb.parsing.element.expected.open_sexpr");
+  public static final IElementType CLOSE_SEXPR = new HbElementType("CLOSE_SEXPR", "hb.parsing.element.expected.close_sexpr");
   public static final IElementType EQUALS = new HbElementType("EQUALS", "hb.parsing.element.expected.equals");
   public static final IElementType ID = new HbElementType("ID", "hb.parsing.element.expected.id");
   public static final IElementType DATA_PREFIX = new HbElementType("DATA_PREFIX", "hb.parsing.element.expected.data");
@@ -49,7 +51,7 @@ public class HbTokenTypes {
   public static final IElementType CLOSE_UNESCAPED = new HbElementType("CLOSE_UNESCAPED", "hb.parsing.element.expected.close.unescaped");
   public static final IElementType ELSE = new HbElementType("ELSE", "");
   public static final IElementType BOOLEAN = new HbElementType("BOOLEAN", "hb.parsing.element.expected.boolean");
-  public static final IElementType INTEGER = new HbElementType("INTEGER", "hb.parsing.element.expected.integer");
+  public static final IElementType NUMBER = new HbElementType("NUMBER", "hb.parsing.element.expected.integer");
   public static final IElementType STRING = new HbElementType("STRING", "hb.parsing.element.expected.string");
   public static final IElementType ESCAPE_CHAR = new HbElementType("ESCAPE_CHAR", "");
   public static final IElementType INVALID = new HbElementType("INVALID", "hb.parsing.element.expected.invalid");

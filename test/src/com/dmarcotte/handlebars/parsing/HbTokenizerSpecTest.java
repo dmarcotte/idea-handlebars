@@ -3,9 +3,9 @@ package com.dmarcotte.handlebars.parsing;
 import static com.dmarcotte.handlebars.parsing.HbTokenTypes.*;
 
 /**
- * Java representation of the validations in the tokenizer_spec.rb revision which corresponds
+ * Java representation of the validations in the spec/tokenizer.js revision which corresponds
  * to the revision of handlesbars.l that our lexer is based on
- * (https://github.com/wycats/handlebars.js/blob/932e2970ad29b16d6d6874ad0bfb44b07b4cd765/spec/tokenizer_spec.rb)
+ * (https://github.com/wycats/handlebars.js/blob/b09333db7946d20ba7dbc6d32d5496ab8295b8e1/spec/tokenizer.js)
  * <p/>
  * All the tests should be nearly identical except that we generate whitespace tokens to give IDEA a better picture
  * of the text, vs. the actual Handlebars lexer which can just toss whitespace out
@@ -19,6 +19,25 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     TokenizerResult result = tokenize("{{foo}}");
     result.shouldMatchTokenTypes(OPEN, ID, CLOSE);
     result.shouldBeToken(1, ID, "foo");
+  }
+
+  /**
+   * supports unescaping with &
+   */
+  public void testUnescapingWithAmp() {
+    TokenizerResult result = tokenize("{{&bar}}");
+    result.shouldMatchTokenTypes(OPEN, ID, CLOSE);
+    result.shouldBeToken(0, OPEN, "{{&");
+    result.shouldBeToken(1, ID, "bar");
+  }
+
+  /**
+   * supports unescaping with {{{
+   */
+  public void testUnescapingWithTripleStache() {
+    TokenizerResult result = tokenize("{{{bar}}}");
+    result.shouldMatchTokenTypes(OPEN_UNESCAPED, ID, CLOSE_UNESCAPED);
+    result.shouldBeToken(1, ID, "bar");
   }
 
   /**
@@ -59,6 +78,17 @@ public class HbTokenizerSpecTest extends HbLexerTest {
    * supports escaping escape character
    */
   public void testEscapingEscapeCharacter() {
+    TokenizerResult result = tokenize("{{foo}} \\\\{{bar}} {{baz}}");
+    result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, OPEN, ID, CLOSE, WHITE_SPACE, OPEN, ID, CLOSE);
+
+    result.shouldBeToken(3, CONTENT, " \\\\");
+    result.shouldBeToken(5, ID, "bar");
+  }
+
+  /**
+   * supports escaping multiple escape characters
+   */
+  public void testEscapingMultipleEscapeCharacter() {
     TokenizerResult result = tokenize("{{foo}} \\\\{{bar}} \\\\{{baz}}");
     result.shouldMatchTokenTypes(OPEN, ID, CLOSE, CONTENT, OPEN, ID, CLOSE, CONTENT, OPEN, ID, CLOSE);
 
@@ -69,7 +99,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
   }
 
   /**
-   * supports mixed escaped delimiters and escaped escape characters
+   * supports escaped mustaches after escaped escape characters
    */
   public void testMixedEscapedDelimitersAndEscapedEscapes() {
     TokenizerResult result = tokenize("{{foo}} \\\\{{bar}} \\{{baz}}");
@@ -79,8 +109,13 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     result.shouldBeToken(4, OPEN, "{{");
     result.shouldBeToken(5, ID, "bar");
     result.shouldBeToken(9, CONTENT, "{{baz}}");
+  }
 
-    result = tokenize("{{foo}} \\{{bar}} \\\\{{baz}}");
+  /**
+   * supports escaped escape characters after escaped mustaches
+   */
+  public void testEscapedEscapeCharactersAfterEscapedStaches() {
+    TokenizerResult result = tokenize("{{foo}} \\{{bar}} \\\\{{baz}}");
     result.shouldMatchTokenTypes(OPEN, ID, CLOSE, WHITE_SPACE, ESCAPE_CHAR, CONTENT, CONTENT, OPEN, ID, CLOSE);
 
     result.shouldBeToken(4, ESCAPE_CHAR, "\\");
@@ -356,12 +391,12 @@ public class HbTokenizerSpecTest extends HbLexerTest {
    */
   public void testTokenizesNumbers() {
     TokenizerResult result = tokenize("{{ foo 1 }}");
-    result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, INTEGER, WHITE_SPACE, CLOSE);
-    result.shouldBeToken(4, INTEGER, "1");
+    result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, NUMBER, WHITE_SPACE, CLOSE);
+    result.shouldBeToken(4, NUMBER, "1");
 
     result = tokenize("{{ foo -1 }}");
-    result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, INTEGER, WHITE_SPACE, CLOSE);
-    result.shouldBeToken(4, INTEGER, "-1");
+    result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, NUMBER, WHITE_SPACE, CLOSE);
+    result.shouldBeToken(4, NUMBER, "-1");
   }
 
   /**
@@ -388,7 +423,7 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, ID, WHITE_SPACE, CLOSE);
 
     result = tokenize("{{ foo bar baz=1 }}");
-    result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, INTEGER, WHITE_SPACE, CLOSE);
+    result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, NUMBER, WHITE_SPACE, CLOSE);
 
     result = tokenize("{{ foo bar baz=true }}");
     result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, BOOLEAN, WHITE_SPACE, CLOSE);
@@ -427,5 +462,41 @@ public class HbTokenizerSpecTest extends HbLexerTest {
     result = tokenize("{{ foo bar=@baz }}");
     result.shouldMatchTokenTypes(OPEN, WHITE_SPACE, ID, WHITE_SPACE, ID, EQUALS, DATA_PREFIX, ID, WHITE_SPACE, CLOSE);
     result.shouldBeToken(7, ID, "baz");
+  }
+
+  /**
+   * tokenizes subexpressions
+   */
+  public void testTokenizesSubexpressions() {
+    TokenizerResult result = tokenize("{{foo (bar)}}");
+    result.shouldMatchTokenTypes(OPEN, ID, WHITE_SPACE, OPEN_SEXPR, ID, CLOSE_SEXPR, CLOSE);
+    result.shouldBeToken(1, ID, "foo");
+    result.shouldBeToken(4, ID, "bar");
+
+    result = tokenize("{{foo (a-x b-y)}}");
+    result.shouldMatchTokenTypes(OPEN, ID, WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, ID, CLOSE_SEXPR, CLOSE);
+    result.shouldBeToken(1, ID, "foo");
+    result.shouldBeToken(4, ID, "a-x");
+    result.shouldBeToken(6, ID, "b-y");
+  }
+
+  /**
+   * tokenizes nested subexpressions
+   */
+  public void testTokenizesNestedSubexpressions() {
+    TokenizerResult result = tokenize("{{foo (bar (lol rofl)) (baz)}}");
+    result.shouldMatchTokenTypes(OPEN, ID, WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, ID, CLOSE_SEXPR, CLOSE_SEXPR, WHITE_SPACE, OPEN_SEXPR, ID, CLOSE_SEXPR, CLOSE);
+    result.shouldBeToken(4, ID, "bar");
+    result.shouldBeToken(7, ID, "lol");
+    result.shouldBeToken(9, ID, "rofl");
+    result.shouldBeToken(14, ID, "baz");
+  }
+
+  /**
+   * tokenizes nested subexpressions: literals
+   */
+  public void testTokenizesNestedSubexpressionLiterals() {
+    TokenizerResult result = tokenize("{{foo (bar (lol true) false) (baz 1) (blah 'b') (blorg \"c\")}}");
+    result.shouldMatchTokenTypes(OPEN, ID, WHITE_SPACE, OPEN_SEXPR, ID,  WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, BOOLEAN, CLOSE_SEXPR, WHITE_SPACE, BOOLEAN, CLOSE_SEXPR, WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, NUMBER, CLOSE_SEXPR, WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, STRING, CLOSE_SEXPR, WHITE_SPACE, OPEN_SEXPR, ID, WHITE_SPACE, STRING, CLOSE_SEXPR, CLOSE);
   }
 }
