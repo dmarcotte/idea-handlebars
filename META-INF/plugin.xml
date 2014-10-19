@@ -10,11 +10,11 @@
   <category>Custom Languages</category>
   <change-notes>
   </change-notes>
-  <version>130.0</version>
+  <version>136.0</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
 
-  <idea-version since-build="128.18" until-build="130.00"/>
+  <idea-version since-build="135.00" until-build="136.00"/>
 
   <application-components>
     <!-- Add your application components here -->
