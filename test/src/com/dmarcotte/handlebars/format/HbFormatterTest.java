@@ -205,7 +205,7 @@ public abstract class HbFormatterTest extends LightIdeaTestCase implements HbFor
         ApplicationManager.getApplication().runWriteAction(new Runnable() {
           @Override
           public void run() {
-            ((DocumentImpl)doc).stripTrailingSpaces();
+            ((DocumentImpl)doc).stripTrailingSpaces(getProject());
           }
         });
       }
