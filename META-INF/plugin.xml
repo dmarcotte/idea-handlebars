@@ -10,7 +10,7 @@
   <category>Custom Languages</category>
   <change-notes>
   </change-notes>
-  <version>130.0</version>
+  <version>130.1</version>
   <depends>com.intellij.modules.lang</depends>
   <vendor logo="/icons/handlebars_icon.png" url="https://github.com/dmarcotte">dmarcotte</vendor>
 
