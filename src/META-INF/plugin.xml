@@ -8,12 +8,12 @@
     ]]>
   </description>
   <category>HTML/JavaScript Development</category>
-  <version>0.8</version>
+  <version>141.1.2</version>
   <depends>com.intellij.modules.lang</depends>
   <depends optional="true">JavaScript</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte / JetBrains</vendor>
 
-  <idea-version since-build="134.1342"/>
+  <idea-version since-build="141.1" until-build="142"/>
 
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
