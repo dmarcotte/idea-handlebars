@@ -10,6 +10,7 @@ import com.intellij.ide.structureView.TreeBasedStructureViewBuilder;
 import com.intellij.ide.structureView.impl.StructureViewComposite;
 import com.intellij.ide.structureView.impl.TemplateLanguageStructureViewBuilder;
 import com.intellij.lang.PsiStructureViewFactory;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public class HbStructureViewFactory implements PsiStructureViewFactory {
         final StructureViewBuilder builder = new TreeBasedStructureViewBuilder() {
           @NotNull
           @Override
-          public StructureViewModel createStructureViewModel() {
+          public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
             return new HbStructureViewModel((HbPsiFile) mainFile);
           }
         };

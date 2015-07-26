@@ -3,7 +3,7 @@ package com.dmarcotte.handlebars.pages;
 import com.dmarcotte.handlebars.HbBundle;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
-import com.intellij.ide.ui.ListCellRendererWrapper;
+import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.options.ConfigurationException;
@@ -97,9 +97,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
       model.addElement(language);
     }
 
-    // When com.intellij.openapi.fileTypes.impl.FileTypePatternDialog#FileTypePatternDialog updates to fix this warning, we make the same update here
-    //noinspection GtkPreferredJComboBoxRenderer,deprecation
-    myCommenterLanguage.setRenderer(new ListCellRendererWrapper(myCommenterLanguage.getRenderer()) {
+    myCommenterLanguage.setRenderer(new ListCellRendererWrapper() {
       @Override
       public void customize(JList list, Object value, int index, boolean selected, boolean hasFocus) {
         setText(value == null ? "" : ((Language)value).getDisplayName());

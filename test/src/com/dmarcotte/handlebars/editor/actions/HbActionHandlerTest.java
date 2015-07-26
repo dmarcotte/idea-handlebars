@@ -2,7 +2,7 @@ package com.dmarcotte.handlebars.editor.actions;
 
 import com.dmarcotte.handlebars.file.HbFileType;
 import com.intellij.codeInsight.generation.CommentByBlockCommentHandler;
-import com.intellij.codeInsight.generation.CommentByLineCommentHandler;
+import com.intellij.codeInsight.generation.actions.CommentByLineCommentAction;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.actionSystem.TypedAction;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.IdeaTestCase;
+import com.intellij.testFramework.PlatformTestCase;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtureTestCase {
 
-    protected HbActionHandlerTest() {
-        IdeaTestCase.initPlatformPrefix();
-    }
+  protected HbActionHandlerTest() {
+    PlatformTestCase.initPlatformLangPrefix();
+  }
 
   private void performWriteAction(final Project project, final Runnable action) {
     ApplicationManager.getApplication().runWriteAction(new Runnable() {
@@ -84,7 +84,7 @@ public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtur
     doExecuteActionTest(before, expected, new Runnable() {
       @Override
       public void run() {
-        new CommentByLineCommentHandler().invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile());
+        new CommentByLineCommentAction().actionPerformedImpl(myFixture.getProject(), myFixture.getEditor());
       }
     });
   }
@@ -97,7 +97,8 @@ public abstract class HbActionHandlerTest extends LightPlatformCodeInsightFixtur
     doExecuteActionTest(before, expected, new Runnable() {
       @Override
       public void run() {
-        new CommentByBlockCommentHandler().invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile());
+        new CommentByBlockCommentHandler().invoke(myFixture.getProject(), myFixture.getEditor(),
+                                                  myFixture.getEditor().getCaretModel().getPrimaryCaret(), myFixture.getFile());
       }
     });
   }
