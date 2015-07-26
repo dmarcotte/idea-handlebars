@@ -18,6 +18,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
     <fileTypeFactory implementation="com.dmarcotte.handlebars.file.HbFileTypeFactory"/>
+    <completion.contributor language="Handlebars" implementationClass="com.dmarcotte.handlebars.completion.HbKeywordCompletionContributor"/>
     <lang.parserDefinition language="Handlebars" implementationClass="com.dmarcotte.handlebars.parsing.HbParseDefinition"/>
     <lang.formatter language="Handlebars" implementationClass="com.dmarcotte.handlebars.format.HbFormattingModelBuilder"/>
     <colorSettingsPage implementation="com.dmarcotte.handlebars.pages.HbColorsPage"/>
