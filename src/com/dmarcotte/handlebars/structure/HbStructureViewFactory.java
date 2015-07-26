@@ -22,14 +22,14 @@ public class HbStructureViewFactory implements PsiStructureViewFactory {
   public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
     return new TemplateLanguageStructureViewBuilder(psiFile) {
       @Override
-      protected StructureViewComposite.StructureViewDescriptor createMainView(FileEditor fileEditor, final PsiFile mainFile) {
+      protected StructureViewComposite.StructureViewDescriptor createMainView(FileEditor fileEditor, PsiFile mainFile) {
         if (!psiFile.isValid()) return null;
 
         final StructureViewBuilder builder = new TreeBasedStructureViewBuilder() {
           @NotNull
           @Override
           public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
-            return new HbStructureViewModel((HbPsiFile) mainFile);
+            return new HbStructureViewModel((HbPsiFile)psiFile, editor);
           }
         };
 
