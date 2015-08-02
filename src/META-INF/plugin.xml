@@ -13,7 +13,7 @@
   <depends optional="true">JavaScript</depends>
   <vendor url="https://github.com/dmarcotte">dmarcotte / JetBrains</vendor>
 
-  <idea-version since-build="141.1" until-build="142"/>
+  <idea-version since-build="141.1" until-build="142.0"/>
 
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
