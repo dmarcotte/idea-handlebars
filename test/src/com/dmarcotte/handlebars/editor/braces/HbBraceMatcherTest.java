@@ -2,16 +2,16 @@ package com.dmarcotte.handlebars.editor.braces;
 
 import com.dmarcotte.handlebars.file.HbFileType;
 import com.intellij.codeInsight.highlighting.BraceMatchingUtil;
-import com.intellij.testFramework.IdeaTestCase;
+import com.intellij.testFramework.PlatformTestCase;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 
 public class HbBraceMatcherTest extends LightPlatformCodeInsightFixtureTestCase {
 
   private static final String ourBraceMatchIndicator = "<brace_match>";
 
-    public HbBraceMatcherTest() {
-        IdeaTestCase.initPlatformPrefix();
-    }
+  public HbBraceMatcherTest() {
+    PlatformTestCase.initPlatformLangPrefix();
+  }
 
   /**
    * Expects "fileText" to have two "&lt;brace_match&gt;" tokens, placed in front of two braces which are

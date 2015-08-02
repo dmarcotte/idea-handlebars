@@ -44,6 +44,12 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     result.shouldMatchTokenContent("{{! this is a comment=true }}", "This here be non-Hb content!");
   }
 
+  public void testEmptyUnclosedComment() {
+    TokenizerResult result = tokenize("{{!");
+    result.shouldMatchTokenTypes(UNCLOSED_COMMENT);
+    result.shouldMatchTokenContent("{{!");
+  }
+
   public void testSquareBracketStuff() {
     TokenizerResult result = tokenize("{{test\t[what] }}");
     result.shouldMatchTokenTypes(OPEN, ID, WHITE_SPACE, ID, WHITE_SPACE, CLOSE);
@@ -92,9 +98,9 @@ public class HbLexerFreeFormTest extends HbLexerTest {
   }
 
   public void testTooManyMustaches() {
-    TokenizerResult result = tokenize("{{{{");
-    result.shouldMatchTokenTypes(OPEN_UNESCAPED, INVALID);
-    result.shouldMatchTokenContent("{{{", "{");
+    TokenizerResult result = tokenize("{{{{{");
+    result.shouldMatchTokenTypes(OPEN_RAW_BLOCK, INVALID);
+    result.shouldMatchTokenContent("{{{{", "{");
   }
 
   public void testTooManyCommentCloseStaches() {
@@ -127,6 +133,14 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     result.shouldMatchTokenTypes(COMMENT);
     result.shouldBeToken(0, COMMENT, "{{!}}");
   }
+
+  public void testNotCompletedBlock() {
+    TokenizerResult result = tokenize("{{!-}}");
+
+    result.shouldMatchTokenTypes(COMMENT);
+    result.shouldBeToken(0, COMMENT, "{{!-}}");
+  }
+
 
   public void testEscapedMustacheAtEOF() {
     TokenizerResult result = tokenize("\\{{escaped}}");
@@ -261,5 +275,11 @@ public class HbLexerFreeFormTest extends HbLexerTest {
     TokenizerResult result = tokenize("{{>foo @bar.baz}}");
     result.shouldMatchTokenTypes(OPEN_PARTIAL, ID, WHITE_SPACE, DATA_PREFIX, ID, SEP, ID, CLOSE);
     result.shouldMatchTokenContent("{{>", "foo", " ", "@", "bar", ".", "baz", "}}");
+  }
+
+  public void testRawBlock() {
+    TokenizerResult result = tokenize("{{{{raw}}}} {{test}} {{{{/raw}}}}");
+    result.shouldMatchTokenTypes(OPEN_RAW_BLOCK, ID, CLOSE_RAW_BLOCK, CONTENT, END_RAW_BLOCK, ID, CLOSE_RAW_BLOCK);
+    result.shouldMatchTokenContent("{{{{", "raw", "}}}}", " {{test}} ", "{{{{/", "raw", "}}}}");
   }
 }

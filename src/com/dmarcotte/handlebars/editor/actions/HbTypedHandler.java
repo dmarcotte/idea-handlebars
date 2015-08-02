@@ -7,6 +7,7 @@ import com.dmarcotte.handlebars.parsing.HbTokenTypes;
 import com.dmarcotte.handlebars.psi.*;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
@@ -26,6 +27,10 @@ import org.jetbrains.annotations.NotNull;
  * on Enter.
  */
 public class HbTypedHandler extends TypedHandlerDelegate {
+  private static final Logger LOG = Logger.getInstance("#com.dmarcotte.handlebars.editor.actions.HbTypedHandler");
+
+  public static final String OPEN_BRACE = "{";
+  public static final String CLOSE_BRACES = "}}";
 
   @Override
   public Result beforeCharTyped(char c, Project project, Editor editor, PsiFile file, FileType fileType) {
@@ -58,9 +63,13 @@ public class HbTypedHandler extends TypedHandlerDelegate {
   }
 
   @Override
-  public Result charTyped(char c, Project project, Editor editor, @NotNull PsiFile file) {
+  public Result charTyped(char c, Project project, @NotNull Editor editor, @NotNull PsiFile file) {
     int offset = editor.getCaretModel().getOffset();
     FileViewProvider provider = file.getViewProvider();
+
+    if (!provider.getBaseLanguage().isKindOf(HbLanguage.INSTANCE)) {
+      return Result.CONTINUE;
+    }
 
     if (offset < 2 || offset > editor.getDocument().getTextLength()) {
       return Result.CONTINUE;
@@ -73,7 +82,7 @@ public class HbTypedHandler extends TypedHandlerDelegate {
       if (HbConfig.isAutocompleteMustachesEnabled() && c == '}' && !previousChar.equals("}")) {
         // we may be able to complete the second brace
         PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
-        PsiElement elementAt = provider.findElementAt(offset - 1, HbLanguage.class);
+        PsiElement elementAt = provider.findElementAt(offset - 1, provider.getBaseLanguage());
         ASTNode node = elementAt != null ? elementAt.getNode() : null;
         if (node != null && node.getElementType() == HbTokenTypes.INVALID) {
           // we should be looking at the beginning of a close brace.  Find its matching open brace and auto-complete based on its type
@@ -108,9 +117,39 @@ public class HbTypedHandler extends TypedHandlerDelegate {
     if (closeBraceCompleted || (c == '}' && previousChar.equals("}"))) {
       autoInsertCloseTag(project, offset, editor, provider);
       adjustMustacheFormatting(project, offset, editor, file, provider);
+    } else if (c == '/' && previousChar.equals("{")) {
+      finishClosingTag(offset, editor, provider);
     }
 
     return Result.CONTINUE;
+  }
+
+  private static void finishClosingTag(int offset, Editor editor, FileViewProvider provider) {
+    PsiElement elementAtCaret = provider.findElementAt(offset - 1, HbLanguage.class);
+    if (elementAtCaret != null) {
+      HbBlockWrapper block = PsiTreeUtil.getParentOfType(elementAtCaret, HbBlockWrapper.class);
+      if (block != null) {
+        final HbOpenBlockMustache open = PsiTreeUtil.findChildOfType(block, HbOpenBlockMustache.class);
+        final HbCloseBlockMustache close = PsiTreeUtil.findChildOfType(block, HbCloseBlockMustache.class);
+        if (open != null && close == null) {
+          final HbMustacheName mustacheName = PsiTreeUtil.findChildOfType(open, HbMustacheName.class);
+          if (mustacheName != null) {
+            if (offset > 3) {
+              final String prePreviousChar = editor.getDocument().getText(new TextRange(offset - 3, offset - 2));
+              if (prePreviousChar.equals("{")) {
+                editor.getDocument().insertString(offset, mustacheName.getText() + CLOSE_BRACES);
+                editor.getCaretModel().moveToOffset(offset + mustacheName.getText().length() + CLOSE_BRACES.length());
+              } else {
+                editor.getDocument().replaceString(offset - 1, offset, OPEN_BRACE + '/' + mustacheName.getText() + CLOSE_BRACES);
+                editor.getCaretModel().moveToOffset(offset + mustacheName.getText().length() + CLOSE_BRACES.length() + 1);
+              }
+            } else {
+              LOG.warn("Unexpected offset inside HbBlockWrapper element");
+            }
+          }
+        }
+      }
+    }
   }
 
   /**

@@ -32,6 +32,9 @@ public class HbTokenTypes {
 
   public static final IElementType WHITE_SPACE = new HbElementType("WHITE_SPACE", "hb.parsing.element.expected.white_space");
   public static final IElementType COMMENT = new HbElementType("COMMENT", "hb.parsing.element.expected.comment");
+  public static final IElementType COMMENT_CONTENT = new HbElementType("COMMENT_CONTENT", "hb.parsing.element.expected.comment.content");
+  public static final IElementType COMMENT_OPEN = new HbElementType("COMMENT_OPEN", "hb.parsing.element.expected.comment.open");
+  public static final IElementType COMMENT_CLOSE = new HbElementType("COMMENT_CLOSE", "hb.parsing.element.expected.comment.close");
   public static final IElementType UNCLOSED_COMMENT = new HbElementType("UNCLOSED_COMMENT", "");
 
   public static final IElementType OPEN = new HbElementType("OPEN", "hb.parsing.element.expected.open");
@@ -39,9 +42,15 @@ public class HbTokenTypes {
   public static final IElementType OPEN_PARTIAL = new HbElementType("OPEN_PARTIAL", "hb.parsing.element.expected.open_partial");
   public static final IElementType OPEN_ENDBLOCK = new HbElementType("OPEN_ENDBLOCK", "hb.parsing.element.expected.open_end_block");
   public static final IElementType OPEN_INVERSE = new HbElementType("OPEN_INVERSE", "hb.parsing.element.expected.open_inverse");
+  public static final IElementType OPEN_INVERSE_CHAIN = new HbElementType("OPEN_INVERSE_CHAIN", "hb.parsing.element.expected.open_inverse_chain");
   public static final IElementType OPEN_UNESCAPED = new HbElementType("OPEN_UNESCAPED", "hb.parsing.element.expected.open_unescaped");
   public static final IElementType OPEN_SEXPR = new HbElementType("OPEN_SEXPR", "hb.parsing.element.expected.open_sexpr");
   public static final IElementType CLOSE_SEXPR = new HbElementType("CLOSE_SEXPR", "hb.parsing.element.expected.close_sexpr");
+  public static final IElementType OPEN_BLOCK_PARAMS = new HbElementType("OPEN_BLOCK_PARAMS", "hb.parsing.element.expected.open_block_params");
+  public static final IElementType CLOSE_BLOCK_PARAMS = new HbElementType("CLOSE_BLOCK_PARAMS", "hb.parsing.element.expected.close_block_params");
+  public static final IElementType OPEN_RAW_BLOCK = new HbElementType("OPEN_RAW_BLOCK", "hb.parsing.element.expected.open_raw_block");
+  public static final IElementType END_RAW_BLOCK = new HbElementType("END_RAW_BLOCK", "hb.parsing.element.expected.end_raw_block");
+  public static final IElementType CLOSE_RAW_BLOCK = new HbElementType("CLOSE_RAW_BLOCK", "hb.parsing.element.expected.close_raw_block");
   public static final IElementType EQUALS = new HbElementType("EQUALS", "hb.parsing.element.expected.equals");
   public static final IElementType ID = new HbElementType("ID", "hb.parsing.element.expected.id");
   public static final IElementType DATA_PREFIX = new HbElementType("DATA_PREFIX", "hb.parsing.element.expected.data");
@@ -59,6 +68,6 @@ public class HbTokenTypes {
   public static final IFileElementType FILE = new IFileElementType("FILE", HbLanguage.INSTANCE);
 
   public static final TokenSet WHITESPACES = TokenSet.create(WHITE_SPACE);
-  public static final TokenSet COMMENTS = TokenSet.create(COMMENT);
+  public static final TokenSet COMMENTS = TokenSet.create(COMMENT, COMMENT_CONTENT);
   public static final TokenSet STRING_LITERALS = TokenSet.create(STRING);
 }

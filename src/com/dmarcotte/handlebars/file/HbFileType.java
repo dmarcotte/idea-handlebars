@@ -1,7 +1,6 @@
 package com.dmarcotte.handlebars.file;
 
 import com.dmarcotte.handlebars.HbBundle;
-import com.dmarcotte.handlebars.HbIcons;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.HbTemplateHighlighter;
 import com.intellij.lang.Language;
@@ -11,6 +10,7 @@ import com.intellij.openapi.fileTypes.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
+import icons.HandlebarsIcons;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,11 @@ public class HbFileType extends LanguageFileType implements TemplateLanguageFile
   public static final String DEFAULT_EXTENSION = "handlebars;hbs;mustache";
 
   private HbFileType() {
-    super(HbLanguage.INSTANCE);
+    this(HbLanguage.INSTANCE);
+  }
+
+  protected HbFileType(Language lang) {
+    super(lang);
 
     FileTypeEditorHighlighterProviders.INSTANCE.addExplicitExtension(this, new EditorHighlighterProvider() {
       public EditorHighlighter getEditorHighlighter(@Nullable Project project,
@@ -53,22 +57,22 @@ public class HbFileType extends LanguageFileType implements TemplateLanguageFile
   }
 
   public Icon getIcon() {
-    return HbIcons.FILE_ICON;
+    return HandlebarsIcons.Handlebars_icon;
   }
 
   public Charset extractCharsetFromFileContent(@Nullable final Project project,
                                                @Nullable final VirtualFile file,
-                                               @NotNull final String content) {
+                                               @NotNull final CharSequence content) {
     LanguageFileType associatedFileType = getAssociatedFileType(file, project);
 
     if (associatedFileType == null) {
       return null;
     }
 
-    return associatedFileType.extractCharsetFromFileContent(project, file, content);
+    return CharsetUtil.extractCharsetFromFileContent(project, file, associatedFileType, content);
   }
 
-  private LanguageFileType getAssociatedFileType(VirtualFile file, Project project) {
+  private static LanguageFileType getAssociatedFileType(VirtualFile file, Project project) {
     if (project == null) {
       return null;
     }

@@ -3,12 +3,15 @@ package com.dmarcotte.handlebars.pages;
 import com.dmarcotte.handlebars.HbBundle;
 import com.dmarcotte.handlebars.HbLanguage;
 import com.dmarcotte.handlebars.config.HbConfig;
-import com.intellij.ide.ui.ListCellRendererWrapper;
 import com.intellij.lang.Language;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.ex.FileTypeManagerEx;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
+import com.intellij.ui.ListCellRendererWrapper;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +26,12 @@ public class HbConfigurationPage implements SearchableConfigurable {
   private JCheckBox myFormattingCheckBox;
   private JComboBox myCommenterLanguage;
   private JCheckBox myAutocompleteMustaches;
+  private JCheckBox htmlAsHb;
+  private Project myProject;
+
+  public HbConfigurationPage(Project project) {
+    myProject = project;
+  }
 
   @NotNull
   @Override
@@ -48,7 +57,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
 
   @Override
   public String getHelpTopic() {
-    return null;
+    return "reference.settings.ide.settings.handlebars.mustache";
   }
 
   @Override
@@ -61,6 +70,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
     return myAutoGenerateClosingTagCheckBox.isSelected() != HbConfig.isAutoGenerateCloseTagEnabled()
            || myAutocompleteMustaches.isSelected() != HbConfig.isAutocompleteMustachesEnabled()
            || myFormattingCheckBox.isSelected() != HbConfig.isFormattingEnabled()
+           || htmlAsHb.isSelected() != HbConfig.shouldOpenHtmlAsHandlebars(myProject)
            || !((Language)myCommenterLanguage.getSelectedItem()).getID().equals(HbConfig.getCommenterLanguage().getID());
   }
 
@@ -70,6 +80,15 @@ public class HbConfigurationPage implements SearchableConfigurable {
     HbConfig.setAutocompleteMustachesEnabled(myAutocompleteMustaches.isSelected());
     HbConfig.setFormattingEnabled(myFormattingCheckBox.isSelected());
     HbConfig.setCommenterLanguage((Language)myCommenterLanguage.getSelectedItem());
+
+    if (HbConfig.setShouldOpenHtmlAsHandlebars(htmlAsHb.isSelected(), myProject)) {
+      ApplicationManager.getApplication().runWriteAction(new Runnable() {
+        @Override
+        public void run() {
+          FileTypeManagerEx.getInstanceEx().fireFileTypesChanged();
+        }
+      });
+    }
   }
 
   @Override
@@ -77,6 +96,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
     myAutoGenerateClosingTagCheckBox.setSelected(HbConfig.isAutoGenerateCloseTagEnabled());
     myAutocompleteMustaches.setSelected(HbConfig.isAutocompleteMustachesEnabled());
     myFormattingCheckBox.setSelected(HbConfig.isFormattingEnabled());
+    htmlAsHb.setSelected(HbConfig.shouldOpenHtmlAsHandlebars(myProject));
     resetCommentLanguageCombo(HbConfig.getCommenterLanguage());
   }
 
@@ -97,9 +117,7 @@ public class HbConfigurationPage implements SearchableConfigurable {
       model.addElement(language);
     }
 
-    // When com.intellij.openapi.fileTypes.impl.FileTypePatternDialog#FileTypePatternDialog updates to fix this warning, we make the same update here
-    //noinspection GtkPreferredJComboBoxRenderer,deprecation
-    myCommenterLanguage.setRenderer(new ListCellRendererWrapper(myCommenterLanguage.getRenderer()) {
+    myCommenterLanguage.setRenderer(new ListCellRendererWrapper() {
       @Override
       public void customize(JList list, Object value, int index, boolean selected, boolean hasFocus) {
         setText(value == null ? "" : ((Language)value).getDisplayName());

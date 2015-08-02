@@ -27,5 +27,6 @@ Thumbs.db
 .CVS
 intermediate
 publish
+out
 target
 .idea
